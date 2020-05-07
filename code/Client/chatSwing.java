@@ -143,14 +143,28 @@ class ChatSwing
         frame.setSize(600,600);
         frame.setVisible(true);
 
-    }  
+    } 
+
     /**
      * This will be triggered by button to send message! and show up on chat
      * bubble 
      * @param string being sent in to be added to chat 
      */
-    public static void addMessageToChatBubble(String event ){
+    public void addMessageToChatBubble(String event )
+    {
     }
+
+
+    /**
+    * 
+    * @param Room
+    */
+    public void addRoomToSubscribed(String Room)
+    {
+
+    }
+
+    
 
     public static void main(String [] args)
     {
