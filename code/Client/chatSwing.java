@@ -21,7 +21,7 @@ class ChatSwing
     String rooms[]= {"General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
     JLabel allRoomsList;
     JComboBox allRoomMenu;
-    String allRooms[]={"Barney", "is", "a ", "dinosaur", "who", "lives"};
+    String allRooms[]={"Barney", "is", "a ", "dinosaur", "who", "lives", "General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
 
 
 /**
@@ -46,49 +46,54 @@ class ChatSwing
         //label for window
         c.gridx=0;
         c.gridy=0;
-        c.ipadx=40;
-        c.ipady=20;
-        label = new JLabel("Welcome to chat");
-        label.setForeground(Color.DARK_GRAY);
+        c.ipadx=0;
+        c.ipady=10;
+        label = new JLabel("IRC Chatty Chat");
+        label.setFont(new Font("", Font.BOLD,40));
+        label.setForeground(Color.WHITE);
 
         frame.add(label,c);
       
         
         //This is for the actual chat text 
         c.gridx=0;
-        c.gridy=2;
+        c.gridy=4;
         c.ipadx=200;
         c.ipady=400;
-        chatbubble = new JTextArea("messages shown here");
+        chatbubble = new JTextArea("messages loading..");
+        chatbubble.setEditable(false);
         chatbubble.setBackground(Color.lightGray);
         frame.add(chatbubble,c);
 
 
 
-        c.gridx=1;
+        c.gridx=0;
         c.gridy=1;
         c.ipadx=0;
-        c.ipady=90;
-        labelRoom = new JLabel("Rooms Subscribed");
-        labelRoom.setBackground(Color.GREEN);
+        c.ipady=0;
+        labelRoom = new JLabel("Current Room");
+        labelRoom.setFont(new Font("", Font.PLAIN,15));
+        labelRoom.setForeground(Color.white);
         frame.add(labelRoom,c);
 
-        c.gridx=2;
-        c.gridy=1;
-        c.ipadx=10;
-        c.ipady=10;
+        c.gridx=0;
+        c.gridy=2;
+        c.ipadx=0;
+        c.ipady=0;
         roomMenu= new JComboBox<>(rooms);
         frame.add(roomMenu, c);
 
          c.gridx=1;
-         c.gridy=0;
+         c.gridy=1;
          c.ipadx=10;
          c.ipady=0;
          allRoomsList= new JLabel ("All Rooms Available");
+         allRoomsList.setFont(new Font("", Font.PLAIN,15));
+         allRoomsList.setForeground(Color.white);
          frame.add(allRoomsList, c);
 
-         c.gridx=2;
-         c.gridy=0;
+         c.gridx=1;
+         c.gridy=2;
          c.ipadx=10;
          c.ipady=0;
          allRoomMenu= new JComboBox <> (allRooms);
@@ -101,17 +106,17 @@ class ChatSwing
 
         //Adding a textbox for the chatting 
         c.gridx=0;
-        c.gridy=4;
-        c.ipadx=90;
+        c.gridy=5;
+        c.ipadx=320;
         c.ipady=20;
-        textbox1= new JTextField("Enter Message Here");
-        textbox1.setBackground(Color.CYAN);
+        textbox1= new JTextField();
+        textbox1.setBackground(Color.lightGray);
         frame.add(textbox1,c);
 
         
         
         c.gridx=1;
-        c.gridy=4;
+        c.gridy=5;
         c.ipadx=10;
         c.ipady=10;
         button= new JButton("Click to Send Message");
@@ -135,7 +140,7 @@ class ChatSwing
         frame.pack();
 
         frame.setLayout(null);
-        frame.setSize(900,900);
+        frame.setSize(600,600);
         frame.setVisible(true);
 
     }  
