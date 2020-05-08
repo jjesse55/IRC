@@ -17,4 +17,11 @@ public abstract class IRC_Packet {
     protected IRC_Packet(OpCodes opCode) { 
         this.packetHeader = new IRC_Packet_Header(opCode);
     }
+
+    /**
+     * @return the packetHeader
+     */
+    public IRC_Packet_Header getPacketHeader() {
+        return this.packetHeader;
+    }
 }

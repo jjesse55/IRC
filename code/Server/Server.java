@@ -11,7 +11,7 @@ import code.IRC_Packets.IRC_Packet;
 public class Server {
 
     // Class fields
-    private static final int port = 5000; // Port number for the server process
+    private static final int port = 194; // Port number for the server process
     private ServerSocket welcomeSocket;
 
     /**
