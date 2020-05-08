@@ -6,6 +6,10 @@ public class ListingResponse extends OpPackets{
     String roomNameUserBelongs;
     String itemNames;
 
+    /**
+     * 
+     * @param opCode
+     */
     public ListingResponse(OpCodes opCode){
         super(opCode);
     }

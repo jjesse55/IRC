@@ -6,6 +6,11 @@ public class ForwardToClients extends OpPackets {
     String targetName;
     String nameOfUser;
     String msgtoRoom;
+
+    /**
+     * 
+     * @param opCode
+     */
     public ForwardToClients(OpCodes opCode){
         super(opCode);
     }
