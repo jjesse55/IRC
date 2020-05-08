@@ -31,6 +31,7 @@ public class Client {
 
     //Class methods
     public Client() throws Exception {
+        System.out.println("Connecting to the server...\nHost: " + SERVER_HOST + "\nPort: " + SERVER_PORT);
         this.clientSocket = new Socket(SERVER_HOST, SERVER_PORT);
     }
 
