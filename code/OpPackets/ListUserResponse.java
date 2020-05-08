@@ -2,13 +2,15 @@ package code.OpPackets;
 
 import code.Codes.OpCodes;
 
-public class KeepAlive extends OpPackets {
+public class ListUserResponse extends OpPackets {
+
 
     /**
      * 
      * @param opCode
      */
-    public KeepAlive(OpCodes opCode){
+    public ListUserResponse(OpCodes opCode)
+    {
         super(opCode);
     }
     

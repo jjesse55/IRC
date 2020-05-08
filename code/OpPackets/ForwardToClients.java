@@ -2,15 +2,16 @@ package code.OpPackets;
 
 import code.Codes.OpCodes;
 
-public class HandShake extends OpPackets{
+public class ForwardToClients extends OpPackets {
     String targetName;
-    String messageToSend;
+    String nameOfUser;
+    String msgtoRoom;
 
     /**
      * 
      * @param opCode
      */
-    public HandShake(OpCodes opCode){
+    public ForwardToClients(OpCodes opCode){
         super(opCode);
     }
     

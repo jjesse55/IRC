@@ -2,13 +2,14 @@ package code.OpPackets;
 
 import code.Codes.OpCodes;
 
-public class KeepAlive extends OpPackets {
+public class TellMessage extends OpPackets{
 
     /**
      * 
      * @param opCode
      */
-    public KeepAlive(OpCodes opCode){
+    public TellMessage(OpCodes opCode)
+    {
         super(opCode);
     }
     

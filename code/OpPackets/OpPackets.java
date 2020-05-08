@@ -7,6 +7,10 @@ public class OpPackets extends IRC_Packet{
     //Error Code for Specific Op Packets 
     int errorCode;
 
+    /**
+     * 
+     * @param opCode
+     */ 
     public OpPackets(OpCodes opCode)
     {
         super(opCode);
