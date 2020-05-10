@@ -7,11 +7,12 @@ public class LeaveRoom extends OpPackets {
 
     /**
      * 
+     * Request to leave room
      * @param opCode
      */
     public LeaveRoom(OpCodes opCode)
     {
-        super(opCode);
+        super(OpCodes.OP_CODE_LEAVE_ROOM);
     }
     
 }

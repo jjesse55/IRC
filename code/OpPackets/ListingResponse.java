@@ -7,11 +7,11 @@ public class ListingResponse extends OpPackets{
     String itemNames;
 
     /**
-     * 
+     *  This is the response to listing all rooms 
      * @param opCode
      */
     public ListingResponse(OpCodes opCode){
-        super(opCode);
+        super(OpCodes.OP_CODE_LIST_ROOMS_RESPONSE);
     }
     
 }

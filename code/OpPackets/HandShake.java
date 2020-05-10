@@ -7,11 +7,11 @@ public class HandShake extends OpPackets{
     String messageToSend;
 
     /**
-     * 
+     * This is the first message sent to the server to establish connection
      * @param opCode
      */
     public HandShake(OpCodes opCode){
-        super(opCode);
+        super(OpCodes.OP_CODE_HELLO);
     }
     
 }

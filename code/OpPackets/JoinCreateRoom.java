@@ -6,11 +6,11 @@ public class JoinCreateRoom extends OpPackets{
     String chatRoom;
 
     /**
-     * 
+     * This is the request to join/create a room if the room is not already created
      * @param opCode
      */
     public JoinCreateRoom(OpCodes opCode){
-        super(opCode);
+        super(OpCodes.OP_CODE_JOIN_ROOM);
     }
 
     
