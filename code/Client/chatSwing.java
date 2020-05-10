@@ -157,6 +157,7 @@ class ChatSwing extends JFrame implements ActionListener
     public void addMessageToChatBubble(String event )
     {
         chatbubble.append(event);
+        //TODO call tellmessage!
     }
 
 
@@ -166,13 +167,13 @@ class ChatSwing extends JFrame implements ActionListener
     */
     public void addRoomToSubscribed(String Room)
     {
-        
+        //TODO call list room! 
 
     }
 
     public void userName(){
         NameGetter= new JFrame("UserName Response");
-        //how do i... not allow cancell....
+        //TODO how do i... not allow cancell....
         UserName=JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
 
         //UserName=set this field to the popup box if joseph jesse responds 
@@ -183,7 +184,7 @@ class ChatSwing extends JFrame implements ActionListener
     {
         String action= e.getActionCommand();
         if(action.equals("SendMessage")){
-            //NEED TO ADD CALL TO REQUEST
+            //TODO NEED TO ADD CALL TO REQUEST
             String message= textbox1.getText();
             chatbubble.append(UserName+ ": " +message);
             textbox1.setText(null);
