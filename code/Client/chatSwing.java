@@ -6,8 +6,8 @@ import java.awt.*;
 import javax.swing.JFrame;
 
 
-
-class ChatSwing
+//the warning is ok to keep since we will be serializing but not yet!
+class ChatSwing extends JFrame implements ActionListener
 {
 
     
@@ -58,9 +58,9 @@ class ChatSwing
         //This is for the actual chat text 
         c.gridx=0;
         c.gridy=4;
-        c.ipadx=200;
+        c.ipadx=320;
         c.ipady=400;
-        chatbubble = new JTextArea("messages loading..");
+        chatbubble = new JTextArea();
         chatbubble.setEditable(false);
         chatbubble.setBackground(Color.lightGray);
         frame.add(chatbubble,c);
@@ -126,15 +126,11 @@ class ChatSwing
          * not used not sure how to get this to work yet! 
          * @param 
          */
-        button.addActionListener( new ActionListener(){
-            
-        public void actionPerformed(ActionEvent e){
-            addMessageToChatBubble("hello");
+        button.addActionListener( this);
+        button.setActionCommand("SendMessage");
 
               
-         }
 
-        });
 
         //frame controls
         frame.pack();
@@ -152,15 +148,30 @@ class ChatSwing
      */
     public void addMessageToChatBubble(String event )
     {
+        chatbubble.append(event);
     }
 
 
     /**
-    * 
+    * This should be updated with join/create room response packet
     * @param Room
     */
     public void addRoomToSubscribed(String Room)
     {
+        
+
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+        String action= e.getActionCommand();
+        if(action.equals("SendMessage")){
+            //NEED TO ADD CALL TO REQUEST
+            String message= textbox1.getText();
+            chatbubble.append(message);
+            textbox1.setText(null);
+        }
 
     }
 
