@@ -74,7 +74,7 @@ public class Client {
                 break;
             case OP_CODE_LEAVE_ROOM_RESP:
                 break;
-            case OP_CODE_SEND_MESSAGE:
+            case OP_CODE_SEND_MESSAGE: // Send msg to a room from client 
                 break;
             case OP_CODE_TELL_MESSAGE:
                 break;
