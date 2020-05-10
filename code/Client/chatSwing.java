@@ -22,7 +22,8 @@ class ChatSwing extends JFrame implements ActionListener
     JLabel allRoomsList;
     JComboBox allRoomMenu;
     String allRooms[]={"Barney", "is", "a ", "dinosaur", "who", "lives", "General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
-
+    String UserName; //Name of our User
+    String RespName; 
 
 /**
  * very rough start to the layout! 
