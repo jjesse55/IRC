@@ -6,12 +6,14 @@ import java.awt.*;
 import javax.swing.JFrame;
 
 
+
 //the warning is ok to keep since we will be serializing but not yet!
 class ChatSwing extends JFrame implements ActionListener
 {
 
     
     JFrame frame;
+    JFrame NameGetter;
     JLabel label;
     JTextArea chatbubble;
     JTextField textbox1;
@@ -22,7 +24,7 @@ class ChatSwing extends JFrame implements ActionListener
     JLabel allRoomsList;
     JComboBox allRoomMenu;
     String allRooms[]={"Barney", "is", "a ", "dinosaur", "who", "lives", "General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
-    String UserName; //Name of our User
+    String UserName= ""; //Name of our User
     String RespName; 
 
 /**
@@ -140,6 +142,11 @@ class ChatSwing extends JFrame implements ActionListener
         frame.setSize(600,600);
         frame.setVisible(true);
 
+
+        while(UserName== "" ){
+            userName();
+        }
+
     } 
 
     /**
@@ -163,6 +170,14 @@ class ChatSwing extends JFrame implements ActionListener
 
     }
 
+    public void userName(){
+        NameGetter= new JFrame("UserName Response");
+        //how do i... not allow cancell....
+        UserName=JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
+
+        //UserName=set this field to the popup box if joseph jesse responds 
+    }
+
     @Override
     public void actionPerformed(ActionEvent e)
     {
@@ -170,7 +185,7 @@ class ChatSwing extends JFrame implements ActionListener
         if(action.equals("SendMessage")){
             //NEED TO ADD CALL TO REQUEST
             String message= textbox1.getText();
-            chatbubble.append(message);
+            chatbubble.append(UserName+ ": " +message);
             textbox1.setText(null);
         }
 
@@ -183,6 +198,7 @@ class ChatSwing extends JFrame implements ActionListener
         javax.swing.SwingUtilities.invokeLater(new Runnable(){
         public void run(){
             new ChatSwing();
+            
         }
     });
  
