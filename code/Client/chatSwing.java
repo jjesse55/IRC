@@ -26,6 +26,7 @@ class ChatSwing extends JFrame implements ActionListener
     String allRooms[]={"Barney", "is", "a ", "dinosaur", "who", "lives", "General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
     String UserName= ""; //Name of our User
     String RespName; 
+    String message;
 
 /**
  * very rough start to the layout! 
@@ -161,6 +162,8 @@ class ChatSwing extends JFrame implements ActionListener
     }
 
 
+
+
     /**
     * This should be updated with join/create room response packet
     * @param Room
@@ -185,10 +188,23 @@ class ChatSwing extends JFrame implements ActionListener
         String action= e.getActionCommand();
         if(action.equals("SendMessage")){
             //TODO NEED TO ADD CALL TO REQUEST
-            String message= textbox1.getText();
-            chatbubble.append(UserName+ ": " +message);
+            message= textbox1.getText();
+            chatbubble.append(UserName+ ": " +message + "\n");
             textbox1.setText(null);
         }
+
+    }
+    public String getName(){
+        return UserName;
+    }
+
+    public String getMessage(){
+        return message;
+    }
+
+    public void displayMessage(String UserName, String message)
+    {
+        chatbubble.append(UserName+ ": " + message + "\n");
 
     }
 

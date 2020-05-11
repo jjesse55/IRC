@@ -2,7 +2,11 @@ package code.Client;
 
 import java.io.*;
 import java.net.Socket;
+
+import code.Codes.OpCodes;
 import code.IRC_Packets.IRC_Packet;
+import code.OpPackets.HandShake;
+import code.Client.ChatSwing;
 
 public class Client {
 
@@ -57,6 +61,10 @@ public class Client {
             case OP_CODE_KEEP_ALIVE:
                 break;
             case OP_CODE_HELLO:
+                //TODO figure out where to create the chat swing! so i can actually have an object 
+               // String n="";
+                //String msg="";
+                //IRC_Packet handshake= new HandShake(OpCodes.OP_CODE_HELLO, n, msg);
                 break;
             case OP_CODE_LIST_ROOMS:
                 break;
