@@ -15,10 +15,21 @@ public class Client {
     private static final String SERVER_HOST = "localhost";
 
     public static void main(String [] notUsed) throws Exception {
-        Client client = new Client();
+      Client client = new Client();
+/*
+        javax.swing.SwingUtilities.invokeLater(new Runnable(){
+        public void run(){
+            ChatSwing myChat= new ChatSwing();
+            
+        }
+         });
+ */
 
-        ObjectInputStream inFromServer = new ObjectInputStream(client.getClientSocket().getInputStream());
-        ObjectOutputStream outToServer = new ObjectOutputStream(client.getClientSocket().getOutputStream());
+       ChatSwing myChat= new ChatSwing();
+
+
+    ObjectInputStream inFromServer = new ObjectInputStream(client.getClientSocket().getInputStream());
+    ObjectOutputStream outToServer = new ObjectOutputStream(client.getClientSocket().getOutputStream());
 
         /* TODO, test sending objects to and from the server (execute this loop)
 
@@ -31,7 +42,6 @@ public class Client {
 
         */
     }
-
 
     //Class methods
     public Client() throws Exception {
@@ -64,7 +74,7 @@ public class Client {
                 //TODO figure out where to create the chat swing! so i can actually have an object 
                // String n="";
                 //String msg="";
-                //IRC_Packet handshake= new HandShake(OpCodes.OP_CODE_HELLO, n, msg);
+              //  IRC_Packet handshake= new HandShake(OpCodes.OP_CODE_HELLO, myChat.UserName, msg);
                 break;
             case OP_CODE_LIST_ROOMS:
                 break;

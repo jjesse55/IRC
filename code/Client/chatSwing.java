@@ -11,7 +11,9 @@ import javax.swing.JFrame;
 class ChatSwing extends JFrame implements ActionListener
 {
 
-    
+    /**
+     *
+     */
     JFrame frame;
     JFrame NameGetter;
     JLabel label;
@@ -24,13 +26,13 @@ class ChatSwing extends JFrame implements ActionListener
     JLabel allRoomsList;
     JComboBox allRoomMenu;
     String allRooms[]={"Barney", "is", "a ", "dinosaur", "who", "lives", "General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
-    String UserName= ""; //Name of our User
+    String UserName; 
     String RespName; 
     String message;
 
 /**
- * very rough start to the layout! 
- * @param not used
+ * 
+ * 
  */
     ChatSwing()
     {
@@ -104,10 +106,6 @@ class ChatSwing extends JFrame implements ActionListener
          frame.add(allRoomMenu, c);
 
 
-
-
-
-
         //Adding a textbox for the chatting 
         c.gridx=0;
         c.gridy=5;
@@ -143,12 +141,12 @@ class ChatSwing extends JFrame implements ActionListener
         frame.setSize(600,600);
         frame.setVisible(true);
 
-
-        while(UserName== "" ){
             userName();
-        }
+            // USED FOR TESTING: displayRooms();
 
     } 
+
+
 
     /**
      * This will be triggered by button to send message! and show up on chat
@@ -162,6 +160,10 @@ class ChatSwing extends JFrame implements ActionListener
     }
 
 
+    public String getRoomCurrentlySelected(){
+        String roomVal= roomMenu.getSelectedItem().toString();
+        return roomVal;
+    }
 
 
     /**
@@ -171,13 +173,19 @@ class ChatSwing extends JFrame implements ActionListener
     public void addRoomToSubscribed(String Room)
     {
         //TODO call list room! 
+        
 
     }
 
     public void userName(){
         NameGetter= new JFrame("UserName Response");
-        //TODO how do i... not allow cancell....
         UserName=JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
+        while(UserName == null || UserName== ""){
+
+          NameGetter= new JFrame("UserName Response");
+          UserName=JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
+
+        }
 
         //UserName=set this field to the popup box if joseph jesse responds 
     }
@@ -187,13 +195,14 @@ class ChatSwing extends JFrame implements ActionListener
     {
         String action= e.getActionCommand();
         if(action.equals("SendMessage")){
-            //TODO NEED TO ADD CALL TO REQUEST
             message= textbox1.getText();
             chatbubble.append(UserName+ ": " +message + "\n");
             textbox1.setText(null);
         }
 
     }
+
+
     public String getName(){
         return UserName;
     }
@@ -202,22 +211,47 @@ class ChatSwing extends JFrame implements ActionListener
         return message;
     }
 
-    public void displayMessage(String UserName, String message)
+    /**
+     * This is to be used for Tell msg 
+     * @param UserName
+     * @param message
+     * @param room
+     */
+    public void displayMessage(String UserName, String message, String room)
     {
-        chatbubble.append(UserName+ ": " + message + "\n");
+        if(getRoomCurrentlySelected()== room){
+            chatbubble.append(UserName+ ": " + message + "\n");
+        }
 
     }
 
+    public void displayMessageToRoom(String UserName, String message, String[] rooms){
+            for(int i=0; i< rooms.length; i++){
+                displayMessage(UserName, message, rooms[i]);
+            }
+
+    }
     
+    public void displayRooms(){
+          JFrame Rooms= new JFrame("List All Rooms");
+          JOptionPane.showMessageDialog(Rooms, allRooms);
+    }
+   
+    public void displayUser(String [] users){
+        JFrame user= new JFrame("Showing All Users");
+        JOptionPane.showMessageDialog(user, users);
+    }
 
     public static void main(String [] args)
     {
+        
         javax.swing.SwingUtilities.invokeLater(new Runnable(){
         public void run(){
-            new ChatSwing();
+            ChatSwing myChat= new ChatSwing();
             
         }
     });
+        
  
 }
 }
