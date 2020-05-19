@@ -1,5 +1,7 @@
 package code.IRC_Packets;
 
+import java.io.Serializable;
+
 import code.Codes.OpCodes;
 
 /**
@@ -7,7 +9,7 @@ import code.Codes.OpCodes;
  * 
  * Similar to headers that are transimitted with packets and HTTP requests
  */
-public class IRC_Packet_Header {
+public class IRC_Packet_Header implements Serializable {
     
     //OpCode for the header of the IRC_Packet
     protected OpCodes opCode;
