@@ -25,7 +25,7 @@ public class Client {
         ObjectOutputStream outToServer = new ObjectOutputStream(client.getClientSocket().getOutputStream());
         System.out.println("Created the object ouptut stream");
 
-        outToServer.writeObject(new HandShake(OpCodes.OP_CODE_HELLO, "my name is the user the best user ever"));
+        outToServer.writeObject(new HandShake("my name is the user the best user ever"));
         System.out.println("Sending IRC packet to the server");
        
 
@@ -101,29 +101,13 @@ public class Client {
                 // IRC_Packet handshake= new HandShake(OpCodes.OP_CODE_HELLO, myChat.UserName,
                 // msg);
                 break;
-            case OP_CODE_LIST_ROOMS:
-                break;
             case OP_CODE_LIST_ROOMS_RESPONSE:
-                break;
-            case OP_CODE_LIST_USERS:
                 break;
             case OP_CODE_LIST_USERS_RESP:
                 break;
-            case OP_CODE_JOIN_ROOM:
-                break;
             case OP_CODE_JOIN_ROOM_RESP:
                 break;
-            case OP_CODE_LEAVE_ROOM:
-                break;
             case OP_CODE_LEAVE_ROOM_RESP:
-                break;
-            case OP_CODE_SEND_MESSAGE: // Send msg to a room from client
-                break;
-            case OP_CODE_TELL_MESSAGE:
-                break;
-            case OP_CODE_SEND_PRIVATE_MESSAGE:
-                break;
-            case OP_CODE_TELL_PRIVATE_MESSAGE:
                 break;
         }
     }
