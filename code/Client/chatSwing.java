@@ -11,9 +11,6 @@ import javax.swing.JFrame;
 class ChatSwing extends JFrame implements ActionListener
 {
 
-    /**
-     * TODO fix these constant arrays ASAP. ask JJ for opinion 
-     */
     JFrame frame;
     JFrame NameGetter;
     JLabel label;
@@ -22,10 +19,10 @@ class ChatSwing extends JFrame implements ActionListener
     JButton button; 
     JComboBox roomMenu;
     JLabel labelRoom;
-    String rooms[]= {"General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
+   // String rooms[]= {"General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
     JLabel allRoomsList;
     JComboBox allRoomMenu;
-    String allRooms[]={"Barney", "is", "a ", "dinosaur", "who", "lives", "General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
+    //String allRooms[]={"Barney", "is", "a ", "dinosaur", "who", "lives", "General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
     String UserName; 
     String RespName; 
     String message;
@@ -86,7 +83,7 @@ class ChatSwing extends JFrame implements ActionListener
         c.gridy=2;
         c.ipadx=0;
         c.ipady=0;
-        roomMenu= new JComboBox<>(rooms);
+        roomMenu= new JComboBox<>();
         frame.add(roomMenu, c);
         //roomMenu.addItem(makeObj("katie"));
 
@@ -103,7 +100,7 @@ class ChatSwing extends JFrame implements ActionListener
          c.gridy=2;
          c.ipadx=10;
          c.ipady=0;
-         allRoomMenu= new JComboBox <> (allRooms);
+         allRoomMenu= new JComboBox <> ();
          frame.add(allRoomMenu, c);
 
 
@@ -143,6 +140,7 @@ class ChatSwing extends JFrame implements ActionListener
         frame.setVisible(true);
 
             userName();
+           // roomMenu.addItem("Hello");
             // USED FOR TESTING: displayRooms();
 
     } 
@@ -174,12 +172,32 @@ class ChatSwing extends JFrame implements ActionListener
     public void addRoomToSubscribed(String Room)
     {
         //TODO call list room! 
-        
+        roomMenu.addItem(Room);
+    }
+
+    public void addAvailableRoom(String Room)
+    {
+        allRoomMenu.addItem(Room);
 
     }
 
     public void removeRoomFromSubcribed( String room){
-        //TODO figure this out 
+        int count= allRoomMenu.getItemCount();
+        for(int i=0; i < count; i++){
+            String val= allRoomMenu.getItemAt(i).toString();
+            if(room == val){
+                allRoomMenu.removeItemAt(i);
+            }            
+        }
+
+        int count2= roomMenu.getItemCount();
+        for(int i=0; i < count2; i++){
+            String val= roomMenu.getItemAt(i).toString();
+            if(room == val){
+                roomMenu.removeItemAt(i);
+            }            
+        }
+
     }
 
     public void userName(){
@@ -239,7 +257,7 @@ class ChatSwing extends JFrame implements ActionListener
     
     public void displayRooms(){
           JFrame Rooms= new JFrame("List All Rooms");
-          JOptionPane.showMessageDialog(Rooms, allRooms);
+          JOptionPane.showMessageDialog(Rooms, allRoomMenu);
     }
    
     public void displayUser(String [] users){
