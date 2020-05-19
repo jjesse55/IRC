@@ -31,7 +31,11 @@ public class Server {
             IRC_Packet clientPacket = (IRC_Packet) inFromClient.readObject();
         }
     }
-
+/**
+ * 
+ * TODO: Add a dictionary that holds both names of user and IP adress to decipher what
+ * user is sending the msg
+ */
 
 
     //Class methods

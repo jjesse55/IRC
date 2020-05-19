@@ -7,27 +7,26 @@ import javax.swing.JFrame;
 
 
 
-class ChatSwing
+//the warning is ok to keep since we will be serializing but not yet!
+class ChatSwing extends JFrame implements ActionListener
 {
 
-    
     JFrame frame;
+    JFrame NameGetter;
     JLabel label;
     JTextArea chatbubble;
     JTextField textbox1;
     JButton button; 
     JComboBox roomMenu;
     JLabel labelRoom;
-    String rooms[]= {"General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
+   // no longer need them String rooms[]= {"General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
     JLabel allRoomsList;
     JComboBox allRoomMenu;
-    String allRooms[]={"Barney", "is", "a ", "dinosaur", "who", "lives", "General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
+    // no longer need them String allRooms[]={"Barney", "is", "a ", "dinosaur", "who", "lives", "General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
+    String UserName; 
+    String RespName; 
+    String message;
 
-
-/**
- * very rough start to the layout! 
- * @param not used
- */
     ChatSwing()
     {
         Color bgColor = new Color(47,79,79);
@@ -58,9 +57,9 @@ class ChatSwing
         //This is for the actual chat text 
         c.gridx=0;
         c.gridy=4;
-        c.ipadx=200;
+        c.ipadx=320;
         c.ipady=400;
-        chatbubble = new JTextArea("messages loading..");
+        chatbubble = new JTextArea();
         chatbubble.setEditable(false);
         chatbubble.setBackground(Color.lightGray);
         frame.add(chatbubble,c);
@@ -80,8 +79,9 @@ class ChatSwing
         c.gridy=2;
         c.ipadx=0;
         c.ipady=0;
-        roomMenu= new JComboBox<>(rooms);
+        roomMenu= new JComboBox<>();
         frame.add(roomMenu, c);
+        //roomMenu.addItem(makeObj("katie"));
 
          c.gridx=1;
          c.gridy=1;
@@ -96,12 +96,8 @@ class ChatSwing
          c.gridy=2;
          c.ipadx=10;
          c.ipady=0;
-         allRoomMenu= new JComboBox <> (allRooms);
+         allRoomMenu= new JComboBox <> ();
          frame.add(allRoomMenu, c);
-
-
-
-
 
 
         //Adding a textbox for the chatting 
@@ -126,15 +122,11 @@ class ChatSwing
          * not used not sure how to get this to work yet! 
          * @param 
          */
-        button.addActionListener( new ActionListener(){
-            
-        public void actionPerformed(ActionEvent e){
-            addMessageToChatBubble("hello");
+        button.addActionListener( this);
+        button.setActionCommand("SendMessage");
 
               
-         }
 
-        });
 
         //frame controls
         frame.pack();
@@ -143,7 +135,13 @@ class ChatSwing
         frame.setSize(600,600);
         frame.setVisible(true);
 
+            userName();
+           // roomMenu.addItem("Hello");
+            // USED FOR TESTING: displayRooms();
+
     } 
+
+
 
     /**
      * This will be triggered by button to send message! and show up on chat
@@ -152,27 +150,127 @@ class ChatSwing
      */
     public void addMessageToChatBubble(String event )
     {
+        chatbubble.append(event);
+        //TODO call tellmessage!
+    }
+
+
+    public String getRoomCurrentlySelected(){
+        String roomVal= roomMenu.getSelectedItem().toString();
+        return roomVal;
     }
 
 
     /**
-    * 
+    * This should be updated with join/create room response packet
     * @param Room
     */
     public void addRoomToSubscribed(String Room)
     {
+        //TODO call list room! 
+        roomMenu.addItem(Room);
+    }
+
+    public void addAvailableRoom(String Room)
+    {
+        allRoomMenu.addItem(Room);
 
     }
 
+    public void removeRoomFromSubcribed( String room){
+        int count= allRoomMenu.getItemCount();
+        for(int i=0; i < count; i++){
+            String val= allRoomMenu.getItemAt(i).toString();
+            if(room == val){
+                allRoomMenu.removeItemAt(i);
+            }            
+        }
+
+        int count2= roomMenu.getItemCount();
+        for(int i=0; i < count2; i++){
+            String val= roomMenu.getItemAt(i).toString();
+            if(room == val){
+                roomMenu.removeItemAt(i);
+            }            
+        }
+
+    }
+
+    public void userName(){
+        NameGetter= new JFrame("UserName Response");
+        UserName=JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
+        while(UserName == null || UserName== ""){
+
+          NameGetter= new JFrame("UserName Response");
+          UserName=JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
+
+        }
+
+        //UserName=set this field to the popup box if joseph jesse responds 
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+        String action= e.getActionCommand();
+        if(action.equals("SendMessage")){
+            message= textbox1.getText();
+            chatbubble.append(UserName+ ": " +message + "\n");
+            textbox1.setText(null);
+        }
+
+    }
+
+
+    public String getName(){
+        return UserName;
+    }
+
+    public String getMessage(){
+        return message;
+    }
+
+    /**
+     * This is to be used for Tell msg 
+     * @param UserName
+     * @param message
+     * @param room
+     */
+    public void displayMessage(String UserName, String message, String room)
+    {
+        if(getRoomCurrentlySelected()== room){
+            chatbubble.append(UserName+ ": " + message + "\n");
+        }
+
+    }
+
+    public void displayMessageToRoom(String UserName, String message, String[] rooms){
+            for(int i=0; i< rooms.length; i++){
+                displayMessage(UserName, message, rooms[i]);
+            }
+
+    }
     
+    public void displayRooms(){
+          JFrame Rooms= new JFrame("List All Rooms");
+          JOptionPane.showMessageDialog(Rooms, allRoomMenu);
+    }
+   
+    public void displayUser(String [] users){
+        JFrame user= new JFrame("Showing All Users");
+        JOptionPane.showMessageDialog(user, users);
+    }
 
     public static void main(String [] args)
     {
+        
         javax.swing.SwingUtilities.invokeLater(new Runnable(){
         public void run(){
-            new ChatSwing();
+            ChatSwing myChat= new ChatSwing();
+            
         }
     });
+        
  
 }
 }

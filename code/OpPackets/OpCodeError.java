@@ -10,7 +10,7 @@ public class OpCodeError extends OpPackets {
      */
     public OpCodeError(OpCodes opCode){
         
-        super(opCode);
+        super(OpCodes.OP_CODE_ERR);
     }
     
 }

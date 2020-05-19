@@ -5,12 +5,12 @@ import code.Codes.OpCodes;
 public class TellMessage extends OpPackets{
 
     /**
-     * 
+     * server sending message to clients 
      * @param opCode
      */
     public TellMessage(OpCodes opCode)
     {
-        super(opCode);
+        super(OpCodes.OP_CODE_TELL_MESSAGE);
     }
     
 }
