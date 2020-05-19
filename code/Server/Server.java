@@ -4,10 +4,15 @@ import java.io.*;
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.net.SocketException;
-
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+import code.Codes.ErrorCodes;
 import code.Codes.OpCodes;
+import code.ErrorPackets.IllegalOpcode;
+import code.ErrorPackets.IllegalProtocol;
+import code.ErrorPackets.NameExists;
+import code.ErrorPackets.UnknownError;
 import code.IRC_Packets.IRC_Packet;
 import code.OpPackets.HandShake;
 
@@ -21,6 +26,10 @@ public class Server {
     private ServerSocket welcomeSocket;
     private static int protocol = 0x12345678;
 
+    //Information about clients that the server keeps track of
+    HashMap<String, User> users = new HashMap<>();
+    HashMap<String, Room> rooms = new HashMap<>();
+
     /**
      * Main program that runs the IRC server
      * 
@@ -32,7 +41,7 @@ public class Server {
             while (true) {
 
                 System.out.println("ServerSocket awaiting connections...");
-                Socket newConnection = server.welcomeSocket.accept();
+                Socket newConnection = server.getWelcomeSocket().accept();
                 System.out.println("Client connected to the server");
 
                 ObjectInputStream inFromClient = new ObjectInputStream(newConnection.getInputStream());
@@ -42,11 +51,12 @@ public class Server {
 
                 System.out.println("Recieved obj from the client");
 
-             //    TimeUnit.SECONDS.sleep(20);
+                //DON'T DELETE!!!!
+             //    TimeUnit.SECONDS.sleep(20); This will be used to show handling crashed gracefully
 
                 ObjectOutputStream outToClient = new ObjectOutputStream(newConnection.getOutputStream());
                 System.out.println("Created the object output stream");
-                outToClient.writeObject(new HandShake(OpCodes.OP_CODE_HELLO, "username"));
+                outToClient.writeObject(server.handleRequestFromClient(clientPacket));
 
                 newConnection.close();
             }
@@ -67,7 +77,64 @@ public class Server {
         this.welcomeSocket = new ServerSocket(port);
     }
 
-    public boolean verifyProtocol(HandShake handShake) {
+    /**
+     * READ THIS!!! This function determines what type of request packet is sent
+     * based on the opCode and then calls the functionality on that object once it
+     * is dynamically casted.
+     * 
+     * @param response
+     */
+    private IRC_Packet handleRequestFromClient(IRC_Packet request) {
+        switch (request.getPacketHeader().getOpCode()) {
+            case OP_CODE_HELLO:
+                HandShake handShake = (HandShake) request;
+                if(!this.verifyProtocol(handShake))
+                    return new IllegalProtocol();
+                
+                if(this.nameExists(handShake))
+                    return new NameExists();
+
+                return new HandShake("server");
+            case OP_CODE_LIST_ROOMS:
+                break;
+            case OP_CODE_LIST_USERS:
+                break;
+            case OP_CODE_JOIN_ROOM:
+                break;
+            case OP_CODE_LEAVE_ROOM:
+                break;
+            case OP_CODE_SEND_MESSAGE: // Send msg to a room from client
+                break;
+            case OP_CODE_SEND_PRIVATE_MESSAGE:
+                break;
+            default:
+                return new IllegalOpcode();
+        }
+
+        return new UnknownError();
+    }
+
+
+
+
+
+
+    //Helper methods
+    private boolean nameExists(HandShake handShake) {
+        return this.users.containsKey(handShake.getUserName());
+    }
+
+    private boolean verifyProtocol(HandShake handShake) {
         return handShake.getProtocol() == protocol;
+    }
+
+
+
+
+
+
+    //Getters
+    private ServerSocket getWelcomeSocket() {
+        return this.welcomeSocket;
     }
 }
