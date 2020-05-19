@@ -12,7 +12,7 @@ class ChatSwing extends JFrame implements ActionListener
 {
 
     /**
-     *
+     * TODO fix these constant arrays ASAP. ask JJ for opinion 
      */
     JFrame frame;
     JFrame NameGetter;
@@ -88,6 +88,7 @@ class ChatSwing extends JFrame implements ActionListener
         c.ipady=0;
         roomMenu= new JComboBox<>(rooms);
         frame.add(roomMenu, c);
+        //roomMenu.addItem(makeObj("katie"));
 
          c.gridx=1;
          c.gridy=1;
@@ -175,6 +176,10 @@ class ChatSwing extends JFrame implements ActionListener
         //TODO call list room! 
         
 
+    }
+
+    public void removeRoomFromSubcribed( String room){
+        //TODO figure this out 
     }
 
     public void userName(){
