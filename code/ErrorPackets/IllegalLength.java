@@ -10,7 +10,7 @@ import code.Codes.OpCodes;
  */
 public class IllegalLength extends ErrorPacket {
 
-    public IllegalLength(OpCodes opCode) {
-        super(opCode, ErrorCodes.IRC_ERR_ILLEGAL_LENGTH);
+    public IllegalLength() {
+        super(OpCodes.OP_CODE_ERR, ErrorCodes.IRC_ERR_ILLEGAL_LENGTH);
     }
 }

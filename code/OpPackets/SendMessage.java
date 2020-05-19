@@ -11,7 +11,7 @@ public class SendMessage extends OpPackets {
      * This is the request to send a message
      * @param opCode
      */
-    public SendMessage(OpCodes opCode, String target, String name, String msg){
+    public SendMessage(String target, String name, String msg){
         super(OpCodes.OP_CODE_SEND_MESSAGE);
         this.targetName=target;
         this.nameOfUser=name;

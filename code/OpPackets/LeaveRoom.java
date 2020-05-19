@@ -10,7 +10,7 @@ public class LeaveRoom extends OpPackets {
      * Request to leave room
      * @param opCode
      */
-    public LeaveRoom(OpCodes opCode, String room)
+    public LeaveRoom(String room)
     {
         super(OpCodes.OP_CODE_LEAVE_ROOM);
         this.chatRoom=room;

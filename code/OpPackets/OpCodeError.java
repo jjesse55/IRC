@@ -8,8 +8,7 @@ public class OpCodeError extends OpPackets {
      * 
      * @param opCode
      */
-    public OpCodeError(OpCodes opCode){
-        
+    public OpCodeError(){
         super(OpCodes.OP_CODE_ERR);
     }
     
