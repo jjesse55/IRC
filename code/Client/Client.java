@@ -1,8 +1,10 @@
 package code.Client;
 
+import java.lang.Object;
+import java.util.concurrent.TimeUnit;
 import java.io.*;
 import java.net.Socket;
-
+import java.net.SocketTimeoutException;
 import code.Codes.OpCodes;
 import code.IRC_Packets.IRC_Packet;
 import code.OpPackets.HandShake;
@@ -18,20 +20,35 @@ public class Client {
     public static void main(String[] notUsed) throws Exception {
         Client client = new Client();
         System.out.println("Got to the main");
-        
+        try{ 
         //OutputStream outputStream= socket.
         ObjectOutputStream outToServer = new ObjectOutputStream(client.getClientSocket().getOutputStream());
         System.out.println("Created the object ouptut stream");
 
-        outToServer.writeObject(new HandShake(OpCodes.OP_CODE_HELLO, "my name is the user the best user ever", "like i said, the best ever"));
+        outToServer.writeObject(new HandShake(OpCodes.OP_CODE_HELLO, "my name is the user the best user ever"));
         System.out.println("Sending IRC packet to the server");
-        
+       
+
+
         ObjectInputStream inFromServer = new ObjectInputStream(client.getClientSocket().getInputStream());
         System.out.println("Created the object input stream");
-        IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject();
-
+        IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject(); 
+        
         System.out.println("Yay we got a response back from the server!!!!!!");
+        }
+        catch( SocketTimeoutException exception){
+            System.out.println("ERR: The server has no longer become responsive. Please try connecting again");
+            System.exit(0);
+        }
+        catch(IOException exception){
+
+            System.out.println("ERR: The server has no longer become responsive. Please try connecting again");
+            System.exit(0);
+
+        }
+        
         client.clientSocket.close();
+        
         
         
         /* TODO, test sending objects to and from the server (execute this loop)
