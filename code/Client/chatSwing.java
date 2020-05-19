@@ -19,18 +19,14 @@ class ChatSwing extends JFrame implements ActionListener
     JButton button; 
     JComboBox roomMenu;
     JLabel labelRoom;
-   // String rooms[]= {"General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
+   // no longer need them String rooms[]= {"General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
     JLabel allRoomsList;
     JComboBox allRoomMenu;
-    //String allRooms[]={"Barney", "is", "a ", "dinosaur", "who", "lives", "General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
+    // no longer need them String allRooms[]={"Barney", "is", "a ", "dinosaur", "who", "lives", "General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
     String UserName; 
     String RespName; 
     String message;
 
-/**
- * 
- * 
- */
     ChatSwing()
     {
         Color bgColor = new Color(47,79,79);
