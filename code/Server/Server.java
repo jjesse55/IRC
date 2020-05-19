@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -15,6 +16,7 @@ import code.ErrorPackets.NameExists;
 import code.ErrorPackets.UnknownError;
 import code.IRC_Packets.IRC_Packet;
 import code.OpPackets.HandShake;
+import code.OpPackets.ListRooms;
 
 /**
  * Server class for the server side of the IRC
@@ -27,7 +29,7 @@ public class Server {
     private static int protocol = 0x12345678;
 
     //Information about clients that the server keeps track of
-    HashMap<String, User> users = new HashMap<>();
+    ArrayList<String> users = new ArrayList<>();
     HashMap<String, Room> rooms = new HashMap<>();
 
     /**
@@ -62,7 +64,6 @@ public class Server {
             }
         } catch (SocketException exception) {
             System.out.println("ERR: The client has no longer become responsive. Proceeding as normal");
-            
         }
     }
 
@@ -94,8 +95,10 @@ public class Server {
                 if(this.nameExists(handShake))
                     return new NameExists();
 
+                this.users.add(handShake.getUserName());
                 return new HandShake("server");
             case OP_CODE_LIST_ROOMS:
+                return new ListRoom();
                 break;
             case OP_CODE_LIST_USERS:
                 break;
@@ -121,7 +124,7 @@ public class Server {
 
     //Helper methods
     private boolean nameExists(HandShake handShake) {
-        return this.users.containsKey(handShake.getUserName());
+        return this.users.contains(handShake.getUserName());
     }
 
     private boolean verifyProtocol(HandShake handShake) {
