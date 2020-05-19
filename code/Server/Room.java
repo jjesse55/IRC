@@ -4,14 +4,13 @@ import java.util.ArrayList;
 //import java.util.Collections;
 
 
-
-public class Rooms {
+public class Room {
     ArrayList <String> users;
     String RoomName;
     int RoomNumber;
     //chatSwing chat;
 
-    public Rooms(String name, int num){
+    public Room(String name, int num){
         RoomName=name;
         users= new ArrayList <>();
         RoomNumber= num;
