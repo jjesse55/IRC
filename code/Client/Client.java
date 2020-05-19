@@ -6,51 +6,56 @@ import java.net.Socket;
 import code.Codes.OpCodes;
 import code.IRC_Packets.IRC_Packet;
 import code.OpPackets.HandShake;
+import code.OpPackets.OpPackets;
 import code.Client.ChatSwing;
 
 public class Client {
 
     private Socket clientSocket;
-    private static final int SERVER_PORT = 194; // Port number for the client process
+    private static final int SERVER_PORT = 7777; // Port number for the client process
     private static final String SERVER_HOST = "localhost";
 
-    public static void main(String [] notUsed) throws Exception {
-      Client client = new Client();
-/*
-        javax.swing.SwingUtilities.invokeLater(new Runnable(){
-        public void run(){
-            ChatSwing myChat= new ChatSwing();
-            
-        }
-         });
- */
+    public static void main(String[] notUsed) throws Exception {
+        Client client = new Client();
+        System.out.println("Got to the main");
+        
+        //OutputStream outputStream= socket.
+        ObjectOutputStream outToServer = new ObjectOutputStream(client.getClientSocket().getOutputStream());
+        System.out.println("Created the object ouptut stream");
 
-       ChatSwing myChat= new ChatSwing();
+        outToServer.writeObject(new HandShake(OpCodes.OP_CODE_HELLO, "my name is the user the best user ever", "like i said, the best ever"));
+        System.out.println("Sending IRC packet to the server");
+        
+        ObjectInputStream inFromServer = new ObjectInputStream(client.getClientSocket().getInputStream());
+        System.out.println("Created the object input stream");
+        IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject();
 
-
-    ObjectInputStream inFromServer = new ObjectInputStream(client.getClientSocket().getInputStream());
-    ObjectOutputStream outToServer = new ObjectOutputStream(client.getClientSocket().getOutputStream());
-
+        System.out.println("Yay we got a response back from the server!!!!!!");
+        client.clientSocket.close();
+        
+        
         /* TODO, test sending objects to and from the server (execute this loop)
-
-        while(true) {
-            //TODO, use the GUI to formulate a request object from the client that will populate the below object.
-            IRC_Packet request = new IRC_Packet();
-            outToServer.writeObject();    //This is the line that will send packets to the server
-            IRC_Packet response = (IRC_Packet) inFromServer.readObject();
-        }
-
-        */
+         * 
+         * while(true) { //TODO, use the GUI to formulate a request object from the
+         * client that will populate the below object. IRC_Packet request = new
+         * IRC_Packet(); outToServer.writeObject(); //This is the line that will send
+         * packets to the server IRC_Packet response = (IRC_Packet)
+         * inFromServer.readObject(); }
+         * 
+         */
+        
     }
 
-    //Class methods
+    // Class methods
     public Client() throws Exception {
         System.out.println("Connecting to the server...\nHost: " + SERVER_HOST + "\nPort: " + SERVER_PORT);
         this.clientSocket = new Socket(SERVER_HOST, SERVER_PORT);
+        //System.out.println("in contructor");
     }
 
     /**
      * Getter for the client socket
+     * 
      * @return the clientSocket
      */
     public Socket getClientSocket() {
@@ -58,23 +63,26 @@ public class Client {
     }
 
     /**
-     * READ THIS!!!
-     * This function determines what type of response packet is sent based on the opCode
-     * and then calls the functionality on that object once it is dynamically casted.
+     * READ THIS!!! This function determines what type of response packet is sent
+     * based on the opCode and then calls the functionality on that object once it
+     * is dynamically casted.
+     * 
      * @param response
      */
     public void handleResonseFromServer(IRC_Packet response) {
-        switch(response.getPacketHeader().getOpCode()) {
+        switch (response.getPacketHeader().getOpCode()) {
             case OP_CODE_ERR:
-                //Call the function for this specific object and so on...
+                // Call the function for this specific object and so on...
                 break;
             case OP_CODE_KEEP_ALIVE:
                 break;
             case OP_CODE_HELLO:
-                //TODO figure out where to create the chat swing! so i can actually have an object 
-               // String n="";
-                //String msg="";
-              //  IRC_Packet handshake= new HandShake(OpCodes.OP_CODE_HELLO, myChat.UserName, msg);
+                // TODO figure out where to create the chat swing! so i can actually have an
+                // object
+                // String n="";
+                // String msg="";
+                // IRC_Packet handshake= new HandShake(OpCodes.OP_CODE_HELLO, myChat.UserName,
+                // msg);
                 break;
             case OP_CODE_LIST_ROOMS:
                 break;
@@ -92,7 +100,7 @@ public class Client {
                 break;
             case OP_CODE_LEAVE_ROOM_RESP:
                 break;
-            case OP_CODE_SEND_MESSAGE: // Send msg to a room from client 
+            case OP_CODE_SEND_MESSAGE: // Send msg to a room from client
                 break;
             case OP_CODE_TELL_MESSAGE:
                 break;

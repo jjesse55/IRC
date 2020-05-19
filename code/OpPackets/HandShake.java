@@ -1,8 +1,10 @@
 package code.OpPackets;
 
+import java.io.Serializable;
+
 import code.Codes.OpCodes;
 
-public class HandShake extends OpPackets{
+public class HandShake extends OpPackets {
     String targetName;
     String messageToSend;
 
