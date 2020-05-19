@@ -136,7 +136,12 @@ class ChatSwing extends JFrame implements ActionListener
         frame.setVisible(true);
 
             userName();
-           // roomMenu.addItem("Hello");
+           //roomMenu.addItem("Hello");
+           //roomMenu.addItem("Hi");
+           //roomMenu.addItem("yo");
+           //roomMenu.addItem("dude");
+           //roomMenu.removeItemAt(0);
+
             // USED FOR TESTING: displayRooms();
 
     } 
