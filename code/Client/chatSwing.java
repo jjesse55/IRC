@@ -17,6 +17,7 @@ class ChatSwing extends JFrame implements ActionListener
     JTextArea chatbubble;
     JTextField textbox1;
     JButton button; 
+    JFrame menu;
     JComboBox roomMenu;
     JLabel labelRoom;
    // no longer need them String rooms[]= {"General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
@@ -117,15 +118,11 @@ class ChatSwing extends JFrame implements ActionListener
         c.ipady=10;
         button= new JButton("Click to Send Message");
         frame.add(button,c);
+
         
-        /**
-         * not used not sure how to get this to work yet! 
-         * @param 
-         */
         button.addActionListener( this);
         button.setActionCommand("SendMessage");
 
-              
 
 
         //frame controls
@@ -136,6 +133,7 @@ class ChatSwing extends JFrame implements ActionListener
         frame.setVisible(true);
 
             userName();
+            menuOptionMethods();
            //roomMenu.addItem("Hello");
            //roomMenu.addItem("Hi");
            //roomMenu.addItem("yo");
@@ -163,6 +161,73 @@ class ChatSwing extends JFrame implements ActionListener
     public String getRoomCurrentlySelected(){
         String roomVal= roomMenu.getSelectedItem().toString();
         return roomVal;
+    }
+
+    public void  menuOptionMethods(){
+
+        Color bgColor = new Color(47,79,79);
+        menu= new JFrame("Menu");
+        menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+       
+        menu.getContentPane().setBackground(bgColor);
+        JPanel menuBar= new JPanel();
+        menuBar.setPreferredSize(new Dimension(200,400));
+
+
+
+        JButton listRooms= new JButton("List All Rooms");
+        listRooms.setPreferredSize(new Dimension(200, 90));
+        menuBar.add(listRooms);
+
+        listRooms.addActionListener( new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                chatbubble.append("hi");
+                displayRooms();
+            }
+        });
+
+        JButton addRoom= new JButton("Add a Room");
+        addRoom.setPreferredSize(new Dimension(200, 90));
+        menuBar.add(addRoom);
+
+        addRoom.addActionListener( new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                NameGetter= new JFrame("Add A Room");
+                String roomAdd=JOptionPane.showInputDialog(NameGetter, "Enter The Name you want to Add");
+                addRoomToSubscribed(roomAdd);
+            }
+        });
+
+
+        JButton removeRoom= new JButton("Remove a Room");
+        removeRoom.setPreferredSize(new Dimension(200, 90));
+        menuBar.add(removeRoom);
+
+        removeRoom.addActionListener( new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                NameGetter= new JFrame("Remove A Room");
+                String roomRemov=JOptionPane.showInputDialog(NameGetter, "Enter The Name you want to remove");
+                removeRoomFromSubcribed(roomRemov);
+            }
+        });
+
+        JButton displayUsers= new JButton("Display All Users");
+        displayUsers.setPreferredSize(new Dimension(200, 90));
+        menuBar.add(displayUsers);
+
+        displayUsers.addActionListener( new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                chatbubble.append("hi");
+                //TODO figure out the packet to get the user arrays!
+                //displayUser();
+            }
+        });
+
+
+         //menu.setLayout(null);
+        menu.getContentPane().add(menuBar);
+        menu.pack();
+        menu.setVisible(true);
     }
 
 
@@ -223,6 +288,7 @@ class ChatSwing extends JFrame implements ActionListener
             chatbubble.append(UserName+ ": " +message + "\n");
             textbox1.setText(null);
         }
+
 
     }
 
