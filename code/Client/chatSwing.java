@@ -4,6 +4,23 @@ import java.awt.event.*;
 import java.awt.Color;
 import java.awt.*;
 import javax.swing.JFrame;
+import java.lang.Object;
+import code.IRC_Packets.IRC_Packet;
+import code.OpPackets.LeaveRoom;
+import code.OpPackets.LeaveRoomResp;
+import code.OpPackets.ListRooms;
+import code.OpPackets.JoinRoom;
+import code.OpPackets.JoinRoomResp;
+import code.OpPackets.ListRoomsResp;
+import code.OpPackets.ListUsers;
+import code.OpPackets.ListUsersResponse;
+
+import java.net.Socket;
+import java.io.*;
+import code.Client.Client;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 
 
 
@@ -131,12 +148,22 @@ class ChatSwing extends JFrame implements ActionListener
         frame.setLayout(null);
         frame.setSize(600,600);
         frame.setVisible(true);
+/*
+         USED TO TEST DISPLAY ROOMS 
+        ArrayList<String> cars = new ArrayList<String>();
+        cars.add("Volvo");
+        cars.add("BMW");
+        cars.add("Ford");
+        cars.add("Mazda");
+         displayRooms(cars);
+*/
 
             userName();
             menuOptionMethods();
-           //roomMenu.addItem("Hello");
+          // roomMenu.addItem("Hello");
            //roomMenu.addItem("Hi");
            //roomMenu.addItem("yo");
+
            //roomMenu.addItem("dude");
            //roomMenu.removeItemAt(0);
 
@@ -181,8 +208,49 @@ class ChatSwing extends JFrame implements ActionListener
 
         listRooms.addActionListener( new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                chatbubble.append("hi");
-                displayRooms();
+
+                try{
+
+                Client client = new Client();
+               ObjectOutputStream outToServer = new ObjectOutputStream(client.getClientSocket().getOutputStream());
+                System.out.println("Created the object ouptut stream");
+
+                outToServer.writeObject(new ListRooms());
+                System.out.println("Sending IRC packet to list rooms");       
+
+                ObjectInputStream inFromServer = new ObjectInputStream(client.getClientSocket().getInputStream());
+                System.out.println("GOT the List of rooms from server! ");
+
+                 IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject(); 
+
+                ListRoomsResp roomresp = (ListRoomsResp) irc_Packet;
+
+                ArrayList ro = roomresp.getRooms();
+                System.out.println(ro);
+                      
+                 displayRooms(ro);
+
+                inFromServer.close();
+
+                  
+                }
+                catch(IOException ex){
+                    //TODO no clue here
+                    System.out.println("eroor IO");
+                    System.exit(0);
+
+                }
+                catch(ClassNotFoundException exception){
+                    //TODO ERROR and try again?
+                    System.out.println("eroor class not found");
+
+                }
+                catch(Exception exception){
+                    //TODO error and try again 
+                    System.out.println("eroor exception");
+                    //System.exit(0);
+
+                }
             }
         });
 
@@ -195,7 +263,45 @@ class ChatSwing extends JFrame implements ActionListener
                 NameGetter= new JFrame("Add A Room");
                 String roomAdd=JOptionPane.showInputDialog(NameGetter, "Enter The Name you want to Add");
                 addRoomToSubscribed(roomAdd);
-            }
+           
+           
+                try{
+
+                    Client client = new Client();
+                   ObjectOutputStream outToServer = new ObjectOutputStream(client.getClientSocket().getOutputStream());
+                    System.out.println("Created the object ouptut stream");
+    
+                    outToServer.writeObject(new JoinRoom(roomAdd));
+                    System.out.println("Sending IRC packet to join/ add room ");       
+    
+                    ObjectInputStream inFromServer = new ObjectInputStream(client.getClientSocket().getInputStream());
+                    System.out.println("GOT the room/joined ");
+    
+                     IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject(); 
+    
+
+
+                inFromServer.close();
+
+                    }
+                    catch(IOException ex){
+                        //TODO no clue here
+                        System.out.println("eroor IO");
+                        System.exit(0);
+    
+                    }
+                    catch(ClassNotFoundException exception){
+                        //TODO ERROR and try again?
+                        System.out.println("eroor class not found");
+    
+                    }
+                    catch(Exception exception){
+                        //TODO error and try again 
+                        System.out.println("eroor exception");
+                        //System.exit(0);
+    
+                    }
+                } 
         });
 
 
@@ -208,7 +314,45 @@ class ChatSwing extends JFrame implements ActionListener
                 NameGetter= new JFrame("Remove A Room");
                 String roomRemov=JOptionPane.showInputDialog(NameGetter, "Enter The Name you want to remove");
                 removeRoomFromSubcribed(roomRemov);
-            }
+
+                try{
+
+                    Client client = new Client();
+                    ObjectOutputStream outToServer = new ObjectOutputStream(client.getClientSocket().getOutputStream());
+                    System.out.println("Created the object ouptut stream");
+    
+                    outToServer.writeObject(new LeaveRoom(roomRemov));
+                    System.out.println("Sending IRC packet to leave room ");       
+    
+                    ObjectInputStream inFromServer = new ObjectInputStream(client.getClientSocket().getInputStream());
+                    System.out.println("Room Removed Packet from Server");
+    
+                     IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject(); 
+                inFromServer.close();
+    
+                  
+    
+                      
+                    }
+                    catch(IOException ex){
+                        //TODO no clue here
+                        System.out.println("eroor IO");
+                        System.exit(0);
+    
+                    }
+                    catch(ClassNotFoundException exception){
+                        //TODO ERROR and try again?
+                        System.out.println("eroor class not found");
+    
+                    }
+                    catch(Exception exception){
+                        //TODO error and try again 
+                        System.out.println("eroor exception");
+                        //System.exit(0);
+    
+                    }
+                }
+           
         });
 
         JButton displayUsers= new JButton("Display All Users");
@@ -217,10 +361,50 @@ class ChatSwing extends JFrame implements ActionListener
 
         displayUsers.addActionListener( new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                chatbubble.append("hi");
-                //TODO figure out the packet to get the user arrays!
-                //displayUser();
-            }
+                
+                try{
+
+                    Client client = new Client();
+                   ObjectOutputStream outToServer = new ObjectOutputStream(client.getClientSocket().getOutputStream());
+                    System.out.println("Created the object ouptut stream");
+    
+                    outToServer.writeObject(new ListUsers());
+                    System.out.println("Sending IRC packet to list rooms");       
+    
+                    ObjectInputStream inFromServer = new ObjectInputStream(client.getClientSocket().getInputStream());
+                    System.out.println("GOT the List of rooms from server! ");
+    
+                     IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject(); 
+    
+                    ListUsersResponse roomresp = (ListUsersResponse) irc_Packet;
+    
+                    ArrayList<String> ro = roomresp.getUsers();
+                    System.out.println(ro);
+                          
+                     displayUser(ro);
+                    inFromServer.close();
+    
+                      
+                    }
+                    catch(IOException ex){
+                        //TODO no clue here
+                        System.out.println("eroor IO");
+                        System.exit(0);
+    
+                    }
+                    catch(ClassNotFoundException exception){
+                        //TODO ERROR and try again?
+                        System.out.println("eroor class not found");
+    
+                    }
+                    catch(Exception exception){
+                        //TODO error and try again 
+                        System.out.println("eroor exception");
+                        //System.exit(0);
+    
+                    }
+                }
+            
         });
 
 
@@ -322,14 +506,29 @@ class ChatSwing extends JFrame implements ActionListener
 
     }
     
-    public void displayRooms(){
+    public void displayRooms(ArrayList <String> rooms){
           JFrame Rooms= new JFrame("List All Rooms");
-          JOptionPane.showMessageDialog(Rooms, allRoomMenu);
+          Rooms.setVisible(true);
+          if(rooms == null){
+
+            JOptionPane.showMessageDialog(Rooms, "Empty");
+          }
+          else{
+
+          JOptionPane.showMessageDialog(Rooms, "hi" + rooms.toString());
+          }
     }
    
-    public void displayUser(String [] users){
+    public void displayUser(ArrayList <String> users){
         JFrame user= new JFrame("Showing All Users");
-        JOptionPane.showMessageDialog(user, users);
+        user.setVisible(true);
+        if(users == null){
+
+           JOptionPane.showMessageDialog(user, "Empty");
+        }
+        else{
+        JOptionPane.showMessageDialog(user, users.toString());
+        }
     }
 
     public static void main(String [] args)
