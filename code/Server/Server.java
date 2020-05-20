@@ -17,6 +17,7 @@ import code.ErrorPackets.UnknownError;
 import code.IRC_Packets.IRC_Packet;
 import code.OpPackets.HandShake;
 import code.OpPackets.ListRooms;
+import code.OpPackets.ListRoomsResp;
 
 /**
  * Server class for the server side of the IRC
@@ -98,8 +99,7 @@ public class Server {
                 this.users.add(handShake.getUserName());
                 return new HandShake("server");
             case OP_CODE_LIST_ROOMS:
-                return new ListRoom();
-                break;
+                return new ListRoomsResp(this.getRooms());
             case OP_CODE_LIST_USERS:
                 break;
             case OP_CODE_JOIN_ROOM:
@@ -139,5 +139,8 @@ public class Server {
     //Getters
     private ServerSocket getWelcomeSocket() {
         return this.welcomeSocket;
+    }
+    private ArrayList<String> getRooms() {
+        return this.rooms.isEmpty() ? null : new ArrayList<String>(this.rooms.keySet());
     }
 }
