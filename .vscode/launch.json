@@ -6,6 +6,27 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - Client",
+            "request": "launch",
+            "mainClass": "code.Client.Client",
+            "projectName": "IRC_27353fd7"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Server",
+            "request": "launch",
+            "mainClass": "code.Server.Server",
+            "projectName": "IRC_27353fd7"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - ChatSwing",
+            "request": "launch",
+            "mainClass": "code.Client.ChatSwing",
+            "projectName": "IRC_27353fd7"
+        },
+        {
+            "type": "java",
             "name": "Debug (Launch) - Current File",
             "request": "launch",
             "mainClass": "${file}"
