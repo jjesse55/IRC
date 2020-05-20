@@ -24,3 +24,6 @@ hs_err_pid*
 
 #Mac OS Operating System 
 .DS_Store
+
+# launch.json as a result of using Live Share through VS Code
+launch.json
