@@ -8,7 +8,7 @@ public class TellMessage extends OpPackets{
      * server sending message to clients 
      * @param opCode
      */
-    public TellMessage(OpCodes opCode)
+    public TellMessage()
     {
         super(OpCodes.OP_CODE_TELL_MESSAGE);
     }

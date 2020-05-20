@@ -10,7 +10,7 @@ import code.Codes.OpCodes;
  */
 public class NameExists extends ErrorPacket {
 
-    public NameExists(OpCodes opCode) {
-        super(opCode, ErrorCodes.IRC_ERR_NAME_EXISTS);
+    public NameExists() {
+        super(OpCodes.OP_CODE_ERR, ErrorCodes.IRC_ERR_NAME_EXISTS);
     }
 }

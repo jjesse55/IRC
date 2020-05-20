@@ -9,7 +9,7 @@ import code.Codes.OpCodes;
  */
 public class UnknownError extends ErrorPacket{
     
-    public UnknownError(OpCodes opCode) {
-        super(opCode, ErrorCodes.IRC_ERR_UNKNOWN);
+    public UnknownError() {
+        super(OpCodes.OP_CODE_ERR, ErrorCodes.IRC_ERR_UNKNOWN);
     }
 }

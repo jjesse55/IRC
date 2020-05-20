@@ -10,7 +10,7 @@ import code.Codes.OpCodes;
  */
 public class IllegalOpcode extends ErrorPacket {
 
-    public IllegalOpcode(OpCodes opCode) {
-        super(opCode, ErrorCodes.IRC_ERR_ILLEGAL_OPCODE);
+    public IllegalOpcode() {
+        super(OpCodes.OP_CODE_ERR, ErrorCodes.IRC_ERR_ILLEGAL_OPCODE);
     }
 }

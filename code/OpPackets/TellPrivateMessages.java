@@ -8,7 +8,7 @@ public class TellPrivateMessages extends OpPackets {
      * @param opCode
      */
 
-    public TellPrivateMessages(OpCodes opCode)
+    public TellPrivateMessages()
     {
         super(OpCodes.OP_CODE_TELL_PRIVATE_MESSAGE);
     }
