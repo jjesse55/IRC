@@ -1,34 +1,27 @@
 package code.Server;
 
 import java.util.ArrayList;
-//import java.util.Collections;
 
 
-public class Room {
-    ArrayList <String> users;
+/**
+ * This is the SERVER class for a room (seperate from a client room)
+ * 
+ * TODO - Joseph still needs to make the server able to work with rooms
+ */
+public class Room extends Thread {
+    ArrayList <String> users; //change this
     String RoomName;
-    int RoomNumber;
-    //chatSwing chat;
 
-    public Room(String name, int num){
+    public Room(String name){
         RoomName=name;
         users= new ArrayList <>();
-        RoomNumber= num;
     }
 
-    public void addUsers(String user){
+    public void addUser(String user){
 
     }
 
     public void removeUser(String user){
 
     }
-
-    public void displayUsers(){
-
-    }
-
-
-
-    
 }
