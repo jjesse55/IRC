@@ -18,6 +18,7 @@ import code.IRC_Packets.IRC_Packet;
 import code.OpPackets.HandShake;
 import code.OpPackets.ListRooms;
 import code.OpPackets.ListRoomsResp;
+import code.OpPackets.ListUsersResponse;
 
 /**
  * Server class for the server side of the IRC
@@ -101,7 +102,7 @@ public class Server {
             case OP_CODE_LIST_ROOMS:
                 return new ListRoomsResp(this.getRooms());
             case OP_CODE_LIST_USERS:
-                break;
+                return new ListUsersResponse(this.getUsers());
             case OP_CODE_JOIN_ROOM:
                 break;
             case OP_CODE_LEAVE_ROOM:
@@ -142,5 +143,8 @@ public class Server {
     }
     private ArrayList<String> getRooms() {
         return this.rooms.isEmpty() ? null : new ArrayList<String>(this.rooms.keySet());
+    }
+    private ArrayList<String> getUsers() {
+        return this.users.isEmpty() ? null : this.users;
     }
 }
