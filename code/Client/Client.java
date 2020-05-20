@@ -22,13 +22,12 @@ public class Client {
         System.out.println("Got to the main");
         try{ 
         //OutputStream outputStream= socket.
-        ObjectOutputStream outToServer = new ObjectOutputStream(client.getClientSocket().getOutputStream());
+
+       ObjectOutputStream outToServer = new ObjectOutputStream(client.getClientSocket().getOutputStream());
         System.out.println("Created the object ouptut stream");
 
         outToServer.writeObject(new HandShake("my name is the user the best user ever"));
-        System.out.println("Sending IRC packet to the server");
-       
-
+        System.out.println("Sending IRC packet to the server");       
 
         ObjectInputStream inFromServer = new ObjectInputStream(client.getClientSocket().getInputStream());
         System.out.println("Created the object input stream");
@@ -102,6 +101,7 @@ public class Client {
                 // msg);
                 break;
             case OP_CODE_LIST_ROOMS_RESPONSE:
+                
                 break;
             case OP_CODE_LIST_USERS_RESP:
                 break;

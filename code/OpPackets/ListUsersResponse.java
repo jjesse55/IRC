@@ -17,4 +17,8 @@ public class ListUsersResponse extends OpPackets {
         super(OpCodes.OP_CODE_LIST_USERS_RESP);
         this.users = users;
     }
+
+    public ArrayList<String> getUsers(){
+        return this.users;
+    }
 }
