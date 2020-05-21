@@ -9,6 +9,13 @@
             "name": "CodeLens (Launch) - IPChat",
             "request": "launch",
             "mainClass": "code.Client.IPChat",
+            "projectName": "IRC_27353fd7"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - IPChat",
+            "request": "launch",
+            "mainClass": "code.Client.IPChat",
             "projectName": "IRC_8f229f10"
         },
         {

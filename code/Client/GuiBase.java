@@ -22,35 +22,6 @@ public abstract class GuiBase extends JFrame {
     protected static final String SERVER_HOST = "localhost";
 
 
-    protected void handshakeAndUsername(String username) {
-        try {
-            this.clientSocket = new Socket(SERVER_HOST, SERVER_PORT);
-
-            ObjectOutputStream outToServer = new ObjectOutputStream(this.clientSocket.getOutputStream());
-            System.out.println("Created the object ouptut stream");
-
-            outToServer.writeObject(new HandShake(username));
-            System.out.println("Sending IRC packet to the server");
-
-            ObjectInputStream inFromServer = new ObjectInputStream(this.clientSocket.getInputStream());
-            System.out.println("Created the object input stream");
-            IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject();
-            this.clientSocket.close();
-
-            this.handleResponseFromServer(irc_Packet);
-        } catch (SocketTimeoutException exception) {
-            System.out.println("ERR: The server has no longer become responsive. Please try connecting again");
-            System.exit(1);
-        } catch (IOException exception) {
-            System.out.println("ERR: IO exception");
-            System.exit(1);
-        }
-        catch(ClassNotFoundException exception){
-            System.out.println("ERR: The operation is not available..");
-            System.exit(1);
-        }
-    }
-
     /**
      * READ THIS!!! This function determines what type of response packet is sent
      * based on the opCode and then calls the functionality on that object once it
@@ -67,11 +38,8 @@ public abstract class GuiBase extends JFrame {
             case OP_CODE_KEEP_ALIVE:
                 break;
             case OP_CODE_HELLO:
-                // TODO figure out where to create the chat swing! so i can actually have an
-                // msg);
                 break;
             case OP_CODE_LIST_ROOMS_RESPONSE:
-
                 break;
             case OP_CODE_LIST_USERS_RESP:
                 break;
