@@ -1,8 +1,8 @@
 package code.Client;
 
-import java.lang.Object;
 import java.util.concurrent.TimeUnit;
 import java.io.*;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import code.Codes.OpCodes;
@@ -13,60 +13,53 @@ import code.Client.ChatSwing;
 
 public class Client {
 
+    //Fields for connecting to the server
     private Socket clientSocket;
     private static final int SERVER_PORT = 7777; // Port number for the client process
     private static final String SERVER_HOST = "localhost";
 
+    private ChatSwing gui;
+
     public static void main(String[] notUsed) throws Exception {
         Client client = new Client();
-        System.out.println("Got to the main");
-        try{ 
-        //OutputStream outputStream= socket.
 
-       ObjectOutputStream outToServer = new ObjectOutputStream(client.getClientSocket().getOutputStream());
-        System.out.println("Created the object ouptut stream");
+        try {
+            ObjectOutputStream outToServer = new ObjectOutputStream(client.getClientSocket().getOutputStream());
+            System.out.println("Created the object ouptut stream");
 
-        outToServer.writeObject(new HandShake("my name is the user the best user ever"));
-        System.out.println("Sending IRC packet to the server");       
+            outToServer.writeObject(new HandShake("my name is the user the best user ever"));
+            System.out.println("Sending IRC packet to the server");
 
-        ObjectInputStream inFromServer = new ObjectInputStream(client.getClientSocket().getInputStream());
-        System.out.println("Created the object input stream");
-        IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject(); 
-        
-        System.out.println("Yay we got a response back from the server!!!!!!");
-        }
-        catch( SocketTimeoutException exception){
+            ObjectInputStream inFromServer = new ObjectInputStream(client.getClientSocket().getInputStream());
+            System.out.println("Created the object input stream");
+            IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject();
+
+            System.out.println("Yay we got a response back from the server!!!!!!");
+        } catch (SocketTimeoutException exception) {
             System.out.println("ERR: The server has no longer become responsive. Please try connecting again");
             System.exit(0);
-        }
-        catch(IOException exception){
+        } catch (IOException exception) {
 
             System.out.println("ERR: The server has no longer become responsive. Please try connecting again");
             System.exit(0);
 
         }
-        
+
         client.clientSocket.close();
-        
-        
-        
-        /* TODO, test sending objects to and from the server (execute this loop)
-         * 
-         * while(true) { //TODO, use the GUI to formulate a request object from the
-         * client that will populate the below object. IRC_Packet request = new
-         * IRC_Packet(); outToServer.writeObject(); //This is the line that will send
-         * packets to the server IRC_Packet response = (IRC_Packet)
-         * inFromServer.readObject(); }
-         * 
-         */
-        
+
+        while(true) {}
     }
 
     // Class methods
-    public Client() throws Exception {
+    public Client() { 
         System.out.println("Connecting to the server...\nHost: " + SERVER_HOST + "\nPort: " + SERVER_PORT);
-        this.clientSocket = new Socket(SERVER_HOST, SERVER_PORT);
-        //System.out.println("in contructor");
+        try {
+            this.clientSocket = new Socket(SERVER_HOST, SERVER_PORT);
+        } catch(Exception e) {
+            System.err.println("ERR: Server process must be running before trying to connect with the client... System exiting");
+            System.exit(1);
+        }
+        this.gui = new ChatSwing();
     }
 
     /**
@@ -101,7 +94,7 @@ public class Client {
                 // msg);
                 break;
             case OP_CODE_LIST_ROOMS_RESPONSE:
-                
+
                 break;
             case OP_CODE_LIST_USERS_RESP:
                 break;
