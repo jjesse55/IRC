@@ -1,7 +1,8 @@
 package code.Client;
 import java.util.ArrayList;
+import java.awt.event.*;
 
-public class CRoom extends Thread 
+public class CRoom extends GuiBase implements ActionListener
 {
 
 
@@ -22,4 +23,11 @@ public class CRoom extends Thread
     public void removeUser(String user){
 
     } 
+
+
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+    }
+    
 }

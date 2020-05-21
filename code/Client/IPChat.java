@@ -16,7 +16,7 @@ import code.OpPackets.ListUsers;
 import code.OpPackets.ListUsersResponse;
 import java.net.Socket;
 import java.io.*;
-import code.Client.Client;
+import code.Client.GuiBase;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -24,7 +24,7 @@ import java.util.Arrays;
 
 
 //the warning is ok to keep since we will be serializing but not yet!
-class ChatSwing extends JFrame implements ActionListener
+class IPChat extends GuiBase implements ActionListener
 {
 
     JFrame frame;
@@ -44,7 +44,7 @@ class ChatSwing extends JFrame implements ActionListener
     String RespName; 
     String message;
 
-    ChatSwing()
+    IPChat()
     {
         Color bgColor = new Color(47,79,79);
         //the screen 
@@ -157,8 +157,8 @@ class ChatSwing extends JFrame implements ActionListener
          displayRooms(cars);
 */
 
-            userName();
-            menuOptionMethods();
+            //userName();
+          //  menuOptionMethods();
           // roomMenu.addItem("Hello");
            //roomMenu.addItem("Hi");
            //roomMenu.addItem("yo");
@@ -209,9 +209,7 @@ class ChatSwing extends JFrame implements ActionListener
             public void actionPerformed(ActionEvent e){
 
                 try{
-
-                Client client = new Client();
-               ObjectOutputStream outToServer = new ObjectOutputStream(client.getClientSocket().getOutputStream());
+                ObjectOutputStream outToServer = new ObjectOutputStream(this.clientSocket.getOutputStream());
                 System.out.println("Created the object ouptut stream");
 
                 outToServer.writeObject(new ListRooms());
@@ -235,17 +233,17 @@ class ChatSwing extends JFrame implements ActionListener
                 }
                 catch(IOException ex){
                     //TODO no clue here
-                    System.out.println("eroor IO");
+                    System.out.println("Err: IO");
 
                 }
                 catch(ClassNotFoundException exception){
                     //TODO ERROR and try again?
-                    System.out.println("eroor class not found");
+                    System.out.println("Err: Class Not Found");
 
                 }
                 catch(Exception exception){
                     //TODO error and try again 
-                    System.out.println("eroor exception");
+                    System.out.println("Err:  Exception");
                     System.exit(0);
 
                 }
@@ -386,18 +384,18 @@ class ChatSwing extends JFrame implements ActionListener
                     }
                     catch(IOException ex){
                         //TODO no clue here
-                        System.out.println("eroor IO");
+                        System.out.println("Err: IO Exception");
                         System.exit(0);
     
                     }
                     catch(ClassNotFoundException exception){
                         //TODO ERROR and try again?
-                        System.out.println("eroor class not found");
+                        System.out.println("ERR: Class Not Found");
     
                     }
                     catch(Exception exception){
                         //TODO error and try again 
-                        System.out.println("eroor exception");
+                       System.out.println("ERR: exception");
                         //System.exit(0);
     
                     }
@@ -448,7 +446,7 @@ class ChatSwing extends JFrame implements ActionListener
 
     }
 
-    public void userName(){
+    public String userName(){
         NameGetter= new JFrame("UserName Response");
         UserName=JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
         while(UserName == null || UserName== ""){
@@ -457,6 +455,8 @@ class ChatSwing extends JFrame implements ActionListener
           UserName=JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
 
         }
+
+        return UserName;
 
         //UserName=set this field to the popup box if joseph jesse responds 
     }
@@ -531,14 +531,13 @@ class ChatSwing extends JFrame implements ActionListener
 
     public static void main(String [] args)
     {
-        
         javax.swing.SwingUtilities.invokeLater(new Runnable(){
         public void run(){
-            ChatSwing myChat= new ChatSwing();
-            
+            IPChat myChat= new IPChat();
+
+            //myChat.handShakeAndUsername("fdsfda");
+            myChat.menuOptionMethods();
         }
     });
-        
- 
 }
 }

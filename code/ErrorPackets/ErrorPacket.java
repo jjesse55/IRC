@@ -19,4 +19,6 @@ public abstract class ErrorPacket extends IRC_Packet{
         super(opCode);
         this.errorCode = errorCode;
     }
+
+    public ErrorCodes getErrorCode() { return this.errorCode; }
 }
