@@ -14,7 +14,6 @@ import code.OpPackets.JoinRoomResp;
 import code.OpPackets.ListRoomsResp;
 import code.OpPackets.ListUsers;
 import code.OpPackets.ListUsersResponse;
-
 import java.net.Socket;
 import java.io.*;
 import code.Client.Client;
@@ -237,7 +236,6 @@ class ChatSwing extends JFrame implements ActionListener
                 catch(IOException ex){
                     //TODO no clue here
                     System.out.println("eroor IO");
-                    System.exit(0);
 
                 }
                 catch(ClassNotFoundException exception){
@@ -248,7 +246,7 @@ class ChatSwing extends JFrame implements ActionListener
                 catch(Exception exception){
                     //TODO error and try again 
                     System.out.println("eroor exception");
-                    //System.exit(0);
+                    System.exit(0);
 
                 }
             }
