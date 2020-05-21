@@ -372,7 +372,7 @@ class ChatSwing extends JFrame implements ActionListener
                     System.out.println("Sending IRC packet to list rooms");       
     
                     ObjectInputStream inFromServer = new ObjectInputStream(client.getClientSocket().getInputStream());
-                    System.out.println("GOT the List of rooms from server! ");
+                    System.out.println("GOT the List of users from server! ");
     
                      IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject(); 
     
