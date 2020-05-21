@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - IPChat",
+            "request": "launch",
+            "mainClass": "code.Client.IPChat",
+            "projectName": "IRC_8f229f10"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - Client",
             "request": "launch",
             "mainClass": "code.Client.Client",

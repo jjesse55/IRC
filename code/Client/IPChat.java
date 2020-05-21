@@ -197,7 +197,7 @@ class IPChat extends GuiBase implements ActionListener
        
         menu.getContentPane().setBackground(bgColor);
         JPanel menuBar= new JPanel();
-        menuBar.setPreferredSize(new Dimension(200,400));
+        menuBar.setPreferredSize(new Dimension(200,500));
 
 
 
@@ -209,13 +209,13 @@ class IPChat extends GuiBase implements ActionListener
             public void actionPerformed(ActionEvent e){
 
                 try{
-                ObjectOutputStream outToServer = new ObjectOutputStream(this.clientSocket.getOutputStream());
+                ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
                 System.out.println("Created the object ouptut stream");
 
                 outToServer.writeObject(new ListRooms());
                 System.out.println("Sending IRC packet to list rooms");       
 
-                ObjectInputStream inFromServer = new ObjectInputStream(client.getClientSocket().getInputStream());
+                ObjectInputStream inFromServer = new ObjectInputStream(clientSocket.getInputStream());
                 System.out.println("GOT the List of rooms from server! ");
 
                  IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject(); 
@@ -263,14 +263,13 @@ class IPChat extends GuiBase implements ActionListener
            
                 try{
 
-                    Client client = new Client();
-                   ObjectOutputStream outToServer = new ObjectOutputStream(client.getClientSocket().getOutputStream());
+                   ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
                     System.out.println("Created the object ouptut stream");
     
                     outToServer.writeObject(new JoinRoom(roomAdd));
                     System.out.println("Sending IRC packet to join/ add room ");       
     
-                    ObjectInputStream inFromServer = new ObjectInputStream(client.getClientSocket().getInputStream());
+                    ObjectInputStream inFromServer = new ObjectInputStream(clientSocket.getInputStream());
                     System.out.println("GOT the room/joined ");
     
                      IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject(); 
@@ -313,14 +312,13 @@ class IPChat extends GuiBase implements ActionListener
 
                 try{
 
-                    Client client = new Client();
-                    ObjectOutputStream outToServer = new ObjectOutputStream(client.getClientSocket().getOutputStream());
+                    ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
                     System.out.println("Created the object ouptut stream");
     
                     outToServer.writeObject(new LeaveRoom(roomRemov));
                     System.out.println("Sending IRC packet to leave room ");       
     
-                    ObjectInputStream inFromServer = new ObjectInputStream(client.getClientSocket().getInputStream());
+                    ObjectInputStream inFromServer = new ObjectInputStream(clientSocket.getInputStream());
                     System.out.println("Room Removed Packet from Server");
     
                      IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject(); 
@@ -360,14 +358,13 @@ class IPChat extends GuiBase implements ActionListener
                 
                 try{
 
-                    Client client = new Client();
-                   ObjectOutputStream outToServer = new ObjectOutputStream(client.getClientSocket().getOutputStream());
+                   ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
                     System.out.println("Created the object ouptut stream");
     
                     outToServer.writeObject(new ListUsers());
                     System.out.println("Sending IRC packet to list rooms");       
     
-                    ObjectInputStream inFromServer = new ObjectInputStream(client.getClientSocket().getInputStream());
+                    ObjectInputStream inFromServer = new ObjectInputStream(clientSocket.getInputStream());
                     System.out.println("GOT the List of users from server! ");
     
                      IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject(); 
@@ -402,6 +399,63 @@ class IPChat extends GuiBase implements ActionListener
                 }
             
         });
+
+
+
+
+
+
+        JButton serverDisconnect= new JButton("Disconnect from Server");
+        serverDisconnect.setPreferredSize(new Dimension(200, 90));
+        menuBar.add(serverDisconnect);
+
+        serverDisconnect.addActionListener( new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                
+                try{
+
+                    /*
+                   ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
+                    System.out.println("Created the object ouptut stream");
+    
+                    outToServer.writeObject(new ListUsers());
+                    System.out.println("Sending IRC packet to list rooms");       
+    
+                    ObjectInputStream inFromServer = new ObjectInputStream(clientSocket.getInputStream());
+                    System.out.println("GOT the List of users from server! ");
+    
+                     IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject(); 
+    
+                    ListUsersResponse roomresp = (ListUsersResponse) irc_Packet;
+    
+                    ArrayList<String> ro = roomresp.getUsers();
+                    System.out.println(ro);
+                          
+                     displayUser(ro);
+                     
+
+                    inFromServer.close();
+*/                      
+                    frame.setVisible(false);
+                    frame.dispose();
+                      
+                    }
+                    catch(Exception exception){
+                        //TODO error and try again 
+                       System.out.println("ERR: exception");
+                        //System.exit(0);
+    
+                    }
+                }
+            
+        });
+
+
+
+
+
+
+
 
 
          //menu.setLayout(null);
@@ -535,7 +589,7 @@ class IPChat extends GuiBase implements ActionListener
         public void run(){
             IPChat myChat= new IPChat();
 
-            //myChat.handShakeAndUsername("fdsfda");
+            myChat.handshakeAndUsername("sjdhjskd");
             myChat.menuOptionMethods();
         }
     });
