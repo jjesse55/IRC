@@ -535,7 +535,7 @@ class IPChat extends GuiBase implements ActionListener
         public void run(){
             IPChat myChat= new IPChat();
 
-            myChat.handShakeAndUsername();
+            //myChat.handShakeAndUsername("fdsfda");
             myChat.menuOptionMethods();
         }
     });

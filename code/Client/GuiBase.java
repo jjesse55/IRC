@@ -95,7 +95,6 @@ public abstract class GuiBase extends JFrame {
                 break;
             case IRC_ERR_NAME_EXISTS:
                 System.err.println("ERR: Name already exists for user. Please try again using a different user name");
-                this.handshakeAndUsername(this.getName());
                 break;
             case IRC_ERR_ILLEGAL_PROTOCOL:
                 System.err.println("ERR: Illegal protocol for application user... System exiting");
