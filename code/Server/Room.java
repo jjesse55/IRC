@@ -27,20 +27,19 @@ public class Room extends Thread {
             for (User user : this.users) {
                 System.out.println("Sending the msg to all the users in the room");
                 Socket socket = new Socket(user.getClientHost(), user.getPortNumber());
-                ObjectOutputStream outToServer = new ObjectOutputStream(socket.getOutputStream());
+                ObjectOutputStream outToRoom = new ObjectOutputStream(socket.getOutputStream());
 
-                outToServer.writeObject(this.messageToFwd);
-                outToServer.close();
+                outToRoom.writeObject(this.messageToFwd);
 
-                ObjectInputStream inFromServer = new ObjectInputStream(socket.getInputStream());
+                ObjectInputStream inFromRoom = new ObjectInputStream(socket.getInputStream());
 
-                SendMessageResp resp = (SendMessageResp) inFromServer.readObject();
+                SendMessageResp resp = (SendMessageResp) inFromRoom.readObject();
 
-                inFromServer.close();
+                inFromRoom.close();
                 socket.close();
             }
         } catch (IOException ex) {
-            System.out.println("Err: IO Exception");
+            System.out.println("Err: IO Exception 43");
             System.exit(0);
 
         } catch (ClassNotFoundException exception) {
@@ -57,17 +56,13 @@ public class Room extends Thread {
         this.roomName = roomName;
     }
 
-    public void addUser(User user) {
-
-    }
+    public void addUser(User user) { this.users.add(user); }
 
     /**
      * Remove a user from a room either when the server/client disconnects from each
      * other or when the client requests to leave a room
      */
-    public void removeUser(User user) {
-
-    }
+    public void removeUser(User user) { this.users.remove(user); }
 
     /**
      * Gets the list of users for when a client requests to list all users in a room
