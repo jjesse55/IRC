@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - CRoom",
+            "request": "launch",
+            "mainClass": "code.Client.CRoom",
+            "projectName": "IRC_8f229f10"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - IPChat",
             "request": "launch",
             "mainClass": "code.Client.IPChat",

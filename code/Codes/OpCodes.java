@@ -16,9 +16,10 @@ public enum OpCodes {
     OP_CODE_LEAVE_ROOM(0x0000000A),                 //Request to leave a room
     OP_CODE_LEAVE_ROOM_RESP(0x0000000B),            //Response that the client has left the room
     OP_CODE_SEND_MESSAGE(0x0000000C),               //Client request to send a msg to a room
-    OP_CODE_TELL_MESSAGE(0x0000000D),               //Server sending a message to all users in a room
+    OP_CODE_SEND_MESSAGE_RESPONSE(0x0000000D),               //Server sending a message to all users in a room
     OP_CODE_SEND_PRIVATE_MESSAGE(0x0000000E),       //Request to send private message between clients
-    OP_CODE_TELL_PRIVATE_MESSAGE(0x0000000F);       //Server sending private message from client-client
+    OP_CODE_TELL_PRIVATE_MESSAGE(0x0000000F),     //Server sending private message from client-client
+    OP_CODE_GOODBYE(0x00000010);
 
 
 

@@ -7,7 +7,13 @@ import code.Codes.OpCodes;
  */
 public class ListUsers extends OpPackets {
     
-    public ListUsers() {
+    private String roomName;
+    
+    public ListUsers(String roomName) {
         super(OpCodes.OP_CODE_LIST_USERS);
+        this.roomName = roomName;
     }
+    
+    
+    public String getRoomName() { return this.roomName; }
 }
