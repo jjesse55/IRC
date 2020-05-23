@@ -29,6 +29,7 @@ public class Room extends Thread {
                 ObjectOutputStream outToServer = new ObjectOutputStream(socket.getOutputStream());
 
                 outToServer.writeObject(this.messageToFwd);
+                outToServer.close();
 
                 ObjectInputStream inFromServer = new ObjectInputStream(socket.getInputStream());
 

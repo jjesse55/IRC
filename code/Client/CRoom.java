@@ -42,6 +42,7 @@ public class CRoom extends GuiBase implements ActionListener, Runnable
                 ObjectInputStream inFromClient = new ObjectInputStream(newConnection.getInputStream());
 
                 SendMessage msg = (SendMessage) inFromClient.readObject();
+                System.out.println("Recieved msg from server for room");
                 displayMessage(msg.getUserName(), msg.getMessage());
 
                 ObjectOutputStream outToClient = new ObjectOutputStream(newConnection.getOutputStream());
@@ -70,13 +71,12 @@ public class CRoom extends GuiBase implements ActionListener, Runnable
     JFrame menu;
     JLabel labelRoom;
     JLabel allRoomsList;
-    String UserName; 
     String RespName; 
     String message;
 
-    public CRoom(String name, ServerSocket listeningSocket){
+    public CRoom(String name, ServerSocket listeningSocket, String username) {
+        super(username);
         System.out.println("Constructing CRoom object");
-      
         this.roomName=name;
         this.listeningSocket = listeningSocket;
 
@@ -120,7 +120,7 @@ public class CRoom extends GuiBase implements ActionListener, Runnable
         c.gridy=1;
         c.ipadx=0;
         c.ipady=0;
-        labelRoom = new JLabel("Current Room" + roomName );
+        labelRoom = new JLabel("Current Room:  " + roomName );
         labelRoom.setFont(new Font("", Font.PLAIN,15));
         labelRoom.setForeground(Color.white);
         frame.add(labelRoom,c);
@@ -171,18 +171,20 @@ public class CRoom extends GuiBase implements ActionListener, Runnable
     }
 
 
+
     public String userName(){
         NameGetter= new JFrame("UserName Response");
-        UserName=JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
-        while(UserName == null || UserName== ""){
+        username=JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
+        while(username == null || username== ""){
 
           NameGetter= new JFrame("UserName Response");
-          UserName=JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
+          username=JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
 
         }
 
-        return UserName;
+        return username;
 
+        //UserName=set this field to the popup box if joseph jesse responds 
     }
 
     @Override
@@ -193,25 +195,21 @@ public class CRoom extends GuiBase implements ActionListener, Runnable
 
             message= textbox1.getText();
             textbox1.setText(null);
-            String useName= getUsername();
+            String useName= username;
 
-            SendMessage msgToSend = new SendMessage(message, useName);
+            SendMessage msgToSend = new SendMessage(message, useName, roomName);
+            System.out.println("Room NAME "+ roomName);
+
             IRC_Packet resp = sendPacketToWelcomeServer(msgToSend);
 
             if(isErrPacket(resp)) {
                 handleErrorResponseFromServer( (ErrorPacket) resp);
             } else {
                 SendMessageResp roomResp = (SendMessageResp) resp;
-                displayMessage(useName, message);
-
-                
             }
         }
 
 
-    }
-    public String getName(){
-        return UserName;
     }
 
     public String getMessage(){
@@ -221,12 +219,12 @@ public class CRoom extends GuiBase implements ActionListener, Runnable
 
      /**
      * This is to be used for Tell msg 
-     * @param UserName
+     * @param username()
      * @param message
      */
-    public void displayMessage(String UserName, String message)
+    public void displayMessage(String username, String message)
     {
-            chatbubble.append(UserName+ ": " + message + "\n");
+            chatbubble.append(username+ ": " + message + "\n");
 
     }
     public void displayRooms(ArrayList <String> rooms){
