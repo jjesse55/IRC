@@ -16,8 +16,11 @@ import code.ErrorPackets.NameExists;
 import code.ErrorPackets.UnknownError;
 import code.IRC_Packets.IRC_Packet;
 import code.OpPackets.HandShake;
+import code.OpPackets.JoinRoom;
+import code.OpPackets.JoinRoomResp;
 import code.OpPackets.ListRooms;
 import code.OpPackets.ListRoomsResp;
+import code.OpPackets.ListUsers;
 import code.OpPackets.ListUsersResponse;
 
 /**
@@ -102,12 +105,21 @@ public class Server {
             case OP_CODE_LIST_ROOMS:
                 return new ListRoomsResp(this.getRooms());
             case OP_CODE_LIST_USERS:
-                return new ListUsersResponse(this.getUsers());
+                ListUsers listUsersPacket = (ListUsers) request;
+                return new ListUsersResponse(this.getRoom(listUsersPacket.getRoomName()).getUsers());
             case OP_CODE_JOIN_ROOM:
-                break;
+                JoinRoom joinRoom = (JoinRoom) request;
+                if(!this.doesRoomExist(joinRoom.getRoomName())) {
+                    this.addRoom(joinRoom.getRoomName());
+                }
+                Room room = this.getRoom(joinRoom.getRoomName());
+                room.addUser(new User(joinRoom.getUsername(), joinRoom.getPortNumber()));
+                return new JoinRoomResp();
             case OP_CODE_LEAVE_ROOM:
                 break;
             case OP_CODE_SEND_MESSAGE: // Send msg to a room from client
+                //Room room = this.getRoom(joinRoom.getRoomName());
+                //room.setMessageToForward(joinRoom.get);
                 break;
             case OP_CODE_SEND_PRIVATE_MESSAGE:
                 break;
@@ -147,4 +159,7 @@ public class Server {
     private ArrayList<String> getUsers() {
         return this.users.isEmpty() ? null : this.users;
     }
+    private Room getRoom(String roomName) { return this.rooms.get(roomName); }
+    private boolean doesRoomExist(String name) { return this.rooms.keySet().contains(name); }
+    private void addRoom(String name) { this.rooms.put(name, new Room(name)); }
 }

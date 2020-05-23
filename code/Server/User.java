@@ -7,13 +7,20 @@ package code.Server;
  */
 public class User {
 
-    private String username;
-    private String ipAddress;
     private int port;
+    private String username;
 
-    public User(String username, String ipAddress, int port) {
+    //Host that all clients will use
+    private static final String CLIENT_HOST = "localhost";
+
+    public User(String username, int port) {
         this.username = username;
-        this.ipAddress = ipAddress;
         this.port = port;
     }
+
+
+    //Getters
+    public String getClientHost() { return CLIENT_HOST; }
+    public int getPortNumber() { return this.port; }
+    public String getUsername() { return this.username; }
 }

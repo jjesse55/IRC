@@ -8,6 +8,8 @@ import java.io.*;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+
+import code.Codes.ErrorCodes;
 import code.Codes.OpCodes;
 import code.ErrorPackets.ErrorPacket;
 import code.IRC_Packets.IRC_Packet;
@@ -22,35 +24,8 @@ public abstract class GuiBase extends JFrame {
     protected static final String SERVER_HOST = "localhost";
 
     protected String username;
-    protected void handshakeAndUsername(String username) {
-        try {
-            this.openClientSocket();
 
-            ObjectOutputStream outToServer = new ObjectOutputStream(this.clientSocket.getOutputStream());
-            System.out.println("Created the object ouptut stream");
-
-            outToServer.writeObject(new HandShake(username));
-            System.out.println("Sending IRC packet to the server");
-
-            ObjectInputStream inFromServer = new ObjectInputStream(this.clientSocket.getInputStream());
-            System.out.println("Created the object input stream");
-            IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject();
-
-            this.closeClientSocket();
-            this.handleResponseFromServer(irc_Packet);
-        } catch (SocketTimeoutException exception) {
-            System.out.println("ERR: The server has no longer become responsive. Please try connecting again");
-            System.exit(1);
-        } catch (IOException exception) {
-            System.out.println("ERR: IO exception");
-            System.exit(1);
-        }
-        catch(ClassNotFoundException exception){
-            System.out.println("ERR: The operation is not available..");
-            System.exit(1);
-        }
-    }
-
+    
     protected void openClientSocket() {
         try {
             this.clientSocket = new Socket(SERVER_HOST, SERVER_PORT);
@@ -67,6 +42,46 @@ public abstract class GuiBase extends JFrame {
             e.printStackTrace();
             System.err.println("Unable to close the client socket");
         }
+    }
+
+
+    protected IRC_Packet sendPacketToWelcomeServer(IRC_Packet packet) {
+        IRC_Packet toReturn = null;
+
+        try{
+            openClientSocket();
+            ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
+            System.out.println("Created the object ouptut stream");
+
+            outToServer.writeObject(packet);
+            System.out.println("Sending IRC packet to list rooms");       
+
+            ObjectInputStream inFromServer = new ObjectInputStream(clientSocket.getInputStream());
+            System.out.println("GOT the List of users from server! ");
+
+            toReturn = (IRC_Packet) inFromServer.readObject(); 
+            
+            inFromServer.close();
+            closeClientSocket();
+            }
+            catch(IOException ex){
+                //TODO no clue here
+                System.out.println("Err: IO Exception");
+                System.exit(0);
+
+            }
+            catch(ClassNotFoundException exception){
+                //TODO ERROR and try again?
+                System.out.println("ERR: Class Not Found");
+
+            }
+            catch(Exception exception){
+                //TODO error and try again 
+               System.out.println("ERR: exception");
+                //System.exit(0);
+            }
+
+        return toReturn;
     }
 
     /**
@@ -120,4 +135,9 @@ public abstract class GuiBase extends JFrame {
                 System.exit(1);
         }
     }
+
+    public String getUsername() { return this.username; }
+    public void setUsername(String username) { this.username = username; }
+
+    protected boolean isErrPacket(IRC_Packet packet) { return packet.getPacketHeader().getOpCode() == OpCodes.OP_CODE_ERR; }
 }
