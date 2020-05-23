@@ -2,9 +2,12 @@ package code.Client;
 import java.util.ArrayList;
 import java.awt.event.*;
 
-public class CRoom extends GuiBase implements ActionListener
+public class CRoom extends GuiBase implements ActionListener, Runnable
 {
 
+    public void run() {
+
+    }
 
     //TODO This is the CLIENT class for a room
     //TODO Ktie needs to make this work with the GUI... 

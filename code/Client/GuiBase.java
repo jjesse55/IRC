@@ -21,10 +21,12 @@ public abstract class GuiBase extends JFrame {
     protected static final int SERVER_PORT = 7777; // Port number for the client process
     protected static final String SERVER_HOST = "localhost";
 
+    protected String username;
+
 
     protected void handshakeAndUsername(String username) {
         try {
-            this.clientSocket = new Socket(SERVER_HOST, SERVER_PORT);
+            this.openClientSocket();
 
             ObjectOutputStream outToServer = new ObjectOutputStream(this.clientSocket.getOutputStream());
             System.out.println("Created the object ouptut stream");
@@ -35,8 +37,8 @@ public abstract class GuiBase extends JFrame {
             ObjectInputStream inFromServer = new ObjectInputStream(this.clientSocket.getInputStream());
             System.out.println("Created the object input stream");
             IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject();
-            this.clientSocket.close();
 
+            this.closeClientSocket();
             this.handleResponseFromServer(irc_Packet);
         } catch (SocketTimeoutException exception) {
             System.out.println("ERR: The server has no longer become responsive. Please try connecting again");
@@ -48,6 +50,24 @@ public abstract class GuiBase extends JFrame {
         catch(ClassNotFoundException exception){
             System.out.println("ERR: The operation is not available..");
             System.exit(1);
+        }
+    }
+
+    protected void openClientSocket() {
+        try {
+            this.clientSocket = new Socket(SERVER_HOST, SERVER_PORT);
+        } catch(Exception e) {
+            e.printStackTrace();
+            System.err.println("Unable to open the client socket");
+        }
+    }
+
+    protected void closeClientSocket() {
+        try {
+            this.clientSocket.close();
+        } catch(IOException e) {
+            e.printStackTrace();
+            System.err.println("Unable to close the client socket");
         }
     }
 
