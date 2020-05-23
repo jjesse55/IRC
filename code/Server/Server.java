@@ -122,8 +122,11 @@ public class Server extends Thread {
                 break;
             case OP_CODE_SEND_MESSAGE: // Send msg to a room from client
                 SendMessage msg = (SendMessage) request;
+                System.out.println("line 125");
                 room = this.getRoom(msg.getRoomName());
+                System.out.println("127");
                 room.setMessageToForward(msg);
+                System.out.println("129");
                 room.start();
                 return new SendMessageResp();
             case OP_CODE_SEND_PRIVATE_MESSAGE:
