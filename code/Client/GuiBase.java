@@ -22,8 +22,6 @@ public abstract class GuiBase extends JFrame {
     protected static final String SERVER_HOST = "localhost";
 
     protected String username;
-
-
     protected void handshakeAndUsername(String username) {
         try {
             this.openClientSocket();
@@ -87,11 +85,8 @@ public abstract class GuiBase extends JFrame {
             case OP_CODE_KEEP_ALIVE:
                 break;
             case OP_CODE_HELLO:
-                // TODO figure out where to create the chat swing! so i can actually have an
-                // msg);
                 break;
             case OP_CODE_LIST_ROOMS_RESPONSE:
-
                 break;
             case OP_CODE_LIST_USERS_RESP:
                 break;

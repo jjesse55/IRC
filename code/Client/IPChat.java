@@ -9,14 +9,18 @@ import code.IRC_Packets.IRC_Packet;
 import code.OpPackets.LeaveRoom;
 import code.OpPackets.LeaveRoomResp;
 import code.OpPackets.ListRooms;
+import code.OpPackets.HandShake;
 import code.OpPackets.JoinRoom;
 import code.OpPackets.JoinRoomResp;
 import code.OpPackets.ListRoomsResp;
 import code.OpPackets.ListUsers;
 import code.OpPackets.ListUsersResponse;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.io.*;
 import code.Client.GuiBase;
+import code.Codes.OpCodes;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -592,9 +596,44 @@ class IPChat extends GuiBase implements ActionListener
         public void run(){
             IPChat myChat= new IPChat();
 
-            myChat.handshakeAndUsername("sjdhjskd");
+            myChat.handshakeAndUsername();
             myChat.menuOptionMethods();
         }
     });
-}
+
+ }
+    private boolean handshakeAndUsername() {
+        try {
+            this.clientSocket = new Socket(SERVER_HOST, SERVER_PORT);
+
+            ObjectOutputStream outToServer = new ObjectOutputStream(this.clientSocket.getOutputStream());
+            System.out.println("Created the object ouptut stream");
+
+            outToServer.writeObject(new HandShake(this.userName()));
+            System.out.println("Sending IRC packet to the server");
+
+            ObjectInputStream inFromServer = new ObjectInputStream(this.clientSocket.getInputStream());
+            System.out.println("Created the object input stream");
+            IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject();
+            this.clientSocket.close();
+
+            this.handleResponseFromServer(irc_Packet);
+
+            if(irc_Packet.getPacketHeader().getOpCode() == OpCodes.OP_CODE_ERR)
+                return this.handshakeAndUsername();
+
+        } catch (SocketTimeoutException exception) {
+            System.out.println("ERR: The server has no longer become responsive. Please try connecting again");
+            System.exit(1);
+        } catch (IOException exception) {
+            System.out.println("ERR: IO exception");
+            System.exit(1);
+        }
+        catch(ClassNotFoundException exception){
+            System.out.println("ERR: The operation is not available..");
+            System.exit(1);
+        }
+
+        return true;
+    }
 }
