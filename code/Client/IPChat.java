@@ -32,7 +32,7 @@ import java.util.Arrays;
 
 
 //the warning is ok to keep since we will be serializing but not yet!
-class IPChat extends GuiBase implements ActionListener
+class IPChat extends GuiBase implements ActionListener, Runnable
 {
 
     private ArrayList<CRoom> roomsJoined = new ArrayList<>();
@@ -249,17 +249,24 @@ class IPChat extends GuiBase implements ActionListener
                 NameGetter= new JFrame("Add A Room");
                 String roomAdd=JOptionPane.showInputDialog(NameGetter, "Enter The Name you want to Add");
 
+                System.out.println("this is about to call the openNewRoom function");
+
                 int p= openNewRoomWindow(roomAdd);
                 String us= getUsername();
+
+                System.out.println("After the open new room function :)");
                 
 
                JoinRoom roomJoin = new JoinRoom( roomAdd, us, p );
                IRC_Packet resp = sendPacketToWelcomeServer(roomJoin);
    
+                System.out.println("sent packet to the server :)");
                if(isErrPacket(resp)) {
                    handleErrorResponseFromServer( (ErrorPacket) resp);
                } else {
                    JoinRoomResp join= (JoinRoomResp) resp;
+                
+                   System.out.println("response from server recieved");
                }
                      
             }
@@ -293,10 +300,10 @@ class IPChat extends GuiBase implements ActionListener
         JButton displayUsers= new JButton("Display All Users");
         displayUsers.setPreferredSize(new Dimension(200, 90));
         menuBar.add(displayUsers);
-        String roomtoList=JOptionPane.showInputDialog(NameGetter, "Enter The Name of the Room");
         displayUsers.addActionListener( new ActionListener(){
             public void actionPerformed(ActionEvent e){
-            
+            String roomtoList=JOptionPane.showInputDialog(NameGetter, "Enter The Name of the Room");
+
             ListUsers listUsers = new ListUsers(roomtoList);
             IRC_Packet resp = sendPacketToWelcomeServer(listUsers);
 
@@ -479,13 +486,16 @@ class IPChat extends GuiBase implements ActionListener
         javax.swing.SwingUtilities.invokeLater(new Runnable(){
         public void run(){
             IPChat myChat= new IPChat();
-
-            myChat.handshakeAndUsername();
-            myChat.menuOptionMethods();
+            myChat.run();
         }
     });
-
  }
+
+    public void run() {
+        this.handshakeAndUsername();
+        this.menuOptionMethods();
+    }
+
     private boolean handshakeAndUsername() {
         String usernameToTry = null;
 
@@ -534,11 +544,15 @@ class IPChat extends GuiBase implements ActionListener
      */
     public int openNewRoomWindow(String roomName) {
         try {
+            System.out.println("Line 544 IPChat");
             ServerSocket roomSocket = new ServerSocket(0);
             CRoom newRoom = new CRoom(roomName, roomSocket);
             this.addNewRoom(newRoom);
-            newRoom.run();
-            return newRoom.getListeningSocket().
+            Thread roomThread = new Thread(newRoom);
+            System.out.println("right before attempting to run in parallel");
+            roomThread.start();
+            System.out.println("right after attempting to run in parallel");
+            return newRoom.getListeningSocket().getLocalPort();
         } catch(IOException e) {
             e.printStackTrace();
             System.err.println("ERR: Not able to open the socket for the room.");

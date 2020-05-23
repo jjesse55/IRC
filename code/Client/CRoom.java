@@ -29,6 +29,8 @@ import code.ErrorPackets.ErrorPacket;
 
 import java.util.Arrays;
 
+
+
 public class CRoom extends GuiBase implements ActionListener, Runnable
 {
 
@@ -73,6 +75,7 @@ public class CRoom extends GuiBase implements ActionListener, Runnable
     String message;
 
     public CRoom(String name, ServerSocket listeningSocket){
+        System.out.println("Constructing CRoom object");
       
         this.roomName=name;
         this.listeningSocket = listeningSocket;
@@ -149,9 +152,9 @@ public class CRoom extends GuiBase implements ActionListener, Runnable
 
         //frame controls
         frame.pack();
-
         frame.setLayout(null);
         frame.setSize(600,600);
+        frame.setVisible(true);
     
     }
 
