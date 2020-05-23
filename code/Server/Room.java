@@ -25,10 +25,12 @@ public class Room extends Thread {
     public void run() {
         try {
             for (User user : this.users) {
+                System.out.println("Sending the msg to all the users in the room");
                 Socket socket = new Socket(user.getClientHost(), user.getPortNumber());
                 ObjectOutputStream outToServer = new ObjectOutputStream(socket.getOutputStream());
 
                 outToServer.writeObject(this.messageToFwd);
+                outToServer.close();
 
                 ObjectInputStream inFromServer = new ObjectInputStream(socket.getInputStream());
 

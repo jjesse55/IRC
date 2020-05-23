@@ -22,11 +22,13 @@ import code.OpPackets.ListRooms;
 import code.OpPackets.ListRoomsResp;
 import code.OpPackets.ListUsers;
 import code.OpPackets.ListUsersResponse;
+import code.OpPackets.SendMessage;
+import code.OpPackets.SendMessageResp;
 
 /**
  * Server class for the server side of the IRC
  */
-public class Server {
+public class Server extends Thread {
 
     // Class fields
     private static final int port = 7777; // Port number for the server process
@@ -44,30 +46,29 @@ public class Server {
      */
     public static void main(String[] notUsed) throws Exception {
         Server server = new Server();
+        server.start();
+    }
+
+    public void run() {
         try {
             while (true) {
 
                 System.out.println("ServerSocket awaiting connections...");
-                Socket newConnection = server.getWelcomeSocket().accept();
-                System.out.println("Client connected to the server");
+                Socket newConnection = this.getWelcomeSocket().accept();
 
                 ObjectInputStream inFromClient = new ObjectInputStream(newConnection.getInputStream());
-                System.out.println("Created the object input stream");
 
                 IRC_Packet clientPacket = (IRC_Packet) inFromClient.readObject();
-
-                System.out.println("Recieved obj from the client");
 
                 //DON'T DELETE!!!!
              //    TimeUnit.SECONDS.sleep(20); This will be used to show handling crashed gracefully
 
                 ObjectOutputStream outToClient = new ObjectOutputStream(newConnection.getOutputStream());
-                System.out.println("Created the object output stream");
-                outToClient.writeObject(server.handleRequestFromClient(clientPacket));
+                outToClient.writeObject(this.handleRequestFromClient(clientPacket));
 
                 newConnection.close();
             }
-        } catch (SocketException exception) {
+        } catch (Exception exception) {
             System.out.println("ERR: The client has no longer become responsive. Proceeding as normal");
         }
     }
@@ -91,6 +92,7 @@ public class Server {
      * @param response
      */
     private IRC_Packet handleRequestFromClient(IRC_Packet request) {
+        Room room = null;
         switch (request.getPacketHeader().getOpCode()) {
             case OP_CODE_HELLO:
                 HandShake handShake = (HandShake) request;
@@ -112,15 +114,18 @@ public class Server {
                 if(!this.doesRoomExist(joinRoom.getRoomName())) {
                     this.addRoom(joinRoom.getRoomName());
                 }
-                Room room = this.getRoom(joinRoom.getRoomName());
+                room = this.getRoom(joinRoom.getRoomName());
                 room.addUser(new User(joinRoom.getUsername(), joinRoom.getPortNumber()));
+                System.out.println("Adding client to room: " + joinRoom.getRoomName() + " with port: " + joinRoom.getPortNumber());
                 return new JoinRoomResp();
             case OP_CODE_LEAVE_ROOM:
                 break;
             case OP_CODE_SEND_MESSAGE: // Send msg to a room from client
-                //Room room = this.getRoom(joinRoom.getRoomName());
-                //room.setMessageToForward(joinRoom.get);
-                break;
+                SendMessage msg = (SendMessage) request;
+                room = this.getRoom(msg.getRoomName());
+                room.setMessageToForward(msg);
+                room.start();
+                return new SendMessageResp();
             case OP_CODE_SEND_PRIVATE_MESSAGE:
                 break;
             default:

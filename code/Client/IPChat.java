@@ -61,8 +61,9 @@ class IPChat extends GuiBase implements ActionListener, Runnable
     String UserName; 
 
     JFrame NameGetter;
-    IPChat()
+    public IPChat()
     {
+        super(null);
         /*
         Color bgColor = new Color(47,79,79);
         //the screen 
@@ -255,7 +256,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable
                 String us= getUsername();
 
                 System.out.println("After the open new room function :)");
-                
+                System.out.println("Port number: "+ p);
 
                JoinRoom roomJoin = new JoinRoom( roomAdd, us, p );
                IRC_Packet resp = sendPacketToWelcomeServer(roomJoin);
@@ -546,7 +547,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable
         try {
             System.out.println("Line 544 IPChat");
             ServerSocket roomSocket = new ServerSocket(0);
-            CRoom newRoom = new CRoom(roomName, roomSocket);
+            CRoom newRoom = new CRoom(roomName, roomSocket, username);
             this.addNewRoom(newRoom);
             Thread roomThread = new Thread(newRoom);
             System.out.println("right before attempting to run in parallel");

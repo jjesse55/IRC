@@ -1,14 +1,11 @@
 package code.Client;
 
 import java.util.concurrent.TimeUnit;
-
 import javax.swing.JFrame;
-
 import java.io.*;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-
 import code.Codes.ErrorCodes;
 import code.Codes.OpCodes;
 import code.ErrorPackets.ErrorPacket;
@@ -24,6 +21,9 @@ public abstract class GuiBase extends JFrame {
     protected static final String SERVER_HOST = "localhost";
 
     protected String username;
+
+
+    protected GuiBase(String username) { this.username = username; }
 
     
     protected void openClientSocket() {
@@ -51,13 +51,10 @@ public abstract class GuiBase extends JFrame {
         try{
             openClientSocket();
             ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
-            System.out.println("Created the object ouptut stream");
 
             outToServer.writeObject(packet);
-            System.out.println("Sending IRC packet to list rooms");       
 
             ObjectInputStream inFromServer = new ObjectInputStream(clientSocket.getInputStream());
-            System.out.println("GOT the List of users from server! ");
 
             toReturn = (IRC_Packet) inFromServer.readObject(); 
             
@@ -66,7 +63,7 @@ public abstract class GuiBase extends JFrame {
             }
             catch(IOException ex){
                 //TODO no clue here
-                System.out.println("Err: IO Exception");
+                System.out.println("Err: IO Exception line 66 GUIBase");
                 System.exit(0);
 
             }
