@@ -213,6 +213,8 @@ class IPChat extends GuiBase implements ActionListener
             public void actionPerformed(ActionEvent e){
 
                 try{
+                openClientSocket();
+
                 ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
                 System.out.println("Created the object ouptut stream");
 
@@ -232,7 +234,7 @@ class IPChat extends GuiBase implements ActionListener
                  displayRooms(ro);
 
                 inFromServer.close();
-
+                closeClientSocket();
                   
                 }
                 catch(IOException ex){
@@ -266,7 +268,7 @@ class IPChat extends GuiBase implements ActionListener
            
            
                 try{
-
+                    openClientSocket();
                    ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
                     System.out.println("Created the object ouptut stream");
     
@@ -277,7 +279,7 @@ class IPChat extends GuiBase implements ActionListener
                     System.out.println("GOT the room/joined ");
     
                      IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject(); 
-    
+                    closeClientSocket();
 
 
                 inFromServer.close();
@@ -315,7 +317,7 @@ class IPChat extends GuiBase implements ActionListener
                 removeRoomFromSubcribed(roomRemov);
 
                 try{
-
+                    openClientSocket();
                     ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
                     System.out.println("Created the object ouptut stream");
     
@@ -327,7 +329,7 @@ class IPChat extends GuiBase implements ActionListener
     
                      IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject(); 
                 inFromServer.close();
-    
+                    closeClientSocket();
                   
     
                       
@@ -361,7 +363,7 @@ class IPChat extends GuiBase implements ActionListener
             public void actionPerformed(ActionEvent e){
                 
                 try{
-
+                    openClientSocket();
                    ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
                     System.out.println("Created the object ouptut stream");
     
@@ -380,7 +382,7 @@ class IPChat extends GuiBase implements ActionListener
                           
                      displayUser(ro);
                     inFromServer.close();
-    
+                    closeClientSocket();
                       
                     }
                     catch(IOException ex){
@@ -417,6 +419,7 @@ class IPChat extends GuiBase implements ActionListener
             public void actionPerformed(ActionEvent e){
                 
                 try{
+                    openClientSocket();
 
                     /*
                    ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -439,7 +442,7 @@ class IPChat extends GuiBase implements ActionListener
                      
 
                     inFromServer.close();
-*/                      
+*/                    closeClientSocket();
                     frame.setVisible(false);
                     frame.dispose();
                       
