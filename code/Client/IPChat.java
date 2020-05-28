@@ -27,6 +27,7 @@ import code.ErrorPackets.ErrorPacket;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 
 
@@ -35,7 +36,7 @@ import java.util.Arrays;
 class IPChat extends GuiBase implements ActionListener, Runnable
 {
 
-    private ArrayList<CRoom> roomsJoined = new ArrayList<>();
+    private HashMap<String, CRoom> roomsJoined = new HashMap<>();
 
 
 /*
@@ -285,13 +286,18 @@ class IPChat extends GuiBase implements ActionListener, Runnable
                 String roomRemov=JOptionPane.showInputDialog(NameGetter, "Enter The Name you want to remove");
 
 
-                LeaveRoom roomRev = new LeaveRoom(roomRemov);
+                LeaveRoom roomRev = new LeaveRoom(roomRemov,getUsername());
                 IRC_Packet resp = sendPacketToWelcomeServer(roomRev);
 
                 if(isErrPacket(resp)) {
                     handleErrorResponseFromServer( (ErrorPacket) resp);
                 } else {
-                    LeaveRoomResp leaveRoomResponse = (LeaveRoomResp) resp;
+                   // LeaveRoomResp leaveRoomResponse = (LeaveRoomResp) resp;
+                   CRoom toClose = roomsJoined.get(roomRemov);
+                   if(toClose == null)
+                        System.err.println("Cannot exit the room: " + roomRemov + ". Name does not exist");
+                   toClose.closeRoomWindow();
+                   roomsJoined.remove(roomRemov);
                 }
                       
                 }
@@ -320,43 +326,32 @@ class IPChat extends GuiBase implements ActionListener, Runnable
         });
 
 
-        JButton serverDisconnect= new JButton("Disconnect from Server");
+        JButton serverDisconnect= new JButton("Exit IPChat");
         serverDisconnect.setPreferredSize(new Dimension(200, 90));
         menuBar.add(serverDisconnect);
 
         serverDisconnect.addActionListener( new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 
-                try{
-                    openClientSocket();
+            IRC_Packet resp = sendPacketToWelcomeServer(new GoodBye(getUsername()));
 
-                    
-                   ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
-                    System.out.println("Created the object ouptut stream");
-    
-                    outToServer.writeObject(new GoodBye(getUsername()));
-                    System.out.println("Sending goodbye packet to the server");       
-    
-                    ObjectInputStream inFromServer = new ObjectInputStream(clientSocket.getInputStream());
-                    System.out.println("GOT the Goobye packet response ");
-    
-                     IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject(); 
-    
-                    
-
-                    inFromServer.close();
-                    closeClientSocket();
-                   // frame.setVisible(false);
-                    //frame.dispose();
-                      
-                    }
-                    catch(Exception exception){
-                        //TODO error and try again 
-                       System.out.println("ERR: exception");
-                        //System.exit(0);
-    
-                    }
-                }
+            if(isErrPacket(resp)) {
+                handleErrorResponseFromServer( (ErrorPacket) resp);
+            } else {
+               JFrame disconnect= new JFrame("Disconnecting from Server");
+               disconnect.setVisible(true);
+               int input = JOptionPane.showConfirmDialog(disconnect, "To exit IPChat, click Yes");
+               if(input == 0){
+                    disconnect.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+               }
+               try{
+                    System.exit(0);
+               }catch(Exception a){
+                    a.printStackTrace();
+                    System.exit(5);
+               }
+            }
+            }
             
         });
 
@@ -565,5 +560,5 @@ class IPChat extends GuiBase implements ActionListener, Runnable
     /**
      * Add a new room to the Array kept by the clinet of rooms joined
      */
-    private void addNewRoom(CRoom room) { this.roomsJoined.add(room); }
+    private void addNewRoom(CRoom room) { this.roomsJoined.put(room.getRoomName(), room); }
 }

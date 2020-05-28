@@ -14,10 +14,14 @@ import code.ErrorPackets.IllegalOpcode;
 import code.ErrorPackets.IllegalProtocol;
 import code.ErrorPackets.NameExists;
 import code.ErrorPackets.UnknownError;
+import code.ErrorPackets.InvalidRoomName;
 import code.IRC_Packets.IRC_Packet;
+import code.OpPackets.GoodBye;
 import code.OpPackets.HandShake;
 import code.OpPackets.JoinRoom;
 import code.OpPackets.JoinRoomResp;
+import code.OpPackets.LeaveRoom;
+import code.OpPackets.LeaveRoomResp;
 import code.OpPackets.ListRooms;
 import code.OpPackets.ListRoomsResp;
 import code.OpPackets.ListUsers;
@@ -131,7 +135,17 @@ public class Server extends Thread {
                 System.out.println("Adding client to room: " + joinRoom.getRoomName() + " with port: " + joinRoom.getPortNumber());
                 return new JoinRoomResp();
             case OP_CODE_LEAVE_ROOM:
-                break;
+                LeaveRoom rqst = (LeaveRoom) request;
+                room = this.rooms.get(rqst.getRoomName());
+                if(room == null)
+                    return new InvalidRoomName();
+                String usrExiting = rqst.getUsername();
+                if(room.containsUser(usrExiting)) {
+                    room.removeUser(usrExiting);
+                    if(room.isEmpty())
+                        this.rooms.remove(rqst.getRoomName());
+                }
+                return new LeaveRoomResp();
             case OP_CODE_SEND_MESSAGE: // Send msg to a room from client
                 SendMessage msg = (SendMessage) request;
                 System.out.println("line 125");
@@ -146,6 +160,20 @@ public class Server extends Thread {
                 return new SendMessageResp();
             case OP_CODE_SEND_PRIVATE_MESSAGE:
                 break;
+            case OP_CODE_GOODBYE:
+                GoodBye goodBye = (GoodBye) request;
+                String userExiting = goodBye.getUsername();
+                if(this.users.contains(userExiting))
+                    this.users.remove(userExiting);
+                for(String roomName : this.rooms.keySet()) {
+                    room = this.rooms.get(roomName);
+                    if(room.containsUser(userExiting)) {
+                        room.removeUser(userExiting);
+                        if(room.isEmpty())
+                            this.rooms.remove(roomName);
+                    }
+                }
+                return new GoodBye("server");
             default:
                 return new IllegalOpcode();
         }

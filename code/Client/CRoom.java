@@ -269,4 +269,6 @@ public class CRoom extends GuiBase implements ActionListener, Runnable
     }
 
     public ServerSocket getListeningSocket() { return this.listeningSocket; }
+
+    public String getRoomName() { return this.roomName; }
 }
