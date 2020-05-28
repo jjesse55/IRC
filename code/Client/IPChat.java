@@ -341,11 +341,19 @@ class IPChat extends GuiBase implements ActionListener, Runnable
                JFrame disconnect= new JFrame("Disconnecting from Server");
                disconnect.setVisible(true);
                int input = JOptionPane.showConfirmDialog(disconnect, "To exit IPChat, click Yes");
-               if(input == 0){
                     disconnect.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-               }
                try{
+                if(input == 0){
                     System.exit(0);
+               }
+               if(input ==1){
+                    //do nothing
+                    return;
+               }
+               if(input == 2){
+                    //do nothing
+                    return;
+               }
                }catch(Exception a){
                     a.printStackTrace();
                     System.exit(5);

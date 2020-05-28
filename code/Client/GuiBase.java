@@ -129,6 +129,9 @@ public abstract class GuiBase extends JFrame {
                 System.err.println("ERR: Illegal protocol for application user... System exiting");
                 System.exit(1);
                 break;
+            case IRC_ERR_INVALID_ROOMNAME:
+                System.err.println("ERR: Name of room specified does not match that of an existing room." + 
+                " Please try again...");
             default:
                 System.err.println("ERR: System Exitting..");
                 System.exit(1);
