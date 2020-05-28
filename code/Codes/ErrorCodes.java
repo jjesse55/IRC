@@ -8,8 +8,8 @@ public enum ErrorCodes {
     IRC_ERR_ILLEGAL_OPCODE(0x00000002),     //Illegal OpCode specified
     IRC_ERR_ILLEGAL_LENGTH(0x00000003),     //Wrong version
     IRC_ERR_NAME_EXISTS(0x00000004),        //Name for a client is pre-existant
-    IRC_ERR_ILLEGAL_PROTOCOL(0x00000005);   //Wrong protocol specified to communicate with the server
-
+    IRC_ERR_ILLEGAL_PROTOCOL(0x00000005),  //Wrong protocol specified to communicate with the server
+    IRC_ERR_INVALID_ROOMNAME(0x00000006);  //Client entered in an invalid room name
     private int errCode;    //Integer value representing the errCode
 
     ErrorCodes(int errCode) { this.errCode = errCode; }

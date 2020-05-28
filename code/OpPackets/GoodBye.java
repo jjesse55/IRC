@@ -13,9 +13,9 @@ public class GoodBye extends OpPackets {
      * @param opCode
      */
     public GoodBye(String userName){
-        super(OpCodes.OP_CODE_JOIN_ROOM);
+        super(OpCodes.OP_CODE_GOODBYE);
         this.UserName=userName;
     }
 
-    
+    public String getUsername() { return this.UserName; }
 }

@@ -14,10 +14,14 @@ import code.ErrorPackets.IllegalOpcode;
 import code.ErrorPackets.IllegalProtocol;
 import code.ErrorPackets.NameExists;
 import code.ErrorPackets.UnknownError;
+import code.ErrorPackets.InvalidRoomName;
 import code.IRC_Packets.IRC_Packet;
+import code.OpPackets.GoodBye;
 import code.OpPackets.HandShake;
 import code.OpPackets.JoinRoom;
 import code.OpPackets.JoinRoomResp;
+import code.OpPackets.LeaveRoom;
+import code.OpPackets.LeaveRoomResp;
 import code.OpPackets.ListRooms;
 import code.OpPackets.ListRoomsResp;
 import code.OpPackets.ListUsers;
@@ -50,9 +54,8 @@ public class Server extends Thread {
     }
 
     public void run() {
-        try {
-            while (true) {
-
+        while (true) {
+            try {
                 System.out.println("ServerSocket awaiting connections...");
                 Socket newConnection = this.getWelcomeSocket().accept();
 
@@ -64,12 +67,25 @@ public class Server extends Thread {
              //    TimeUnit.SECONDS.sleep(20); This will be used to show handling crashed gracefully
 
                 ObjectOutputStream outToClient = new ObjectOutputStream(newConnection.getOutputStream());
+
+                System.out.println("Right before sending the response back to the client");
                 outToClient.writeObject(this.handleRequestFromClient(clientPacket));
 
                 newConnection.close();
+            } catch(IOException ex){
+                //TODO no clue here
+                System.out.println("Err: IO Exception");
+                System.exit(0);
+            } catch(ClassNotFoundException exception){
+                //TODO ERROR and try again?
+                System.out.println("ERR: Class Not Found");
+
+            } catch(Exception exception){
+                //TODO error and try again 
+                exception.printStackTrace();
+               System.out.println("ERR: exception");
+                //System.exit(0);
             }
-        } catch (Exception exception) {
-            System.out.println("ERR: The client has no longer become responsive. Proceeding as normal");
         }
     }
 
@@ -119,7 +135,17 @@ public class Server extends Thread {
                 System.out.println("Adding client to room: " + joinRoom.getRoomName() + " with port: " + joinRoom.getPortNumber());
                 return new JoinRoomResp();
             case OP_CODE_LEAVE_ROOM:
-                break;
+                LeaveRoom rqst = (LeaveRoom) request;
+                room = this.rooms.get(rqst.getRoomName());
+                if(room == null)
+                    return new InvalidRoomName();
+                String usrExiting = rqst.getUsername();
+                if(room.containsUser(usrExiting)) {
+                    room.removeUser(usrExiting);
+                    if(room.isEmpty())
+                        this.rooms.remove(rqst.getRoomName());
+                }
+                return new LeaveRoomResp();
             case OP_CODE_SEND_MESSAGE: // Send msg to a room from client
                 SendMessage msg = (SendMessage) request;
                 System.out.println("line 125");
@@ -127,10 +153,27 @@ public class Server extends Thread {
                 System.out.println("127");
                 room.setMessageToForward(msg);
                 System.out.println("129");
-                room.start();
+                if(room.getState() == Thread.State.NEW)
+                    room.start();
+                else
+                    room.run();
                 return new SendMessageResp();
             case OP_CODE_SEND_PRIVATE_MESSAGE:
                 break;
+            case OP_CODE_GOODBYE:
+                GoodBye goodBye = (GoodBye) request;
+                String userExiting = goodBye.getUsername();
+                if(this.users.contains(userExiting))
+                    this.users.remove(userExiting);
+                for(String roomName : this.rooms.keySet()) {
+                    room = this.rooms.get(roomName);
+                    if(room.containsUser(userExiting)) {
+                        room.removeUser(userExiting);
+                        if(room.isEmpty())
+                            this.rooms.remove(roomName);
+                    }
+                }
+                return new GoodBye("server");
             default:
                 return new IllegalOpcode();
         }

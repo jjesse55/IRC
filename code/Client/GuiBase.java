@@ -52,10 +52,12 @@ public abstract class GuiBase extends JFrame {
             openClientSocket();
             ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
 
+            System.out.println("Right before WRITING the object in from the server");
             outToServer.writeObject(packet);
 
             ObjectInputStream inFromServer = new ObjectInputStream(clientSocket.getInputStream());
 
+            System.out.println("Right before READING the object in from the server");
             toReturn = (IRC_Packet) inFromServer.readObject(); 
             
             inFromServer.close();
@@ -127,6 +129,9 @@ public abstract class GuiBase extends JFrame {
                 System.err.println("ERR: Illegal protocol for application user... System exiting");
                 System.exit(1);
                 break;
+            case IRC_ERR_INVALID_ROOMNAME:
+                System.err.println("ERR: Name of room specified does not match that of an existing room." + 
+                " Please try again...");
             default:
                 System.err.println("ERR: System Exitting..");
                 System.exit(1);

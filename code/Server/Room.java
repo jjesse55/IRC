@@ -23,8 +23,8 @@ public class Room extends Thread {
 
 
     public void run() {
-        try {
-            for (User user : this.users) {
+        for (User user : this.users) {
+            try {
                 System.out.println("Sending the msg to all the users in the room");
                 Socket socket = new Socket(user.getClientHost(), user.getPortNumber());
                 ObjectOutputStream outToRoom = new ObjectOutputStream(socket.getOutputStream());
@@ -33,21 +33,20 @@ public class Room extends Thread {
 
                 ObjectInputStream inFromRoom = new ObjectInputStream(socket.getInputStream());
 
+System.out.println("right before Room run() reads object from server");
                 SendMessageResp resp = (SendMessageResp) inFromRoom.readObject();
 
+System.out.println("right after Room run() reads object from server");
                 inFromRoom.close();
                 socket.close();
+            } catch (IOException ex) {
+                System.out.println("Err: IO Exception 43");
+                System.exit(0);
+            } catch (ClassNotFoundException exception) {
+                System.out.println("ERR: Class Not Found");
+            } catch (Exception exception) {
+                System.out.println("ERR: exception");
             }
-        } catch (IOException ex) {
-            System.out.println("Err: IO Exception 43");
-            System.exit(0);
-
-        } catch (ClassNotFoundException exception) {
-            System.out.println("ERR: Class Not Found");
-
-        } catch (Exception exception) {
-            System.out.println("ERR: exception");
-            // System.exit(0);
         }
     }
 
@@ -62,7 +61,14 @@ public class Room extends Thread {
      * Remove a user from a room either when the server/client disconnects from each
      * other or when the client requests to leave a room
      */
-    public void removeUser(User user) { this.users.remove(user); }
+    public void removeUser(String userToRemove) {
+        for(User user: this.users) {
+            if(user.getUsername() == userToRemove) {
+                this.users.remove(user);
+                return;
+            }
+        }
+    }
 
     /**
      * Gets the list of users for when a client requests to list all users in a room
@@ -82,8 +88,15 @@ public class Room extends Thread {
      * Checks to see if a user is in the current room
      */
     public boolean containsUser(String username) {
-        return this.users.contains(username);
+        for(User user: this.users) {
+            if(user.getUsername() == username)
+            return true;
+        }
+
+        return false;
     }
 
     public void setMessageToForward(SendMessage msg) { this.messageToFwd = msg; }
+
+    public boolean isEmpty() { return this.users.isEmpty(); }
 }

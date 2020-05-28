@@ -199,8 +199,12 @@ public class CRoom extends GuiBase implements ActionListener, Runnable
 
             SendMessage msgToSend = new SendMessage(message, useName, roomName);
             System.out.println("Room NAME "+ roomName);
+            
+            System.out.println("CROOM before packet from server recieved");
 
             IRC_Packet resp = sendPacketToWelcomeServer(msgToSend);
+
+            System.out.println("CROOM after packet from server recieved");
 
             if(isErrPacket(resp)) {
                 handleErrorResponseFromServer( (ErrorPacket) resp);
@@ -265,4 +269,6 @@ public class CRoom extends GuiBase implements ActionListener, Runnable
     }
 
     public ServerSocket getListeningSocket() { return this.listeningSocket; }
+
+    public String getRoomName() { return this.roomName; }
 }
