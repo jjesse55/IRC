@@ -50,9 +50,8 @@ public class Server extends Thread {
     }
 
     public void run() {
-        try {
-            while (true) {
-
+        while (true) {
+            try {
                 System.out.println("ServerSocket awaiting connections...");
                 Socket newConnection = this.getWelcomeSocket().accept();
 
@@ -64,12 +63,25 @@ public class Server extends Thread {
              //    TimeUnit.SECONDS.sleep(20); This will be used to show handling crashed gracefully
 
                 ObjectOutputStream outToClient = new ObjectOutputStream(newConnection.getOutputStream());
+
+                System.out.println("Right before sending the response back to the client");
                 outToClient.writeObject(this.handleRequestFromClient(clientPacket));
 
                 newConnection.close();
+            } catch(IOException ex){
+                //TODO no clue here
+                System.out.println("Err: IO Exception");
+                System.exit(0);
+            } catch(ClassNotFoundException exception){
+                //TODO ERROR and try again?
+                System.out.println("ERR: Class Not Found");
+
+            } catch(Exception exception){
+                //TODO error and try again 
+                exception.printStackTrace();
+               System.out.println("ERR: exception");
+                //System.exit(0);
             }
-        } catch (Exception exception) {
-            System.out.println("ERR: The client has no longer become responsive. Proceeding as normal");
         }
     }
 
@@ -127,7 +139,10 @@ public class Server extends Thread {
                 System.out.println("127");
                 room.setMessageToForward(msg);
                 System.out.println("129");
-                room.start();
+                if(room.getState() == Thread.State.NEW)
+                    room.start();
+                else
+                    room.run();
                 return new SendMessageResp();
             case OP_CODE_SEND_PRIVATE_MESSAGE:
                 break;

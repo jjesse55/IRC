@@ -23,8 +23,8 @@ public class Room extends Thread {
 
 
     public void run() {
-        try {
-            for (User user : this.users) {
+        for (User user : this.users) {
+            try {
                 System.out.println("Sending the msg to all the users in the room");
                 Socket socket = new Socket(user.getClientHost(), user.getPortNumber());
                 ObjectOutputStream outToRoom = new ObjectOutputStream(socket.getOutputStream());
@@ -33,21 +33,20 @@ public class Room extends Thread {
 
                 ObjectInputStream inFromRoom = new ObjectInputStream(socket.getInputStream());
 
+System.out.println("right before Room run() reads object from server");
                 SendMessageResp resp = (SendMessageResp) inFromRoom.readObject();
 
+System.out.println("right after Room run() reads object from server");
                 inFromRoom.close();
                 socket.close();
+            } catch (IOException ex) {
+                System.out.println("Err: IO Exception 43");
+                System.exit(0);
+            } catch (ClassNotFoundException exception) {
+                System.out.println("ERR: Class Not Found");
+            } catch (Exception exception) {
+                System.out.println("ERR: exception");
             }
-        } catch (IOException ex) {
-            System.out.println("Err: IO Exception 43");
-            System.exit(0);
-
-        } catch (ClassNotFoundException exception) {
-            System.out.println("ERR: Class Not Found");
-
-        } catch (Exception exception) {
-            System.out.println("ERR: exception");
-            // System.exit(0);
         }
     }
 
