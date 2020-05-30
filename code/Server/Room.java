@@ -41,7 +41,6 @@ System.out.println("right after Room run() reads object from server");
                 socket.close();
             } catch (IOException ex) {
                 System.out.println("Err: IO Exception 43");
-                System.exit(0);
             } catch (ClassNotFoundException exception) {
                 System.out.println("ERR: Class Not Found");
             } catch (Exception exception) {
@@ -63,7 +62,7 @@ System.out.println("right after Room run() reads object from server");
      */
     public void removeUser(String userToRemove) {
         for(User user: this.users) {
-            if(user.getUsername() == userToRemove) {
+            if(user.getUsername().equalsIgnoreCase(userToRemove)) {
                 this.users.remove(user);
                 return;
             }
@@ -89,8 +88,8 @@ System.out.println("right after Room run() reads object from server");
      */
     public boolean containsUser(String username) {
         for(User user: this.users) {
-            if(user.getUsername() == username)
-            return true;
+            if(user.getUsername().equalsIgnoreCase(username))
+                return true;
         }
 
         return false;
@@ -99,4 +98,6 @@ System.out.println("right after Room run() reads object from server");
     public void setMessageToForward(SendMessage msg) { this.messageToFwd = msg; }
 
     public boolean isEmpty() { return this.users.isEmpty(); }
+
+    public String getRoomName() { return this.roomName; }
 }

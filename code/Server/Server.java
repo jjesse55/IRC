@@ -54,12 +54,18 @@ public class Server extends Thread {
         Server server = new Server();
         server.start();
         while(true) {
-            for(User user : server.serverDisconnect.sendKeepAliveMessages(server.users)) {
-                server.users.remove(user);
-                for(String roomName : server.rooms.keySet()) {
-                    if(server.rooms.get(roomName).containsUser(user.getUsername()))
-                        server.rooms.remove(user.getUsername());
+            ArrayList<User> usersToRemove = server.serverDisconnect.sendKeepAliveMessages(server.users);
+            for(User user : usersToRemove) {
+                System.out.println("usr to remove: " + user.getUsername());
+                for(Room room : server.rooms.values()) {
+                    if(room.containsUser(user.getUsername())) {
+                        System.out.println("Did we ever get here");
+                        room.removeUser(user.getUsername());
+                        if(room.isEmpty())
+                            server.rooms.remove(room.getRoomName());
+                    }
                 }
+                server.users.remove(user);
             }
             Thread.sleep(5000);
         }
@@ -75,9 +81,6 @@ public class Server extends Thread {
 
                 IRC_Packet clientPacket = (IRC_Packet) inFromClient.readObject();
 
-                //DON'T DELETE!!!!
-             //    TimeUnit.SECONDS.sleep(20); This will be used to show handling crashed gracefully
-
                 ObjectOutputStream outToClient = new ObjectOutputStream(newConnection.getOutputStream());
 
                 System.out.println("Right before sending the response back to the client");
@@ -85,7 +88,7 @@ public class Server extends Thread {
 
                 newConnection.close();
             } catch(IOException ex){
-                //TODO no clue here
+                System.out.println("line 85");
                 System.out.println("Err: IO Exception");
                 System.exit(0);
             } catch(ClassNotFoundException exception){

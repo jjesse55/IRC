@@ -39,22 +39,12 @@ public class ServerDisconnect {
         return usersToRemove;
     }
 
-    private void openKeepAliveSocket(User user) {
-        try {
-            this.keepAliveSocket = new Socket(CLIENT_HOSTS, user.getPortNumber());
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Unable to open the client socket");
-        }
+    private void openKeepAliveSocket(User user) throws Exception {
+        this.keepAliveSocket = new Socket(CLIENT_HOSTS, user.getPortNumber());
     }
 
-    private void closeKeepAliveSocket() {
-        try {
-            this.keepAliveSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Unable to close the server socket");
-        }
+    private void closeKeepAliveSocket() throws Exception {
+        this.keepAliveSocket.close();
     }
 
     private Socket getKeepAliveSocket() { return this.keepAliveSocket; }
