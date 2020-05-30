@@ -55,7 +55,11 @@ public class Server extends Thread {
         server.start();
         while(true) {
             for(User user : server.serverDisconnect.sendKeepAliveMessages(server.users)) {
-                this.users.remove
+                server.users.remove(user);
+                for(String roomName : server.rooms.keySet()) {
+                    if(server.rooms.get(roomName).containsUser(user.getUsername()))
+                        server.rooms.remove(user.getUsername());
+                }
             }
             Thread.sleep(5000);
         }
