@@ -11,5 +11,4 @@ public class KeepAlive extends OpPackets {
     public KeepAlive(){
         super(OpCodes.OP_CODE_KEEP_ALIVE);
     }
-    
 }

@@ -39,8 +39,10 @@ public class Server extends Thread {
     private ServerSocket welcomeSocket;
     private static int protocol = 0x12345678;
 
+    private ServerDisconnect serverDisconnect;
+
     //Information about clients that the server keeps track of
-    ArrayList<String> users = new ArrayList<>();
+    ArrayList<User> users = new ArrayList<>();
     HashMap<String, Room> rooms = new HashMap<>();
 
     /**
@@ -51,6 +53,22 @@ public class Server extends Thread {
     public static void main(String[] notUsed) throws Exception {
         Server server = new Server();
         server.start();
+        while(true) {
+            ArrayList<User> usersToRemove = server.serverDisconnect.sendKeepAliveMessages(server.users);
+            for(User user : usersToRemove) {
+                System.out.println("usr to remove: " + user.getUsername());
+                for(Room room : server.rooms.values()) {
+                    if(room.containsUser(user.getUsername())) {
+                        System.out.println("Did we ever get here");
+                        room.removeUser(user.getUsername());
+                        if(room.isEmpty())
+                            server.rooms.remove(room.getRoomName());
+                    }
+                }
+                server.users.remove(user);
+            }
+            Thread.sleep(5000);
+        }
     }
 
     public void run() {
@@ -63,9 +81,6 @@ public class Server extends Thread {
 
                 IRC_Packet clientPacket = (IRC_Packet) inFromClient.readObject();
 
-                //DON'T DELETE!!!!
-             //    TimeUnit.SECONDS.sleep(20); This will be used to show handling crashed gracefully
-
                 ObjectOutputStream outToClient = new ObjectOutputStream(newConnection.getOutputStream());
 
                 System.out.println("Right before sending the response back to the client");
@@ -73,7 +88,7 @@ public class Server extends Thread {
 
                 newConnection.close();
             } catch(IOException ex){
-                //TODO no clue here
+                System.out.println("line 85");
                 System.out.println("Err: IO Exception");
                 System.exit(0);
             } catch(ClassNotFoundException exception){
@@ -98,6 +113,7 @@ public class Server extends Thread {
      */
     private Server() throws IOException {
         this.welcomeSocket = new ServerSocket(port);
+        this.serverDisconnect = new ServerDisconnect();
     }
 
     /**
@@ -118,8 +134,8 @@ public class Server extends Thread {
                 if(this.nameExists(handShake))
                     return new NameExists();
 
-                this.users.add(handShake.getUserName());
-                return new HandShake("server");
+                this.users.add(handShake.getUser());
+                return new HandShake(null);
             case OP_CODE_LIST_ROOMS:
                 return new ListRoomsResp(this.getRooms());
             case OP_CODE_LIST_USERS:
@@ -188,16 +204,16 @@ public class Server extends Thread {
 
     //Helper methods
     private boolean nameExists(HandShake handShake) {
-        return this.users.contains(handShake.getUserName());
+        for(User user : this.users)
+            if(user.getUsername() == handShake.getUser().getUsername())
+                return true;
+        
+        return false;
     }
 
     private boolean verifyProtocol(HandShake handShake) {
         return handShake.getProtocol() == protocol;
     }
-
-
-
-
 
 
     //Getters
@@ -207,8 +223,14 @@ public class Server extends Thread {
     private ArrayList<String> getRooms() {
         return this.rooms.isEmpty() ? null : new ArrayList<String>(this.rooms.keySet());
     }
-    private ArrayList<String> getUsers() {
-        return this.users.isEmpty() ? null : this.users;
+    private ArrayList<String> getUsernames() {
+        if(this.users.isEmpty()) return null;
+
+        ArrayList<String> usernames = new ArrayList<>();
+        for(User user : this.users)
+            usernames.add(user.getUsername());
+
+        return usernames;
     }
     private Room getRoom(String roomName) { return this.rooms.get(roomName); }
     private boolean doesRoomExist(String name) { return this.rooms.keySet().contains(name); }

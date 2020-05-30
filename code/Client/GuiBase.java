@@ -1,7 +1,10 @@
 package code.Client;
 
+import java.lang.Object;
 import java.util.concurrent.TimeUnit;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import java.io.*;
 import java.net.ConnectException;
 import java.net.Socket;
@@ -32,6 +35,7 @@ public abstract class GuiBase extends JFrame {
         } catch(Exception e) {
             e.printStackTrace();
             System.err.println("Unable to open the client socket");
+            this.serverCrashes();
         }
     }
 
@@ -62,23 +66,22 @@ public abstract class GuiBase extends JFrame {
             
             inFromServer.close();
             closeClientSocket();
-            }
-            catch(IOException ex){
-                //TODO no clue here
-                System.out.println("Err: IO Exception line 66 GUIBase");
-                System.exit(0);
 
-            }
-            catch(ClassNotFoundException exception){
+        } catch(IOException ex){
+                //TODO no clue here
+                System.out.println("Err: IO Exception");
+                this.serverCrashes();
+        } catch(ClassNotFoundException exception){
                 //TODO ERROR and try again?
                 System.out.println("ERR: Class Not Found");
-
             }
+            /*
             catch(Exception exception){
                 //TODO error and try again 
                System.out.println("ERR: exception");
                 //System.exit(0);
             }
+            */
 
         return toReturn;
     }
@@ -142,4 +145,19 @@ public abstract class GuiBase extends JFrame {
     public void setUsername(String username) { this.username = username; }
 
     protected boolean isErrPacket(IRC_Packet packet) { return packet.getPacketHeader().getOpCode() == OpCodes.OP_CODE_ERR; }
+
+
+    public void serverCrashes(){
+        JFrame servCrash= new JFrame("Server Stopped Responding");
+        servCrash.setVisible(true);
+        JOptionPane.showMessageDialog(servCrash, "The Server has stopped responding, IP Chat Exiting");
+        servCrash.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        System.exit(0);
+    }
+
+
+
+
+
+
 }

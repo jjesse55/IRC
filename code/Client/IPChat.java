@@ -16,6 +16,7 @@ import code.OpPackets.JoinRoomResp;
 import code.OpPackets.ListRoomsResp;
 import code.OpPackets.ListUsers;
 import code.OpPackets.ListUsersResponse;
+import code.Server.User;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -36,27 +37,8 @@ import java.util.HashMap;
 class IPChat extends GuiBase implements ActionListener, Runnable
 {
 
+    private AliveS keepAliveSocket;
     private HashMap<String, CRoom> roomsJoined = new HashMap<>();
-
-
-/*
-    JFrame frame;
-    JFrame NameGetter;
-    JLabel label;
-    JTextArea chatbubble;
-    JTextField textbox1;
-    JButton button; 
-    JFrame menu;
-    JComboBox roomMenu;
-    JLabel labelRoom;
-   // no longer need them String rooms[]= {"General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
-    JLabel allRoomsList;
-    JComboBox allRoomMenu;
-    // no longer need them String allRooms[]={"Barney", "is", "a ", "dinosaur", "who", "lives", "General", "Private Chat-Joseph Jesse", "Private Chat -Katie Rosas", "Games"};
-    String UserName; 
-    String RespName; 
-    String message;
-*/
 
     JFrame menu;
     String UserName; 
@@ -65,151 +47,9 @@ class IPChat extends GuiBase implements ActionListener, Runnable
     public IPChat()
     {
         super(null);
-        /*
-        Color bgColor = new Color(47,79,79);
-        //the screen 
-        frame= new JFrame("IRC Chat");
-        frame.getContentPane().setBackground(bgColor);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-       
-       
-        frame.setLayout(new GridBagLayout()); // no need to use a layout manager
-        GridBagConstraints c= new GridBagConstraints();
-        c.insets= new Insets(2,0,0,0);
-
-
-
-        //label for window
-        c.gridx=0;
-        c.gridy=0;
-        c.ipadx=0;
-        c.ipady=10;
-        label = new JLabel("IRC Chatty Chat");
-        label.setFont(new Font("", Font.BOLD,40));
-        label.setForeground(Color.WHITE);
-
-        frame.add(label,c);
-      
-        
-        //This is for the actual chat text 
-        c.gridx=0;
-        c.gridy=4;
-        c.ipadx=320;
-        c.ipady=400;
-        chatbubble = new JTextArea();
-        chatbubble.setEditable(false);
-        chatbubble.setBackground(Color.lightGray);
-        frame.add(chatbubble,c);
-
-
-
-        c.gridx=0;
-        c.gridy=1;
-        c.ipadx=0;
-        c.ipady=0;
-        labelRoom = new JLabel("Current Room");
-        labelRoom.setFont(new Font("", Font.PLAIN,15));
-        labelRoom.setForeground(Color.white);
-        frame.add(labelRoom,c);
-
-        c.gridx=0;
-        c.gridy=2;
-        c.ipadx=0;
-        c.ipady=0;
-        roomMenu= new JComboBox<>();
-        frame.add(roomMenu, c);
-        //roomMenu.addItem(makeObj("katie"));
-
-         c.gridx=1;
-         c.gridy=1;
-         c.ipadx=10;
-         c.ipady=0;
-         allRoomsList= new JLabel ("All Rooms Available");
-         allRoomsList.setFont(new Font("", Font.PLAIN,15));
-         allRoomsList.setForeground(Color.white);
-         frame.add(allRoomsList, c);
-
-         c.gridx=1;
-         c.gridy=2;
-         c.ipadx=10;
-         c.ipady=0;
-         allRoomMenu= new JComboBox <> ();
-         frame.add(allRoomMenu, c);
-
-
-        //Adding a textbox for the chatting 
-        c.gridx=0;
-        c.gridy=5;
-        c.ipadx=320;
-        c.ipady=20;
-        textbox1= new JTextField();
-        textbox1.setBackground(Color.lightGray);
-        frame.add(textbox1,c);
-
-        
-        
-        c.gridx=1;
-        c.gridy=5;
-        c.ipadx=10;
-        c.ipady=10;
-        button= new JButton("Click to Send Message");
-        frame.add(button,c);
-
-        
-        button.addActionListener( this);
-        button.setActionCommand("SendMessage");
-
-
-
-        //frame controls
-        frame.pack();
-
-        frame.setLayout(null);
-        frame.setSize(600,600);
-        frame.setVisible(true);
-
-         USED TO TEST DISPLAY ROOMS 
-        ArrayList<String> cars = new ArrayList<String>();
-        cars.add("Volvo");
-        cars.add("BMW");
-        cars.add("Ford");
-        cars.add("Mazda");
-         displayRooms(cars);
-
-
-            //userName();
-          //  menuOptionMethods();
-          // roomMenu.addItem("Hello");
-           //roomMenu.addItem("Hi");
-           //roomMenu.addItem("yo");
-
-           //roomMenu.addItem("dude");
-           //roomMenu.removeItemAt(0);
-
-            // USED FOR TESTING: displayRooms();
-
-            */
     } 
 
 
-
-    /**
-     * This will be triggered by button to send message! and show up on chat
-     * bubble 
-     * @param string being sent in to be added to chat 
-     *
-    public void addMessageToChatBubble(String event )
-    {
-        chatbubble.append(event);
-        //TODO call tellmessage!
-    }
-
-
-    public String getRoomCurrentlySelected(){
-        String roomVal= roomMenu.getSelectedItem().toString();
-        return roomVal;
-    }
-*/
     public void  menuOptionMethods(){
 
         Color bgColor = new Color(47,79,79);
@@ -370,42 +210,6 @@ class IPChat extends GuiBase implements ActionListener, Runnable
     }
 
 
-    /**
-    * This should be updated with join/create room response packet
-    * @param Room
-    
-    public void addRoomToSubscribed(String Room)
-    {
-        //TODO call list room! 
-        roomMenu.addItem(Room);
-    }
-
-    public void addAvailableRoom(String Room)
-    {
-        allRoomMenu.addItem(Room);
-
-    }
-
-    public void removeRoomFromSubcribed( String room){
-        int count= allRoomMenu.getItemCount();
-        for(int i=0; i < count; i++){
-            String val= allRoomMenu.getItemAt(i).toString();
-            if(room == val){
-                allRoomMenu.removeItemAt(i);
-            }            
-        }
-
-        int count2= roomMenu.getItemCount();
-        for(int i=0; i < count2; i++){
-            String val= roomMenu.getItemAt(i).toString();
-            if(room == val){
-                roomMenu.removeItemAt(i);
-            }            
-        }
-
-    }
-    */
-
     public String userName(){
         NameGetter= new JFrame("UserName Response");
         UserName=JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
@@ -421,7 +225,13 @@ class IPChat extends GuiBase implements ActionListener, Runnable
         //UserName=set this field to the popup box if joseph jesse responds 
     }
     
-
+    public void serverCrashes(){
+        JFrame servCrash= new JFrame("Server Stopped Responding");
+        servCrash.setVisible(true);
+        JOptionPane.showMessageDialog(servCrash, "The Server has stopped responding, IP Chat Exiting");
+        servCrash.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        System.exit(0);
+    }
     @Override
     public void actionPerformed(ActionEvent e)
     {
@@ -429,36 +239,6 @@ class IPChat extends GuiBase implements ActionListener, Runnable
             //yelling it needed this :) 
     }
 
-/*
-    public String getName(){
-        return UserName;
-    }
-
-    public String getMessage(){
-        return message;
-    }
-*/
-    /**
-     * This is to be used for Tell msg 
-     * @param UserName
-     * @param message
-     * @param room
-     
-    public void displayMessage(String UserName, String message, String room)
-    {
-        if(getRoomCurrentlySelected()== room){
-            chatbubble.append(UserName+ ": " + message + "\n");
-        }
-
-    }
-
-    public void displayMessageToRoom(String UserName, String message, String[] rooms){
-            for(int i=0; i< rooms.length; i++){
-                displayMessage(UserName, message, rooms[i]);
-            }
-
-    }
-    */
     public void displayRooms(ArrayList <String> rooms){
           JFrame Rooms= new JFrame("List All Rooms");
           Rooms.setVisible(true);
@@ -490,6 +270,8 @@ class IPChat extends GuiBase implements ActionListener, Runnable
         javax.swing.SwingUtilities.invokeLater(new Runnable(){
         public void run(){
             IPChat myChat= new IPChat();
+            myChat.keepAliveSocket = new AliveS();
+            myChat.keepAliveSocket.start();
             myChat.run();
         }
     });
@@ -510,7 +292,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable
             System.out.println("Created the object ouptut stream");
 
             usernameToTry = this.userName();
-            outToServer.writeObject(new HandShake(usernameToTry));
+            outToServer.writeObject(new HandShake(new User(usernameToTry, this.keepAliveSocket.getPortNumber())));
             System.out.println("Sending IRC packet to the server");
 
             ObjectInputStream inFromServer = new ObjectInputStream(this.clientSocket.getInputStream());
@@ -525,10 +307,10 @@ class IPChat extends GuiBase implements ActionListener, Runnable
 
         } catch (SocketTimeoutException exception) {
             System.out.println("ERR: The server has no longer become responsive. Please try connecting again");
-            System.exit(1);
+            this.serverCrashes();
         } catch (IOException exception) {
             System.out.println("ERR: IO exception");
-            System.exit(1);
+            this.serverCrashes();
         }
         catch(ClassNotFoundException exception){
             System.out.println("ERR: The operation is not available..");
