@@ -28,6 +28,9 @@ public class ServerDisconnect extends Thread {
     //Class methods
     public ServerDisconnect(ArrayList<User> users) { this.users = users; }
 
+    /**
+     * Method that waits for an admin password to disconnect the server from all clients
+     */
     public void run() {
         String passwordAttempt = null;
         while(!this.adminPassword.equals(passwordAttempt)) {
@@ -67,6 +70,10 @@ public class ServerDisconnect extends Thread {
         }
     }
 
+    /**
+     * Method that sends keep alive messages to all clients connected to the server
+     * Is invoked in server.java in five second increments
+     */
     public ArrayList<User> sendKeepAliveMessages() {
         ArrayList<User> usersToRemove = new ArrayList<>();
         for (User user : this.users) {
@@ -108,6 +115,5 @@ public class ServerDisconnect extends Thread {
     }
 
     private Socket getKeepAliveSocket() { return this.keepAliveSocket; }
-
     private Socket getDisconnectSocket() { return this.disconnectSocket; }
 }

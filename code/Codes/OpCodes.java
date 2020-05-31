@@ -19,7 +19,7 @@ public enum OpCodes {
     OP_CODE_SEND_MESSAGE_RESPONSE(0x0000000D),               //Server sending a message to all users in a room
     OP_CODE_SEND_PRIVATE_MESSAGE(0x0000000E),       //Request to send private message between clients
     OP_CODE_TELL_PRIVATE_MESSAGE(0x0000000F),     //Server sending private message from client-client
-    OP_CODE_GOODBYE(0x00000010);
+    OP_CODE_GOODBYE(0x00000010);                    //End the connection between the client/server
 
 
 

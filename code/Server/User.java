@@ -9,17 +9,19 @@ import java.io.Serializable;
  */
 public class User implements Serializable {
 
+    //class fields
     private int port;
     private String username;
 
     //Host that all clients will use
     private static final String CLIENT_HOST = "localhost";
 
+
+    //Class methods
     public User(String username, int port) {
         this.username = username;
         this.port = port;
     }
-
 
     //Getters
     public String getClientHost() { return CLIENT_HOST; }
