@@ -1,31 +1,36 @@
 package code.Server;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
-
 import code.OpPackets.SendMessage;
 import code.OpPackets.SendMessageResp;
 
+
 /**
- * This is the SERVER class for a room (seperate from a client room)
- * 
- * TODO - Joseph still needs to make the server able to work with rooms
+ * This is the SERVER's room class (seperate from a client room which is in
+ * CRoom.java)
  */
 public class Room extends Thread {
 
+    // Class fields
     private String roomName;
-    private ArrayList<User> users = new ArrayList<>(); // change this
-
     private SendMessage messageToFwd;
+    private ArrayList<User> users = new ArrayList<>();
+
+
+    // Class methods
+    public Room(String roomName) {
+        this.roomName = roomName;
+    }
 
 
     public void run() {
+        System.out.println("LOG: Sending msg: " + this.messageToFwd + " to all the users in the room: " + this.getRoomName());
+
         for (User user : this.users) {
             try {
-                System.out.println("Sending the msg to all the users in the room");
                 Socket socket = new Socket(user.getClientHost(), user.getPortNumber());
                 ObjectOutputStream outToRoom = new ObjectOutputStream(socket.getOutputStream());
 
@@ -33,36 +38,30 @@ public class Room extends Thread {
 
                 ObjectInputStream inFromRoom = new ObjectInputStream(socket.getInputStream());
 
-System.out.println("right before Room run() reads object from server");
                 SendMessageResp resp = (SendMessageResp) inFromRoom.readObject();
 
-System.out.println("right after Room run() reads object from server");
                 inFromRoom.close();
                 socket.close();
-            } catch (IOException ex) {
-                System.out.println("Err: IO Exception 43");
             } catch (ClassNotFoundException exception) {
                 System.out.println("ERR: Class Not Found");
             } catch (Exception exception) {
-                System.out.println("ERR: exception");
+                System.out.println("ERR: Error sending message to user: " + user.getUsername());
             }
         }
     }
 
 
-    public Room(String roomName) {
-        this.roomName = roomName;
+    public void addUser(User user) {
+        this.users.add(user);
     }
-
-    public void addUser(User user) { this.users.add(user); }
 
     /**
      * Remove a user from a room either when the server/client disconnects from each
      * other or when the client requests to leave a room
      */
     public void removeUser(String userToRemove) {
-        for(User user: this.users) {
-            if(user.getUsername().equalsIgnoreCase(userToRemove)) {
+        for (User user : this.users) {
+            if (user.getUsername().equalsIgnoreCase(userToRemove)) {
                 this.users.remove(user);
                 return;
             }
@@ -87,17 +86,23 @@ System.out.println("right after Room run() reads object from server");
      * Checks to see if a user is in the current room
      */
     public boolean containsUser(String username) {
-        for(User user: this.users) {
-            if(user.getUsername().equalsIgnoreCase(username))
+        for (User user : this.users) {
+            if (user.getUsername().equalsIgnoreCase(username))
                 return true;
         }
 
         return false;
     }
 
-    public void setMessageToForward(SendMessage msg) { this.messageToFwd = msg; }
+    public void setMessageToForward(SendMessage msg) {
+        this.messageToFwd = msg;
+    }
 
-    public boolean isEmpty() { return this.users.isEmpty(); }
+    public boolean isEmpty() {
+        return this.users.isEmpty();
+    }
 
-    public String getRoomName() { return this.roomName; }
+    public String getRoomName() {
+        return this.roomName;
+    }
 }
