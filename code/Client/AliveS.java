@@ -9,6 +9,11 @@ import code.OpPackets.GoodBye;
 import code.OpPackets.KeepAlive;
 
 
+/**
+ * Keep alive class for clients.
+ * Listens for keep alive messages from the server to make sure the
+ * clients running the application are still alive.
+ */
 public class AliveS extends Thread {
 
     //Class fields
