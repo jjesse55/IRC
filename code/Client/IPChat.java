@@ -259,7 +259,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
         if (rooms == null)
              JOptionPane.showMessageDialog(Rooms, "Empty");
         else
-            JOptionPane.showMessageDialog(Rooms, "hi" + rooms.toString());
+            JOptionPane.showMessageDialog(Rooms, rooms.toString());
     }
 
     public void displayUser(ArrayList<String> users) {

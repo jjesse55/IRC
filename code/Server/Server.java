@@ -53,10 +53,10 @@ public class Server extends Thread {
         while (true) {
             ArrayList<User> usersToRemove = server.serverDisconnect.sendKeepAliveMessages();
             for (User user : usersToRemove) {
-                System.out.println("usr to remove: " + user.getUsername());
+                System.out.println("LOG: Timeout recieved from user: " + user.getUsername() +
+                ". Removing the user from the system now...");
                 for (Room room : server.rooms.values()) {
                     if (room.containsUser(user.getUsername())) {
-                        System.out.println("Did we ever get here");
                         room.removeUser(user.getUsername());
                         if (room.isEmpty())
                             server.rooms.remove(room.getRoomName());
@@ -136,7 +136,7 @@ public class Server extends Thread {
 
             case OP_CODE_LIST_USERS:
                 ListUsers listUsersPacket = (ListUsers) request;
-                System.out.println("LOG: Recieved list users request from client: for room" + listUsersPacket.getRoomName());
+                System.out.println("LOG: Recieved list users request from client: for room " + listUsersPacket.getRoomName());
                 room = this.getRoom(listUsersPacket.getRoomName());
                 System.out.println("LOG: Sending list of users in room: " + listUsersPacket.getRoomName() 
                 + " back to client.");
@@ -152,8 +152,7 @@ public class Server extends Thread {
                 }
                 room = this.getRoom(joinRoom.getRoomName());
                 room.addUser(new User(joinRoom.getUsername(), joinRoom.getPortNumber()));
-                System.out.println("Adding client to room: " + joinRoom.getRoomName() + " with port: "
-                + joinRoom.getPortNumber());
+                System.out.println("Adding client to room: " + joinRoom.getRoomName());
                 return new JoinRoomResp();
 
             case OP_CODE_LEAVE_ROOM:

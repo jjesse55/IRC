@@ -27,7 +27,8 @@ public class Room extends Thread {
 
 
     public void run() {
-        System.out.println("LOG: Sending msg: " + this.messageToFwd + " to all the users in the room: " + this.getRoomName());
+        System.out.println("LOG: Sending msg: " + this.messageToFwd.getMessage()
+        + " to all the users in the room: " + this.getRoomName());
 
         for (User user : this.users) {
             try {
