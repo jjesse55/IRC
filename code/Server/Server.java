@@ -7,7 +7,6 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
-
 import code.Codes.ErrorCodes;
 import code.Codes.OpCodes;
 import code.ErrorPackets.IllegalOpcode;
@@ -53,8 +52,9 @@ public class Server extends Thread {
     public static void main(String[] notUsed) throws Exception {
         Server server = new Server();
         server.start();
+        server.serverDisconnect.start();
         while(true) {
-            ArrayList<User> usersToRemove = server.serverDisconnect.sendKeepAliveMessages(server.users);
+            ArrayList<User> usersToRemove = server.serverDisconnect.sendKeepAliveMessages();
             for(User user : usersToRemove) {
                 System.out.println("usr to remove: " + user.getUsername());
                 for(Room room : server.rooms.values()) {
@@ -113,7 +113,7 @@ public class Server extends Thread {
      */
     private Server() throws IOException {
         this.welcomeSocket = new ServerSocket(port);
-        this.serverDisconnect = new ServerDisconnect();
+        this.serverDisconnect = new ServerDisconnect(this.users);
     }
 
     /**

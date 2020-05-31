@@ -1,23 +1,75 @@
 package code.Server;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.lang.Object;
-import code.IRC_Packets.IRC_Packet;
+import java.util.Scanner;
+import code.OpPackets.GoodBye;
 import code.OpPackets.KeepAlive;
 
 
-public class ServerDisconnect {
+/**
+ * Class to implement both the keep alive messages to all the users in the system
+ * AND
+ * Notify all the clients upon the server disconnecting for maintenance, upgrades, etc.
+ */
+public class ServerDisconnect extends Thread {
 
+    //Class fields
     private Socket keepAliveSocket;
-    protected static final String CLIENT_HOSTS = "localhost";
+    private Socket disconnectSocket;
+    private static final String CLIENT_HOSTS = "localhost";
 
-    public ArrayList<User> sendKeepAliveMessages(ArrayList<User> users) {
+    private ArrayList<User> users;
+    private String adminPassword = "adminPassword";
+
+
+    //Class methods
+    public ServerDisconnect(ArrayList<User> users) { this.users = users; }
+
+    public void run() {
+        String passwordAttempt = null;
+        while(!this.adminPassword.equals(passwordAttempt)) {
+            Scanner scanner = new Scanner(System.in);
+            passwordAttempt = scanner.nextLine();
+            if(!passwordAttempt.equals(this.adminPassword)) {
+                System.out.println("ERR: Incorrrect admin password entered. Please try again.");
+                continue;
+            }
+
+            for (User user : this.users) {
+                try {
+                    System.out.println("LOG: Notifying user: " + user.getUsername() + " of server disconnection.");
+
+                    this.openDisconnectSocket(user);
+                    ObjectOutputStream outToUser = new ObjectOutputStream(this.getDisconnectSocket().getOutputStream());
+    
+                    outToUser.writeObject(new GoodBye("server"));
+    
+                    ObjectInputStream inFromUser = new ObjectInputStream(this.getDisconnectSocket().getInputStream());
+    
+                    GoodBye resp = (GoodBye) inFromUser.readObject();
+
+                    System.out.println("LOG: Confirmed server disconncetion from user: " + user.getUsername());
+    
+                    inFromUser.close();
+                    closeDisconnectSocket();
+    
+                } catch (Exception e) {
+                    System.out.println("ERR: Could not successfully send notice of server disconnect to user: "
+                    + user.getUsername());
+                }
+            }
+
+            System.out.println("LOG: Server disconnected from all users, now terminating...");
+            System.exit(0);
+        }
+    }
+
+    public ArrayList<User> sendKeepAliveMessages() {
         ArrayList<User> usersToRemove = new ArrayList<>();
-        for (User user : users) {
+        for (User user : this.users) {
             try {
                 this.openKeepAliveSocket(user);
                 ObjectOutputStream outToUser = new ObjectOutputStream(this.getKeepAliveSocket().getOutputStream());
@@ -43,9 +95,19 @@ public class ServerDisconnect {
         this.keepAliveSocket = new Socket(CLIENT_HOSTS, user.getPortNumber());
     }
 
+    private void openDisconnectSocket(User user) throws Exception {
+        this.disconnectSocket = new Socket(CLIENT_HOSTS, user.getPortNumber());
+    }
+
     private void closeKeepAliveSocket() throws Exception {
         this.keepAliveSocket.close();
     }
 
+    private void closeDisconnectSocket() throws Exception {
+        this.disconnectSocket.close();
+    }
+
     private Socket getKeepAliveSocket() { return this.keepAliveSocket; }
+
+    private Socket getDisconnectSocket() { return this.disconnectSocket; }
 }
