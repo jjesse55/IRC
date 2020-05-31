@@ -231,10 +231,8 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
         NameGetter = new JFrame("UserName Response");
         UserName = JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
 
-        while (UserName == null || UserName == "") {
-            NameGetter = new JFrame("UserName Response");
-            UserName = JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
-        }
+        if(UserName == null)
+            System.exit(0);
 
         return UserName;
     }
