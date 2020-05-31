@@ -231,10 +231,8 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
         NameGetter = new JFrame("UserName Response");
         UserName = JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
 
-        while (UserName == null || UserName == "") {
-            NameGetter = new JFrame("UserName Response");
-            UserName = JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
-        }
+        if(UserName == null)
+            System.exit(0);
 
         return UserName;
     }
@@ -259,7 +257,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
         if (rooms == null)
              JOptionPane.showMessageDialog(Rooms, "Empty");
         else
-            JOptionPane.showMessageDialog(Rooms, "hi" + rooms.toString());
+            JOptionPane.showMessageDialog(Rooms, rooms.toString());
     }
 
     public void displayUser(ArrayList<String> users) {
