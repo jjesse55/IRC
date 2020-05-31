@@ -109,6 +109,10 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
                 NameGetter = new JFrame("Add/Join A Room");
                 String roomAdd = JOptionPane.showInputDialog(NameGetter, "Enter The Name you want to join");
 
+                if(roomAdd == null){
+                    System.out.println("Cancel was is pressed");
+                 }
+                 else{
                 int p = openNewRoomWindow(roomAdd);
                 String us = getUsername();
 
@@ -121,7 +125,12 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
                     handleErrorResponseFromServer((ErrorPacket) resp);
                 else
                     System.out.println("LOG: Successfully joined the room: " + roomAdd);
-            }
+
+                 }
+                }
+
+
+        
         });
 
         JButton removeRoom = new JButton("Leave a Room");
@@ -158,11 +167,15 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
         displayUsers.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String roomtoList = JOptionPane.showInputDialog(NameGetter, "Enter The Name of the Room");
-
+                if(roomtoList == null){
+                    System.out.println("Cancel was is pressed");
+                 }
+                 else{
                 ListUsers listUsers = new ListUsers(roomtoList);
 
                 System.out.println("LOG: Requesting to list all the users in room: " + roomtoList);
                 IRC_Packet resp = sendPacketToWelcomeServer(listUsers);
+                 
 
                 if (isErrPacket(resp))
                     handleErrorResponseFromServer((ErrorPacket) resp);
@@ -172,6 +185,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
                     + ". Displaying them now...");
                     displayUser(listUsersResponse.getUsers());
                 }
+              }
             }
         });
 
@@ -243,7 +257,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
         JFrame Rooms = new JFrame("List All Rooms");
         Rooms.setVisible(true);
         if (rooms == null)
-            JOptionPane.showMessageDialog(Rooms, "Empty");
+             JOptionPane.showMessageDialog(Rooms, "Empty");
         else
             JOptionPane.showMessageDialog(Rooms, "hi" + rooms.toString());
     }
