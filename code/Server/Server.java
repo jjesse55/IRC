@@ -3,12 +3,8 @@ package code.Server;
 import java.io.*;
 import java.net.Socket;
 import java.net.ServerSocket;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
-import code.Codes.ErrorCodes;
-import code.Codes.OpCodes;
 import code.ErrorPackets.IllegalOpcode;
 import code.ErrorPackets.IllegalProtocol;
 import code.ErrorPackets.NameExists;
@@ -21,7 +17,6 @@ import code.OpPackets.JoinRoom;
 import code.OpPackets.JoinRoomResp;
 import code.OpPackets.LeaveRoom;
 import code.OpPackets.LeaveRoomResp;
-import code.OpPackets.ListRooms;
 import code.OpPackets.ListRoomsResp;
 import code.OpPackets.ListUsers;
 import code.OpPackets.ListUsersResponse;
@@ -140,7 +135,8 @@ public class Server extends Thread {
                 return new ListRoomsResp(this.getRooms());
             case OP_CODE_LIST_USERS:
                 ListUsers listUsersPacket = (ListUsers) request;
-                return new ListUsersResponse(this.getRoom(listUsersPacket.getRoomName()).getUsers());
+                room = this.getRoom(listUsersPacket.getRoomName());
+                return room == null ? new ListUsersResponse(null) : new ListUsersResponse(room.getUsers());
             case OP_CODE_JOIN_ROOM:
                 JoinRoom joinRoom = (JoinRoom) request;
                 if(!this.doesRoomExist(joinRoom.getRoomName())) {
@@ -155,6 +151,7 @@ public class Server extends Thread {
                 room = this.rooms.get(rqst.getRoomName());
                 if(room == null)
                     return new InvalidRoomName();
+
                 String usrExiting = rqst.getUsername();
                 if(room.containsUser(usrExiting)) {
                     room.removeUser(usrExiting);
