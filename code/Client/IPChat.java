@@ -151,8 +151,10 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
                     handleErrorResponseFromServer((ErrorPacket) resp);
                 else {
                     CRoom toClose = roomsJoined.get(roomRemov);
-                    if (toClose == null)
+                    if (toClose == null) {
                         System.err.println("ERR: Cannot exit the room: " + roomRemov + ". Name does not exist");
+                        return;
+                    }
                     toClose.closeRoomWindow();
                     roomsJoined.remove(roomRemov);
 
