@@ -24,3 +24,12 @@ hs_err_pid*
 
 #Mac OS Operating System 
 .DS_Store
+
+# VS code
+.vscode/*
+
+# IntelliJ
+.idea/*
+
+# Other auto-generated files
+IRC.iml
