@@ -14,6 +14,4 @@ public enum ErrorCodes {
     private int errCode;                    //Integer value representing the errCode
 
     ErrorCodes(int errCode) { this.errCode = errCode; }
-
-    public int getErrCode() { return this.errCode; }
 }

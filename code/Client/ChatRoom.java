@@ -1,6 +1,5 @@
 package code.Client;
 
-import java.util.ArrayList;
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.Color;
@@ -12,7 +11,6 @@ import code.OpPackets.SendMessageResp;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.*;
-
 import code.ErrorPackets.ErrorPacket;
 
 public class ChatRoom extends GuiBase implements ActionListener, Runnable {
@@ -21,13 +19,12 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
     private final String roomName;
     private final ServerSocket listeningSocket;
 
-    private final JFrame frame;
-    private JFrame nameGetter;
-    private final JLabel label;
-    private final JTextArea chatBubble;
-    private final JTextField textBox1;
-    private final JButton button;
-    private final JLabel labelRoom;
+    private JFrame frame;
+    private JLabel label;
+    private JTextArea chatBubble;
+    private JTextField textBox1;
+    private JButton button;
+    private JLabel labelRoom;
     private String message;
 
     // Run method for room threads
@@ -128,30 +125,6 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
 
     }
 
-    /**
-     * This will be triggered by button to send message! and show up on chat bubble
-     * 
-     * @param string being sent in to be added to chat
-     */
-
-    public void addMessageToChatBubble(String event) {
-        chatBubble.append(event);
-    }
-
-    public String userName() {
-        nameGetter = new JFrame("userName Response");
-        username = JOptionPane.showInputDialog(nameGetter, "Enter Your Name");
-
-        while (username == null || username == "") {
-
-            nameGetter = new JFrame("userName Response");
-            username = JOptionPane.showInputDialog(nameGetter, "Enter Your Name");
-
-        }
-
-        return username;
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         String action = e.getActionCommand();
@@ -187,26 +160,6 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
      */
     public void displayMessage(String username, String message) {
         chatBubble.append(username + ": " + message + "\n");
-    }
-
-    public void displayRooms(ArrayList<String> rooms) {
-        JFrame Rooms = new JFrame("List All Rooms");
-        Rooms.setVisible(true);
-
-        if (rooms == null) {
-            JOptionPane.showMessageDialog(Rooms, "Empty");
-        } else {
-            JOptionPane.showMessageDialog(Rooms, "hi" + rooms.toString());
-        }
-    }
-
-    public void displayUser(ArrayList<String> users) {
-        JFrame user = new JFrame("Showing All Users");
-        user.setVisible(true);
-        if (users == null)
-            JOptionPane.showMessageDialog(user, "Empty");
-        else
-            JOptionPane.showMessageDialog(user, users.toString());
     }
 
     public void closeRoomWindow() {

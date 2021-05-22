@@ -52,7 +52,7 @@ public class ServerDisconnect extends Thread {
     
                     ObjectInputStream inFromUser = new ObjectInputStream(this.getDisconnectSocket().getInputStream());
     
-                    GoodBye resp = (GoodBye) inFromUser.readObject();
+                    inFromUser.readObject();
 
                     System.out.println("LOG: Confirmed server disconncetion from user: " + user.getUsername());
     
@@ -85,7 +85,7 @@ public class ServerDisconnect extends Thread {
 
                 ObjectInputStream inFromUser = new ObjectInputStream(this.getKeepAliveSocket().getInputStream());
 
-                KeepAlive resp = (KeepAlive) inFromUser.readObject();
+                inFromUser.readObject();
 
                 inFromUser.close();
                 closeKeepAliveSocket();

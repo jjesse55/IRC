@@ -1,7 +1,5 @@
 package code.OpPackets;
 
-import java.io.Serializable;
-
 import code.Codes.OpCodes;
 import code.Server.User;
 

@@ -5,7 +5,6 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import code.OpPackets.SendMessage;
-import code.OpPackets.SendMessageResp;
 
 
 /**
@@ -39,7 +38,7 @@ public class Room extends Thread {
 
                 ObjectInputStream inFromRoom = new ObjectInputStream(socket.getInputStream());
 
-                SendMessageResp resp = (SendMessageResp) inFromRoom.readObject();
+                inFromRoom.readObject();
 
                 inFromRoom.close();
                 socket.close();

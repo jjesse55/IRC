@@ -38,17 +38,4 @@ public enum OpCodes {
      * @return
      */
     public int getOpCode() { return this.opCode; }
-
-    /**
-     * Verify that an opCode is valid and is a listed type
-     * @param opCode
-     * @return
-     */
-    static public OpCodes getOpCodeByValue(int opCode) {
-        for(OpCodes o : OpCodes.values()) {
-            if(o.getOpCode() == opCode)
-                return o;
-        }
-        return null;
-    }
 }
