@@ -5,7 +5,7 @@ import java.awt.event.*;
 import java.awt.Color;
 import java.awt.*;
 import javax.swing.JFrame;
-import code.IRC_Packets.IRC_Packet;
+import code.IRC_Packets.IrcPacket;
 import code.OpPackets.LeaveRoom;
 import code.OpPackets.ListRooms;
 import code.OpPackets.GoodBye;
@@ -18,7 +18,7 @@ import code.Server.User;
 import java.net.ServerSocket;
 import java.net.SocketTimeoutException;
 import java.io.*;
-import code.Client.GuiBase;
+
 import code.Codes.OpCodes;
 import code.ErrorPackets.ErrorPacket;
 import java.util.ArrayList;
@@ -32,14 +32,14 @@ import java.util.HashMap;
 class IPChat extends GuiBase implements ActionListener, Runnable {
     // Class fields
     private AliveS keepAliveSocket;
-    private HashMap<String, CRoom> roomsJoined = new HashMap<>();
+    private HashMap<String, ChatRoom> roomsJoined = new HashMap<>();
 
     // Fields for the GUI
     JFrame menu;
-    String UserName;
+    String username;
 
     // class methods
-    JFrame NameGetter;
+    JFrame nameGetter;
 
     public IPChat() {
         super(null);
@@ -88,7 +88,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
                 ListRooms listRooms = new ListRooms();
 
                 System.out.println("LOG: Sending request to server to list all rooms.");
-                IRC_Packet resp = sendPacketToWelcomeServer(listRooms);
+                IrcPacket resp = sendPacketToWelcomeServer(listRooms);
 
                 if (isErrPacket(resp))
                     handleErrorResponseFromServer((ErrorPacket) resp);
@@ -106,8 +106,8 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
 
         addRoom.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                NameGetter = new JFrame("Add/Join A Room");
-                String roomAdd = JOptionPane.showInputDialog(NameGetter, "Enter The Name you want to join");
+                nameGetter = new JFrame("Add/Join A Room");
+                String roomAdd = JOptionPane.showInputDialog(nameGetter, "Enter The Name you want to join");
 
                 if(roomAdd == null){
                     System.out.println("Cancel was is pressed");
@@ -119,7 +119,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
                 JoinRoom roomJoin = new JoinRoom(roomAdd, us, p);
 
                 System.out.println("LOG: Requesting to join the room: " + roomAdd);
-                IRC_Packet resp = sendPacketToWelcomeServer(roomJoin);
+                IrcPacket resp = sendPacketToWelcomeServer(roomJoin);
 
                 if (isErrPacket(resp)) 
                     handleErrorResponseFromServer((ErrorPacket) resp);
@@ -139,18 +139,18 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
 
         removeRoom.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                NameGetter = new JFrame("Leave A Room");
-                String roomRemov = JOptionPane.showInputDialog(NameGetter, "Enter The Name you want to leave");
+                nameGetter = new JFrame("Leave A Room");
+                String roomRemov = JOptionPane.showInputDialog(nameGetter, "Enter The Name you want to leave");
 
                 LeaveRoom roomRev = new LeaveRoom(roomRemov, getUsername());
 
                 System.out.println("LOG: Requesting to leave the room: " + roomRemov);
-                IRC_Packet resp = sendPacketToWelcomeServer(roomRev);
+                IrcPacket resp = sendPacketToWelcomeServer(roomRev);
 
                 if (isErrPacket(resp))
                     handleErrorResponseFromServer((ErrorPacket) resp);
                 else {
-                    CRoom toClose = roomsJoined.get(roomRemov);
+                    ChatRoom toClose = roomsJoined.get(roomRemov);
                     if (toClose == null) {
                         System.err.println("ERR: Cannot exit the room: " + roomRemov + ". Name does not exist");
                         return;
@@ -168,22 +168,22 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
         menuBar.add(displayUsers);
         displayUsers.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String roomtoList = JOptionPane.showInputDialog(NameGetter, "Enter The Name of the Room");
-                if(roomtoList == null){
+                String roomToList = JOptionPane.showInputDialog(nameGetter, "Enter The Name of the Room");
+                if(roomToList == null){
                     System.out.println("Cancel was is pressed");
                  }
                  else{
-                ListUsers listUsers = new ListUsers(roomtoList);
+                ListUsers listUsers = new ListUsers(roomToList);
 
-                System.out.println("LOG: Requesting to list all the users in room: " + roomtoList);
-                IRC_Packet resp = sendPacketToWelcomeServer(listUsers);
+                System.out.println("LOG: Requesting to list all the users in room: " + roomToList);
+                IrcPacket resp = sendPacketToWelcomeServer(listUsers);
                  
 
                 if (isErrPacket(resp))
                     handleErrorResponseFromServer((ErrorPacket) resp);
                 else {
                     ListUsersResponse listUsersResponse = (ListUsersResponse) resp;
-                    System.out.println("LOG: Successfully retrieved all users in room: " + roomtoList
+                    System.out.println("LOG: Successfully retrieved all users in room: " + roomToList
                     + ". Displaying them now...");
                     displayUser(listUsersResponse.getUsers());
                 }
@@ -199,7 +199,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
             public void actionPerformed(ActionEvent e) {
 
                 System.out.println("LOG: Informing server of client exiting IPChat application");
-                IRC_Packet resp = sendPacketToWelcomeServer(new GoodBye(getUsername()));
+                IrcPacket resp = sendPacketToWelcomeServer(new GoodBye(getUsername()));
 
                 if (isErrPacket(resp)) {
                     handleErrorResponseFromServer((ErrorPacket) resp);
@@ -230,13 +230,13 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
     }
 
     public String userName() {
-        NameGetter = new JFrame("UserName Response");
-        UserName = JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
+        nameGetter = new JFrame("userName Response");
+        username = JOptionPane.showInputDialog(nameGetter, "Enter Your Name");
 
-        if(UserName == null)
+        if(username == null)
             System.exit(0);
 
-        return UserName;
+        return username;
     }
 
     public void serverCrashes() {
@@ -254,12 +254,12 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
     public void actionPerformed(ActionEvent e) {}
 
     public void displayRooms(ArrayList<String> rooms) {
-        JFrame Rooms = new JFrame("List All Rooms");
-        Rooms.setVisible(true);
+        JFrame listAllRoomsFrame = new JFrame("List All Rooms");
+        listAllRoomsFrame.setVisible(true);
         if (rooms == null)
-             JOptionPane.showMessageDialog(Rooms, "Empty");
+             JOptionPane.showMessageDialog(listAllRoomsFrame, "Empty");
         else
-            JOptionPane.showMessageDialog(Rooms, rooms.toString());
+            JOptionPane.showMessageDialog(listAllRoomsFrame, rooms.toString());
     }
 
     public void displayUser(ArrayList<String> users) {
@@ -286,12 +286,12 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
             outToServer.writeObject(new HandShake(new User(usernameToTry, this.keepAliveSocket.getPortNumber())));
 
             ObjectInputStream inFromServer = new ObjectInputStream(this.clientSocket.getInputStream());
-            IRC_Packet irc_Packet = (IRC_Packet) inFromServer.readObject();
+            IrcPacket ircPacket = (IrcPacket) inFromServer.readObject();
 
             super.closeClientSocket();
-            this.handleResponseFromServer(irc_Packet);
+            this.handleResponseFromServer(ircPacket);
 
-            if (irc_Packet.getPacketHeader().getOpCode() == OpCodes.OP_CODE_ERR)
+            if (ircPacket.getPacketHeader().getOpCode() == OpCodes.OP_CODE_ERR)
                 return this.handshakeAndUsername();
 
             System.out.println("LOG: Successfully registered with username: " + usernameToTry);
@@ -312,13 +312,13 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
     }
 
     /**
-     * This method: 1. creates a new CRoom (client room) object 2. Opens up the
+     * This method: 1. creates a new ChatRoom (client room) object 2. Opens up the
      * listening socket for the room 3. Runs the new room in parallel
      */
     public int openNewRoomWindow(String roomName) {
         try {
             ServerSocket roomSocket = new ServerSocket(0);
-            CRoom newRoom = new CRoom(roomName, roomSocket, username);
+            ChatRoom newRoom = new ChatRoom(roomName, roomSocket, username);
             this.addNewRoom(newRoom);
             Thread roomThread = new Thread(newRoom);
 
@@ -338,7 +338,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
     /**
      * Add a new room to the Array kept by the clinet of rooms joined
      */
-    private void addNewRoom(CRoom room) {
+    private void addNewRoom(ChatRoom room) {
         this.roomsJoined.put(room.getRoomName(), room);
     }
 }

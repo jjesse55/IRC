@@ -6,7 +6,6 @@ public class SendPrivateMessages extends OpPackets{
 
     /**
      * Request to send private message between clients
-     * @param opCode
      */
     public SendPrivateMessages()
     {

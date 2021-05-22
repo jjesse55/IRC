@@ -7,23 +7,23 @@ import code.Codes.OpCodes;
 /**
  * 
  */
-public abstract class IRC_Packet implements Serializable {
+public abstract class IrcPacket implements Serializable {
 
-    //Header of the IRC_Packet
-    protected IRC_Packet_Header packetHeader;
+    //Header of the IrcPacket
+    protected IrcPacketHeader packetHeader;
 
     /**
      * Initialize the header of the packet with an opCode passed in via argument
      * @param opCode
      */
-    protected IRC_Packet(OpCodes opCode) { 
-        this.packetHeader = new IRC_Packet_Header(opCode);
+    protected IrcPacket(OpCodes opCode) {
+        this.packetHeader = new IrcPacketHeader(opCode);
     }
 
     /**
      * @return the packetHeader
      */
-    public IRC_Packet_Header getPacketHeader() {
+    public IrcPacketHeader getPacketHeader() {
         return this.packetHeader;
     }
 }

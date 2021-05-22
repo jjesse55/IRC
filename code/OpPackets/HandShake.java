@@ -11,7 +11,7 @@ public class HandShake extends OpPackets {
 
     /**
      * This is the first message sent to the server to establish connection
-     * @param opCode
+     * @param user
      */
     public HandShake(User user){
         super(OpCodes.OP_CODE_HELLO);

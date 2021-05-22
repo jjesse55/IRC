@@ -4,10 +4,8 @@ import code.Codes.OpCodes;
 
 public class SendMessageResp extends OpPackets{
 
-
     /**
      * server sending message to clients 
-     * @param opCode
      */
     public SendMessageResp()
     {

@@ -9,12 +9,12 @@ import code.Codes.OpCodes;
  * 
  * Similar to headers that are transimitted with packets and HTTP requests
  */
-public class IRC_Packet_Header implements Serializable {
+public class IrcPacketHeader implements Serializable {
     
-    //OpCode for the header of the IRC_Packet
+    //OpCode for the header of the IrcPacket
     protected OpCodes opCode;
 
-    public IRC_Packet_Header(OpCodes opCode) { this.opCode = opCode; }
+    public IrcPacketHeader(OpCodes opCode) { this.opCode = opCode; }
 
     /**
      * @return the opCode

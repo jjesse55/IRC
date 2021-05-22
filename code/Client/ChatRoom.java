@@ -6,28 +6,28 @@ import javax.swing.*;
 import java.awt.Color;
 import java.awt.*;
 import javax.swing.JFrame;
-import code.IRC_Packets.IRC_Packet;
+import code.IRC_Packets.IrcPacket;
 import code.OpPackets.SendMessage;
 import code.OpPackets.SendMessageResp;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.*;
-import code.Client.GuiBase;
+
 import code.ErrorPackets.ErrorPacket;
 
-public class CRoom extends GuiBase implements ActionListener, Runnable {
+public class ChatRoom extends GuiBase implements ActionListener, Runnable {
 
     // class fields
-    private String roomName;
-    private ServerSocket listeningSocket;
+    private final String roomName;
+    private final ServerSocket listeningSocket;
 
-    private JFrame frame;
-    private JFrame NameGetter;
-    private JLabel label;
-    private JTextArea chatbubble;
-    private JTextField textbox1;
-    private JButton button;
-    private JLabel labelRoom;
+    private final JFrame frame;
+    private JFrame nameGetter;
+    private final JLabel label;
+    private final JTextArea chatBubble;
+    private final JTextField textBox1;
+    private final JButton button;
+    private final JLabel labelRoom;
     private String message;
 
     // Run method for room threads
@@ -57,7 +57,7 @@ public class CRoom extends GuiBase implements ActionListener, Runnable {
 
     // Class methods
 
-    public CRoom(String name, ServerSocket listeningSocket, String username) {
+    public ChatRoom(String name, ServerSocket listeningSocket, String username) {
         super(username);
         this.roomName = name;
         this.listeningSocket = listeningSocket;
@@ -87,10 +87,10 @@ public class CRoom extends GuiBase implements ActionListener, Runnable {
         c.gridy = 4;
         c.ipadx = 320;
         c.ipady = 400;
-        chatbubble = new JTextArea();
-        chatbubble.setEditable(false);
-        chatbubble.setBackground(Color.lightGray);
-        frame.add(chatbubble, c);
+        chatBubble = new JTextArea();
+        chatBubble.setEditable(false);
+        chatBubble.setBackground(Color.lightGray);
+        frame.add(chatBubble, c);
 
         c.gridx = 0;
         c.gridy = 1;
@@ -106,9 +106,9 @@ public class CRoom extends GuiBase implements ActionListener, Runnable {
         c.gridy = 5;
         c.ipadx = 320;
         c.ipady = 20;
-        textbox1 = new JTextField();
-        textbox1.setBackground(Color.lightGray);
-        frame.add(textbox1, c);
+        textBox1 = new JTextField();
+        textBox1.setBackground(Color.lightGray);
+        frame.add(textBox1, c);
 
         c.gridx = 1;
         c.gridy = 5;
@@ -135,17 +135,17 @@ public class CRoom extends GuiBase implements ActionListener, Runnable {
      */
 
     public void addMessageToChatBubble(String event) {
-        chatbubble.append(event);
+        chatBubble.append(event);
     }
 
     public String userName() {
-        NameGetter = new JFrame("UserName Response");
-        username = JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
+        nameGetter = new JFrame("userName Response");
+        username = JOptionPane.showInputDialog(nameGetter, "Enter Your Name");
 
         while (username == null || username == "") {
 
-            NameGetter = new JFrame("UserName Response");
-            username = JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
+            nameGetter = new JFrame("userName Response");
+            username = JOptionPane.showInputDialog(nameGetter, "Enter Your Name");
 
         }
 
@@ -157,14 +157,14 @@ public class CRoom extends GuiBase implements ActionListener, Runnable {
         String action = e.getActionCommand();
         if (action.equals("SendMessage")) {
 
-            message = textbox1.getText();
-            textbox1.setText(null);
+            message = textBox1.getText();
+            textBox1.setText(null);
             String useName = username;
 
             SendMessage msgToSend = new SendMessage(message, useName, roomName);
             System.out.println("LOG: Attempting to send message to room: " + roomName + "\nMessage: " + message);
 
-            IRC_Packet resp = sendPacketToWelcomeServer(msgToSend);
+            IrcPacket resp = sendPacketToWelcomeServer(msgToSend);
 
             if (isErrPacket(resp)) {
                 handleErrorResponseFromServer((ErrorPacket) resp);
@@ -186,7 +186,7 @@ public class CRoom extends GuiBase implements ActionListener, Runnable {
      * @param message
      */
     public void displayMessage(String username, String message) {
-        chatbubble.append(username + ": " + message + "\n");
+        chatBubble.append(username + ": " + message + "\n");
     }
 
     public void displayRooms(ArrayList<String> rooms) {

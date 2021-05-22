@@ -1,7 +1,7 @@
 package code.Codes;
 
 /**
- * OpCodes sent with IRC_Packet objects
+ * OpCodes sent with IrcPacket objects
  */
 public enum OpCodes {
     OP_CODE_ERR(0x00000001),                        //An error in the request from the client

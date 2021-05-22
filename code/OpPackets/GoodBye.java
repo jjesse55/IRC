@@ -6,16 +6,16 @@ import code.Codes.OpCodes;
 
 public class GoodBye extends OpPackets {
 
-    String UserName;
+    String userName;
 
       /**
      * This is the request to join/create a room if the room is not already created
-     * @param opCode
+     * @param userName
      */
     public GoodBye(String userName){
         super(OpCodes.OP_CODE_GOODBYE);
-        this.UserName=userName;
+        this.userName=userName;
     }
 
-    public String getUsername() { return this.UserName; }
+    public String getUsername() { return this.userName; }
 }

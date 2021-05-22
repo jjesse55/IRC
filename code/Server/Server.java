@@ -11,7 +11,7 @@ import code.ErrorPackets.IllegalProtocol;
 import code.ErrorPackets.NameExists;
 import code.ErrorPackets.UnknownError;
 import code.ErrorPackets.InvalidRoomName;
-import code.IRC_Packets.IRC_Packet;
+import code.IRC_Packets.IrcPacket;
 import code.OpPackets.GoodBye;
 import code.OpPackets.HandShake;
 import code.OpPackets.JoinRoom;
@@ -78,7 +78,7 @@ public class Server extends Thread {
 
                 ObjectInputStream inFromClient = new ObjectInputStream(newConnection.getInputStream());
 
-                IRC_Packet clientPacket = (IRC_Packet) inFromClient.readObject();
+                IrcPacket clientPacket = (IrcPacket) inFromClient.readObject();
 
                 ObjectOutputStream outToClient = new ObjectOutputStream(newConnection.getOutputStream());
                 outToClient.writeObject(this.handleRequestFromClient(clientPacket));
@@ -110,9 +110,8 @@ public class Server extends Thread {
      * based on the opCode and then calls the functionality on that object once it
      * is dynamically casted.
      * 
-     * @param response
      */
-    private IRC_Packet handleRequestFromClient(IRC_Packet request) {
+    private IrcPacket handleRequestFromClient(IrcPacket request) {
         Room room = null;
         switch (request.getPacketHeader().getOpCode()) {
             case OP_CODE_HELLO:

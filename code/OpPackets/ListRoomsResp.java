@@ -11,7 +11,6 @@ public class ListRoomsResp extends OpPackets{
 
     /**
      *  This is the response to listing all rooms 
-     * @param opCode
      */
     public ListRoomsResp (ArrayList<String> rooms) {
         super(OpCodes.OP_CODE_LIST_ROOMS_RESPONSE);

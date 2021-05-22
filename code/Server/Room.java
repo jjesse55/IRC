@@ -10,7 +10,7 @@ import code.OpPackets.SendMessageResp;
 
 /**
  * This is the SERVER's room class (seperate from a client room which is in
- * CRoom.java)
+ * ChatRoom.java)
  */
 public class Room extends Thread {
 
