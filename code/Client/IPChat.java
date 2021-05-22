@@ -69,15 +69,15 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
     public void MENUOptionMethods() {
 
         Color bgColor = new Color(47, 79, 79);
-        MENU.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.MENU.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        MENU.getContentPane().setBackground(bgColor);
-        JPanel MENUBar = new JPanel();
-        MENUBar.setPreferredSize(new Dimension(200, 500));
+        this.MENU.getContentPane().setBackground(bgColor);
+        JPanel menuBar = new JPanel();
+        menuBar.setPreferredSize(new Dimension(200, 500));
 
         JButton listRooms = new JButton("List All Rooms");
         listRooms.setPreferredSize(new Dimension(200, 90));
-        MENUBar.add(listRooms);
+        menuBar.add(listRooms);
 
         listRooms.addActionListener(actionEvent -> {
 
@@ -97,11 +97,11 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
 
         JButton addRoom = new JButton("Add/Join a Room");
         addRoom.setPreferredSize(new Dimension(200, 90));
-        MENUBar.add(addRoom);
+        menuBar.add(addRoom);
 
         addRoom.addActionListener(actionEvent -> {
-                nameGetter = new JFrame("Add/Join A Room");
-                String roomAdd = JOptionPane.showInputDialog(nameGetter, "Enter The Name you want to join");
+                this.nameGetter = new JFrame("Add/Join A Room");
+                String roomAdd = JOptionPane.showInputDialog(this.nameGetter, "Enter The Name you want to join");
 
             if(roomAdd == null){
                 System.out.println("Cancel was is pressed");
@@ -125,11 +125,11 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
 
         JButton removeRoom = new JButton("Leave a Room");
         removeRoom.setPreferredSize(new Dimension(200, 90));
-        MENUBar.add(removeRoom);
+        menuBar.add(removeRoom);
 
         removeRoom.addActionListener(actionEvent -> {
-            nameGetter = new JFrame("Leave A Room");
-            String roomRemov = JOptionPane.showInputDialog(nameGetter, "Enter The Name you want to leave");
+            this.nameGetter = new JFrame("Leave A Room");
+            String roomRemov = JOptionPane.showInputDialog(this.nameGetter, "Enter The Name you want to leave");
 
             LeaveRoom roomRev = new LeaveRoom(roomRemov, getUsername());
 
@@ -139,13 +139,13 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
             if (isErrPacket(resp))
                 handleErrorResponseFromServer((ErrorPacket) resp);
             else {
-                ChatRoom toClose = ROOMS_JOINED.get(roomRemov);
+                ChatRoom toClose = this.ROOMS_JOINED.get(roomRemov);
                 if (toClose == null) {
                     System.err.println("ERR: Cannot exit the room: " + roomRemov + ". Name does not exist");
                     return;
                 }
                 toClose.closeRoomWindow();
-                ROOMS_JOINED.remove(roomRemov);
+                this.ROOMS_JOINED.remove(roomRemov);
 
                 System.out.println("LOG: Successfully left the room: " + roomRemov);
             }
@@ -153,9 +153,9 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
 
         JButton displayUsers = new JButton("Display All Users in a Room");
         displayUsers.setPreferredSize(new Dimension(200, 90));
-        MENUBar.add(displayUsers);
+        menuBar.add(displayUsers);
         displayUsers.addActionListener(actionEvent -> {
-            String roomToList = JOptionPane.showInputDialog(nameGetter, "Enter The Name of the Room");
+            String roomToList = JOptionPane.showInputDialog(this.nameGetter, "Enter The Name of the Room");
             if(roomToList == null){
                 System.out.println("Cancel was is pressed");
              }
@@ -179,7 +179,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
 
         JButton serverDisconnect = new JButton("Exit IPChat");
         serverDisconnect.setPreferredSize(new Dimension(200, 90));
-        MENUBar.add(serverDisconnect);
+        menuBar.add(serverDisconnect);
 
         serverDisconnect.addActionListener(actionEvent -> {
 
@@ -208,19 +208,19 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
         });
 
         // MENU.setLayout(null);
-        MENU.getContentPane().add(MENUBar);
-        MENU.pack();
-        MENU.setVisible(true);
+        this.MENU.getContentPane().add(menuBar);
+        this.MENU.pack();
+        this.MENU.setVisible(true);
     }
 
     public String userName() {
-        nameGetter = new JFrame("userName Response");
-        username = JOptionPane.showInputDialog(nameGetter, "Enter Your Name");
+        this.nameGetter = new JFrame("userName Response");
+        this.username = JOptionPane.showInputDialog(this.nameGetter, "Enter Your Name");
 
-        if(username == null)
+        if(this.username == null)
             System.exit(0);
 
-        return username;
+        return this.username;
     }
 
     public void serverCrashes() {
@@ -302,7 +302,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
     public int openNewRoomWindow(String roomName) {
         try {
             ServerSocket roomSocket = new ServerSocket(0);
-            ChatRoom newRoom = new ChatRoom(roomName, roomSocket, username);
+            ChatRoom newRoom = new ChatRoom(roomName, roomSocket, this.username);
             this.addNewRoom(newRoom);
             Thread roomThread = new Thread(newRoom);
 

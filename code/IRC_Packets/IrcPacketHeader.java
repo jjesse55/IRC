@@ -19,6 +19,6 @@ public class IrcPacketHeader implements Serializable {
      * @return the OP_CODE
      */
     public OpCodes getOpCode() {
-        return OP_CODE;
+        return this.OP_CODE;
     }
 }

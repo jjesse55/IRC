@@ -60,10 +60,10 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
 
         Color bgColor = new Color(47, 79, 79);
         // the screen
-        FRAME.getContentPane().setBackground(bgColor);
-        FRAME.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.FRAME.getContentPane().setBackground(bgColor);
+        this.FRAME.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        FRAME.setLayout(new GridBagLayout()); // no need to use a layout manager
+        this.FRAME.setLayout(new GridBagLayout()); // no need to use a layout manager
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(2, 0, 0, 0);
 
@@ -72,50 +72,50 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
         c.gridy = 0;
         c.ipadx = 0;
         c.ipady = 10;
-        LABEL.setFont(new Font("", Font.BOLD, 40));
-        LABEL.setForeground(Color.WHITE);
-        FRAME.add(LABEL, c);
+        this.LABEL.setFont(new Font("", Font.BOLD, 40));
+        this.LABEL.setForeground(Color.WHITE);
+        this.FRAME.add(this.LABEL, c);
 
         // This is for the actual chat text
         c.gridx = 0;
         c.gridy = 4;
         c.ipadx = 320;
         c.ipady = 400;
-        CHAT_BUBBLE.setEditable(false);
-        CHAT_BUBBLE.setBackground(Color.lightGray);
-        FRAME.add(CHAT_BUBBLE, c);
+        this.CHAT_BUBBLE.setEditable(false);
+        this.CHAT_BUBBLE.setBackground(Color.lightGray);
+        this.FRAME.add(this.CHAT_BUBBLE, c);
 
         c.gridx = 0;
         c.gridy = 1;
         c.ipadx = 0;
         c.ipady = 0;
-        LABEL_ROOM.setText("Current Room:  " + ROOM_NAME);
-        LABEL_ROOM.setFont(new Font("", Font.PLAIN, 15));
-        LABEL_ROOM.setForeground(Color.white);
-        FRAME.add(LABEL_ROOM, c);
+        this.LABEL_ROOM.setText("Current Room:  " + ROOM_NAME);
+        this.LABEL_ROOM.setFont(new Font("", Font.PLAIN, 15));
+        this.LABEL_ROOM.setForeground(Color.white);
+        this.FRAME.add(this.LABEL_ROOM, c);
 
         // Adding a textbox for the chatting
         c.gridx = 0;
         c.gridy = 5;
         c.ipadx = 320;
         c.ipady = 20;
-        TEXT_BOX_1.setBackground(Color.lightGray);
-        FRAME.add(TEXT_BOX_1, c);
+        this.TEXT_BOX_1.setBackground(Color.lightGray);
+        this.FRAME.add(this.TEXT_BOX_1, c);
 
         c.gridx = 1;
         c.gridy = 5;
         c.ipadx = 10;
         c.ipady = 10;
-        FRAME.add(BUTTON, c);
+        this.FRAME.add(this.BUTTON, c);
 
-        BUTTON.addActionListener(this);
-        BUTTON.setActionCommand("SendMessage");
+        this.BUTTON.addActionListener(this);
+        this.BUTTON.setActionCommand("SendMessage");
 
         // FRAME controls
-        FRAME.pack();
-        FRAME.setLayout(null);
-        FRAME.setSize(600, 600);
-        FRAME.setVisible(true);
+        this.FRAME.pack();
+        this.FRAME.setLayout(null);
+        this.FRAME.setSize(600, 600);
+        this.FRAME.setVisible(true);
 
     }
 
@@ -124,12 +124,12 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
         String action = e.getActionCommand();
         if (action.equals("SendMessage")) {
 
-            String message = TEXT_BOX_1.getText();
-            TEXT_BOX_1.setText(null);
+            String message = this.TEXT_BOX_1.getText();
+            this.TEXT_BOX_1.setText(null);
             String useName = username;
 
-            SendMessage msgToSend = new SendMessage(message, useName, ROOM_NAME);
-            System.out.println("LOG: Attempting to send message to room: " + ROOM_NAME + "\nMessage: " + message);
+            SendMessage msgToSend = new SendMessage(message, useName, this.ROOM_NAME);
+            System.out.println("LOG: Attempting to send message to room: " + this.ROOM_NAME + "\nMessage: " + message);
 
             IrcPacket resp = sendPacketToWelcomeServer(msgToSend);
 
@@ -149,12 +149,12 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
      * @param message
      */
     public void displayMessage(String username, String message) {
-        CHAT_BUBBLE.append(username + ": " + message + "\n");
+        this.CHAT_BUBBLE.append(username + ": " + message + "\n");
     }
 
     public void closeRoomWindow() {
-        FRAME.setVisible(false);
-        FRAME.dispose();
+        this.FRAME.setVisible(false);
+        this.FRAME.dispose();
     }
 
     // Getters

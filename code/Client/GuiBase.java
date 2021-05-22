@@ -50,10 +50,10 @@ public abstract class GuiBase extends JFrame {
 
         try {
             openClientSocket();
-            ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
+            ObjectOutputStream outToServer = new ObjectOutputStream(this.clientSocket.getOutputStream());
             outToServer.writeObject(packet);
 
-            ObjectInputStream inFromServer = new ObjectInputStream(clientSocket.getInputStream());
+            ObjectInputStream inFromServer = new ObjectInputStream(this.clientSocket.getInputStream());
             toReturn = (IrcPacket) inFromServer.readObject();
 
             inFromServer.close();
