@@ -2,7 +2,7 @@ package code.ErrorPackets;
 
 import code.Codes.ErrorCodes;
 import code.Codes.OpCodes;
-import code.IRC_Packets.IRC_Packet;
+import code.IRC_Packets.IrcPacket;
 
 
 /**
@@ -10,15 +10,15 @@ import code.IRC_Packets.IRC_Packet;
  * 
  * Extends the generic IRC packet class
  */
-public abstract class ErrorPacket extends IRC_Packet{
+public abstract class ErrorPacket extends IrcPacket {
     
     //Error Code for Specific Op Packets 
-    protected ErrorCodes errorCode;
+    protected final ErrorCodes ERROR_CODE;
    
     public ErrorPacket(OpCodes opCode, ErrorCodes errorCode){
         super(opCode);
-        this.errorCode = errorCode;
+        this.ERROR_CODE = errorCode;
     }
 
-    public ErrorCodes getErrorCode() { return this.errorCode; }
+    public ErrorCodes getErrorCode() { return this.ERROR_CODE; }
 }

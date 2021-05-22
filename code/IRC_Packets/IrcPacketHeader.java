@@ -8,17 +8,17 @@ import code.Codes.OpCodes;
  * 
  * Similar to headers that are transimitted with packets and HTTP requests
  */
-public class IRC_Packet_Header implements Serializable {
+public class IrcPacketHeader implements Serializable {
     
-    //OpCode for the header of the IRC_Packet
-    protected OpCodes opCode;
+    //OpCode for the header of the IrcPacket
+    protected final OpCodes OP_CODE;
 
-    public IRC_Packet_Header(OpCodes opCode) { this.opCode = opCode; }
+    public IrcPacketHeader(OpCodes opCode) { this.OP_CODE = opCode; }
 
     /**
-     * @return the opCode
+     * @return the OP_CODE
      */
     public OpCodes getOpCode() {
-        return opCode;
+        return this.OP_CODE;
     }
 }

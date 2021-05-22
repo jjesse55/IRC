@@ -11,7 +11,7 @@ import code.ErrorPackets.IllegalProtocol;
 import code.ErrorPackets.NameExists;
 import code.ErrorPackets.UnknownError;
 import code.ErrorPackets.InvalidRoomName;
-import code.IRC_Packets.IRC_Packet;
+import code.IRC_Packets.IrcPacket;
 import code.OpPackets.GoodBye;
 import code.OpPackets.HandShake;
 import code.OpPackets.JoinRoom;
@@ -30,15 +30,15 @@ import code.OpPackets.SendMessageResp;
 public class Server extends Thread {
 
     // Class fields
-    private static final int port = 7777; // Port number for the server process
-    private ServerSocket welcomeSocket;
-    private static int protocol = 0x12345678;
+    private static final int PORT = 7777; // Port number for the server process
+    private final ServerSocket WELCOME_SOCKET;
+    private final static int PROTOCOL = 0x12345678;
 
-    private ServerDisconnect serverDisconnect;
+    private final ServerDisconnect SERVER_DISCONNECT;
 
     // Information about clients that the server keeps track of
-    ArrayList<User> users = new ArrayList<>();
-    HashMap<String, Room> rooms = new HashMap<>();
+    private final ArrayList<User> USERS = new ArrayList<>();
+    private final HashMap<String, Room> ROOMS = new HashMap<>();
 
     /**
      * Main program that runs the IRC server
@@ -48,20 +48,20 @@ public class Server extends Thread {
     public static void main(String[] notUsed) throws Exception {
         Server server = new Server();
         server.start();
-        server.serverDisconnect.start();
+        server.SERVER_DISCONNECT.start();
         while (true) {
-            ArrayList<User> usersToRemove = server.serverDisconnect.sendKeepAliveMessages();
+            ArrayList<User> usersToRemove = server.SERVER_DISCONNECT.sendKeepAliveMessages();
             for (User user : usersToRemove) {
                 System.out.println("LOG: Timeout recieved from user: " + user.getUsername()
                         + ". Removing the user from the system now...");
-                for (Room room : server.rooms.values()) {
+                for (Room room : server.ROOMS.values()) {
                     if (room.containsUser(user.getUsername())) {
                         room.removeUser(user.getUsername());
                         if (room.isEmpty())
-                            server.rooms.remove(room.getRoomName());
+                            server.ROOMS.remove(room.getRoomName());
                     }
                 }
-                server.users.remove(user);
+                server.USERS.remove(user);
             }
             Thread.sleep(5000);
         }
@@ -78,7 +78,7 @@ public class Server extends Thread {
 
                 ObjectInputStream inFromClient = new ObjectInputStream(newConnection.getInputStream());
 
-                IRC_Packet clientPacket = (IRC_Packet) inFromClient.readObject();
+                IrcPacket clientPacket = (IrcPacket) inFromClient.readObject();
 
                 ObjectOutputStream outToClient = new ObjectOutputStream(newConnection.getOutputStream());
                 outToClient.writeObject(this.handleRequestFromClient(clientPacket));
@@ -101,8 +101,8 @@ public class Server extends Thread {
      * @throws IOException
      */
     private Server() throws IOException {
-        this.welcomeSocket = new ServerSocket(port);
-        this.serverDisconnect = new ServerDisconnect(this.users);
+        this.WELCOME_SOCKET = new ServerSocket(PORT);
+        this.SERVER_DISCONNECT = new ServerDisconnect(this.USERS);
     }
 
     /**
@@ -110,9 +110,9 @@ public class Server extends Thread {
      * based on the opCode and then calls the functionality on that object once it
      * is dynamically casted.
      * 
-     * @param response
+     * @param request
      */
-    private IRC_Packet handleRequestFromClient(IRC_Packet request) {
+    private IrcPacket handleRequestFromClient(IrcPacket request) {
         Room room;
         switch (request.getPacketHeader().getOpCode()) {
             case OP_CODE_HELLO:
@@ -122,7 +122,7 @@ public class Server extends Thread {
                     return new IllegalProtocol();
                 if (this.nameExists(handShake))
                     return new NameExists();
-                this.users.add(handShake.getUser());
+                this.USERS.add(handShake.getUser());
                 System.out.println("LOG: Sending handshake to response back to client.");
                 return new HandShake(null);
 
@@ -157,7 +157,7 @@ public class Server extends Thread {
                 LeaveRoom rqst = (LeaveRoom) request;
                 System.out.println("LOG: Recieved request from client: " + rqst.getUsername() + " to leave room: "
                         + rqst.getRoomName());
-                room = this.rooms.get(rqst.getRoomName());
+                room = this.ROOMS.get(rqst.getRoomName());
                 if (room == null) {
                     System.out.println("ERR: Name in remove room request invalid... Sending error packet response.");
                     return new InvalidRoomName();
@@ -166,7 +166,7 @@ public class Server extends Thread {
                 if (room.containsUser(usrExiting)) {
                     room.removeUser(usrExiting);
                     if (room.isEmpty())
-                        this.rooms.remove(rqst.getRoomName());
+                        this.ROOMS.remove(rqst.getRoomName());
                 }
                 System.out.println("LOG: Successfull removed client from the room. Sending response packet...");
                 return new LeaveRoomResp();
@@ -193,17 +193,17 @@ public class Server extends Thread {
                 System.out.println("LOG: Revieced goodbye request from exiting client: " + goodBye.getUsername());
                 String userExiting = goodBye.getUsername();
                 System.out.println("Removing the user from the system.");
-                if (this.users.contains(userExiting))
-                    this.users.remove(userExiting);
+                if (this.USERS.contains(userExiting))
+                    this.USERS.remove(userExiting);
                 System.out.println("Removing the user from all subscribed rooms.");
                 while (true) {
                     try {
-                        for (String roomName : this.rooms.keySet()) {
-                            room = this.rooms.get(roomName);
+                        for (String roomName : this.ROOMS.keySet()) {
+                            room = this.ROOMS.get(roomName);
                             if (room.containsUser(userExiting)) {
                                 room.removeUser(userExiting);
                                 if (room.isEmpty())
-                                    this.rooms.remove(roomName);
+                                    this.ROOMS.remove(roomName);
                             }
                         }
                         break;
@@ -222,7 +222,7 @@ public class Server extends Thread {
 
     // Helper methods
     private boolean nameExists(HandShake handShake) {
-        for (User user : this.users)
+        for (User user : this.USERS)
             if (user.getUsername().equals(handShake.getUser().getUsername()))
                 return true;
 
@@ -230,27 +230,27 @@ public class Server extends Thread {
     }
 
     private boolean verifyProtocol(HandShake handShake) {
-        return handShake.getProtocol() == protocol;
+        return handShake.getProtocol() == PROTOCOL;
     }
 
     // Getters
     private ServerSocket getWelcomeSocket() {
-        return this.welcomeSocket;
+        return this.WELCOME_SOCKET;
     }
 
     private ArrayList<String> getRooms() {
-        return this.rooms.isEmpty() ? null : new ArrayList<String>(this.rooms.keySet());
+        return this.ROOMS.isEmpty() ? null : new ArrayList<String>(this.ROOMS.keySet());
     }
 
     private Room getRoom(String roomName) {
-        return this.rooms.get(roomName);
+        return this.ROOMS.get(roomName);
     }
 
     private boolean doesRoomExist(String name) {
-        return this.rooms.keySet().contains(name);
+        return this.ROOMS.keySet().contains(name);
     }
 
     private void addRoom(String name) {
-        this.rooms.put(name, new Room(name));
+        this.ROOMS.put(name, new Room(name));
     }
 }

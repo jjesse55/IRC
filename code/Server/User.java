@@ -10,8 +10,8 @@ import java.io.Serializable;
 public class User implements Serializable {
 
     //class fields
-    private int port;
-    private String username;
+    private final int PORT;
+    private final String USERNAME;
 
     //Host that all clients will use
     private static final String CLIENT_HOST = "localhost";
@@ -19,12 +19,12 @@ public class User implements Serializable {
 
     //Class methods
     public User(String username, int port) {
-        this.username = username;
-        this.port = port;
+        this.USERNAME = username;
+        this.PORT = port;
     }
 
     //Getters
     public String getClientHost() { return CLIENT_HOST; }
-    public int getPortNumber() { return this.port; }
-    public String getUsername() { return this.username; }
+    public int getPortNumber() { return this.PORT; }
+    public String getUsername() { return this.USERNAME; }
 }

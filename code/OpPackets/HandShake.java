@@ -4,18 +4,18 @@ import code.Codes.OpCodes;
 import code.Server.User;
 
 public class HandShake extends OpPackets {
-    private User user;
-    private int protocol = 0x12345678;
+    private final User USER;
+    private final int PROTOCOL = 0x12345678;
 
     /**
      * This is the first message sent to the server to establish connection
-     * @param opCode
+     * @param user
      */
     public HandShake(User user){
         super(OpCodes.OP_CODE_HELLO);
-        this.user = user;
+        this.USER = user;
     }
 
-    public User getUser() { return this.user; }
-    public int getProtocol() { return this.protocol; }
+    public User getUser() { return this.USER; }
+    public int getProtocol() { return this.PROTOCOL; }
 }

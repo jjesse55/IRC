@@ -21,27 +21,27 @@ public class ServerDisconnect extends Thread {
     private Socket disconnectSocket;
     private static final String CLIENT_HOSTS = "localhost";
 
-    private ArrayList<User> users;
-    private String adminPassword = "adminPassword";
+    private final ArrayList<User> USERS;
+    private final String ADMIN_PASSWORD = "adminPassword";
 
 
     //Class methods
-    public ServerDisconnect(ArrayList<User> users) { this.users = users; }
+    public ServerDisconnect(ArrayList<User> users) { this.USERS = users; }
 
     /**
      * Method that waits for an admin password to disconnect the server from all clients
      */
     public void run() {
         String passwordAttempt = null;
-        while(!this.adminPassword.equals(passwordAttempt)) {
+        while(!this.ADMIN_PASSWORD.equals(passwordAttempt)) {
             Scanner scanner = new Scanner(System.in);
             passwordAttempt = scanner.nextLine();
-            if(!passwordAttempt.equals(this.adminPassword)) {
+            if(!passwordAttempt.equals(this.ADMIN_PASSWORD)) {
                 System.out.println("ERR: Incorrrect admin password entered. Please try again.");
                 continue;
             }
 
-            for (User user : this.users) {
+            for (User user : this.USERS) {
                 try {
                     System.out.println("LOG: Notifying user: " + user.getUsername() + " of server disconnection.");
 
@@ -76,7 +76,7 @@ public class ServerDisconnect extends Thread {
      */
     public ArrayList<User> sendKeepAliveMessages() {
         ArrayList<User> usersToRemove = new ArrayList<>();
-        for (User user : this.users) {
+        for (User user : this.USERS) {
             try {
                 this.openKeepAliveSocket(user);
                 ObjectOutputStream outToUser = new ObjectOutputStream(this.getKeepAliveSocket().getOutputStream());

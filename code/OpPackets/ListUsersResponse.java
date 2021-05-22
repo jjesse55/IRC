@@ -5,19 +5,17 @@ import code.Codes.OpCodes;
 
 public class ListUsersResponse extends OpPackets {
 
-    private ArrayList<String> users;
+    private final ArrayList<String> USERS;
 
     /**
      * This is the response to listing all users
-     * 
-     * @param opCode
      */
     public ListUsersResponse(ArrayList<String> users) {
         super(OpCodes.OP_CODE_LIST_USERS_RESP);
-        this.users = users;
+        this.USERS = users;
     }
 
     public ArrayList<String> getUsers(){
-        return this.users;
+        return this.USERS;
     }
 }

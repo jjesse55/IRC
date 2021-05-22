@@ -4,7 +4,7 @@ import java.net.ServerSocket;
 import java.io.*;
 import java.net.Socket;
 import code.ErrorPackets.IllegalOpcode;
-import code.IRC_Packets.IRC_Packet;
+import code.IRC_Packets.IrcPacket;
 import code.OpPackets.GoodBye;
 import code.OpPackets.KeepAlive;
 
@@ -36,7 +36,7 @@ public class AliveS extends Thread {
             try {
                 Socket aliveConnection = this.listeningSocket.accept();
                 ObjectInputStream inFromServer = new ObjectInputStream(aliveConnection.getInputStream());
-                IRC_Packet serverPacket = (IRC_Packet) inFromServer.readObject();
+                IrcPacket serverPacket = (IrcPacket) inFromServer.readObject();
 
                 ObjectOutputStream outToServer = new ObjectOutputStream(aliveConnection.getOutputStream());
                 outToServer.writeObject(this.handleRequestFromClient(serverPacket));
@@ -49,17 +49,12 @@ public class AliveS extends Thread {
     }
 
 
-    private IRC_Packet handleRequestFromClient(IRC_Packet request) {
+    private IrcPacket handleRequestFromClient(IrcPacket request) {
         switch (request.getPacketHeader().getOpCode()) {
-
             case OP_CODE_GOODBYE:
-                GoodBye Gbye = (GoodBye) request;
                 return new GoodBye(null);
-                
             case OP_CODE_KEEP_ALIVE:
-                KeepAlive aliveK = (KeepAlive) request;
                 return new KeepAlive();
-
             default:
                 return new IllegalOpcode();
         }

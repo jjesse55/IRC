@@ -30,6 +30,7 @@ hs_err_pid*
 
 # IntelliJ
 .idea/*
+out/*
 
 # Other auto-generated files
 IRC.iml

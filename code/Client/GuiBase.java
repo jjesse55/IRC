@@ -6,7 +6,7 @@ import java.io.*;
 import java.net.Socket;
 import code.Codes.OpCodes;
 import code.ErrorPackets.ErrorPacket;
-import code.IRC_Packets.IRC_Packet;
+import code.IRC_Packets.IrcPacket;
 
 /**
  * Base class for the client side of the application
@@ -45,16 +45,16 @@ public abstract class GuiBase extends JFrame {
         }
     }
 
-    protected IRC_Packet sendPacketToWelcomeServer(IRC_Packet packet) {
-        IRC_Packet toReturn = null;
+    protected IrcPacket sendPacketToWelcomeServer(IrcPacket packet) {
+        IrcPacket toReturn = null;
 
         try {
             openClientSocket();
-            ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
+            ObjectOutputStream outToServer = new ObjectOutputStream(this.clientSocket.getOutputStream());
             outToServer.writeObject(packet);
 
-            ObjectInputStream inFromServer = new ObjectInputStream(clientSocket.getInputStream());
-            toReturn = (IRC_Packet) inFromServer.readObject();
+            ObjectInputStream inFromServer = new ObjectInputStream(this.clientSocket.getInputStream());
+            toReturn = (IrcPacket) inFromServer.readObject();
 
             inFromServer.close();
             closeClientSocket();
@@ -76,7 +76,7 @@ public abstract class GuiBase extends JFrame {
      * 
      * @param response
      */
-    protected void handleResponseFromServer(IRC_Packet response) {
+    protected void handleResponseFromServer(IrcPacket response) {
         switch (response.getPacketHeader().getOpCode()) {
             case OP_CODE_ERR:
                 ErrorPacket errorPacket = (ErrorPacket) response;
@@ -115,7 +115,7 @@ public abstract class GuiBase extends JFrame {
                 System.err.println("ERR: Illegal protocol for application user... System exiting");
                 System.exit(1);
                 break;
-            case IRC_ERR_INVALID_ROOMNAME:
+            case IRC_ERR_INVALID_ROOM_NAME:
                 System.err.println("ERR: Name of room specified does not match that of an existing room."
                         + " Please try again...");
                 break;
@@ -137,7 +137,7 @@ public abstract class GuiBase extends JFrame {
      * Determines if the packet response from the server contains an error code
      * becuase of the inability to perform some operation.
      */
-    protected boolean isErrPacket(IRC_Packet packet) {
+    protected boolean isErrPacket(IrcPacket packet) {
         return packet.getPacketHeader().getOpCode() == OpCodes.OP_CODE_ERR;
     }
 
