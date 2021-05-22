@@ -1,8 +1,6 @@
 package code.OpPackets;
 
 import java.util.ArrayList;
-
-import java.io.Serializable;
 import code.Codes.OpCodes;
 
 public class ListRoomsResp extends OpPackets{

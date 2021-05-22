@@ -113,7 +113,7 @@ public class Server extends Thread {
      * @param response
      */
     private IRC_Packet handleRequestFromClient(IRC_Packet request) {
-        Room room = null;
+        Room room;
         switch (request.getPacketHeader().getOpCode()) {
             case OP_CODE_HELLO:
                 HandShake handShake = (HandShake) request;
@@ -240,20 +240,6 @@ public class Server extends Thread {
 
     private ArrayList<String> getRooms() {
         return this.rooms.isEmpty() ? null : new ArrayList<String>(this.rooms.keySet());
-    }
-
-    /**
-     * Method not yet used because sending private messages not yet implemented.
-     */
-    private ArrayList<String> getUsernames() {
-        if (this.users.isEmpty())
-            return null;
-
-        ArrayList<String> usernames = new ArrayList<>();
-        for (User user : this.users)
-            usernames.add(user.getUsername());
-
-        return usernames;
     }
 
     private Room getRoom(String roomName) {

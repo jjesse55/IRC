@@ -1,12 +1,8 @@
 package code.IRC_Packets;
 
 import java.io.Serializable;
-
 import code.Codes.OpCodes;
 
-/**
- * 
- */
 public abstract class IRC_Packet implements Serializable {
 
     //Header of the IRC_Packet

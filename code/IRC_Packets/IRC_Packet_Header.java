@@ -1,7 +1,6 @@
 package code.IRC_Packets;
 
 import java.io.Serializable;
-
 import code.Codes.OpCodes;
 
 /**

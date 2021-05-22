@@ -1,6 +1,5 @@
 package code.Client;
 
-import java.util.ArrayList;
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.Color;
@@ -12,7 +11,6 @@ import code.OpPackets.SendMessageResp;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.*;
-import code.Client.GuiBase;
 import code.ErrorPackets.ErrorPacket;
 
 public class CRoom extends GuiBase implements ActionListener, Runnable {
@@ -22,7 +20,6 @@ public class CRoom extends GuiBase implements ActionListener, Runnable {
     private ServerSocket listeningSocket;
 
     private JFrame frame;
-    private JFrame NameGetter;
     private JLabel label;
     private JTextArea chatbubble;
     private JTextField textbox1;
@@ -128,30 +125,6 @@ public class CRoom extends GuiBase implements ActionListener, Runnable {
 
     }
 
-    /**
-     * This will be triggered by button to send message! and show up on chat bubble
-     * 
-     * @param string being sent in to be added to chat
-     */
-
-    public void addMessageToChatBubble(String event) {
-        chatbubble.append(event);
-    }
-
-    public String userName() {
-        NameGetter = new JFrame("UserName Response");
-        username = JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
-
-        while (username == null || username == "") {
-
-            NameGetter = new JFrame("UserName Response");
-            username = JOptionPane.showInputDialog(NameGetter, "Enter Your Name");
-
-        }
-
-        return username;
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         String action = e.getActionCommand();
@@ -187,26 +160,6 @@ public class CRoom extends GuiBase implements ActionListener, Runnable {
      */
     public void displayMessage(String username, String message) {
         chatbubble.append(username + ": " + message + "\n");
-    }
-
-    public void displayRooms(ArrayList<String> rooms) {
-        JFrame Rooms = new JFrame("List All Rooms");
-        Rooms.setVisible(true);
-
-        if (rooms == null) {
-            JOptionPane.showMessageDialog(Rooms, "Empty");
-        } else {
-            JOptionPane.showMessageDialog(Rooms, "hi" + rooms.toString());
-        }
-    }
-
-    public void displayUser(ArrayList<String> users) {
-        JFrame user = new JFrame("Showing All Users");
-        user.setVisible(true);
-        if (users == null)
-            JOptionPane.showMessageDialog(user, "Empty");
-        else
-            JOptionPane.showMessageDialog(user, users.toString());
     }
 
     public void closeRoomWindow() {
