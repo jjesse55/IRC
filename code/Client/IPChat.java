@@ -35,11 +35,11 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
     private final HashMap<String, ChatRoom> ROOMS_JOINED = new HashMap<>();
 
     // Fields for the GUI
-    final JFrame MENU = new JFrame("Menu");
-    String username;
+    private final JFrame MENU = new JFrame("Menu");
+    private String username;
 
     // class methods
-    JFrame nameGetter;
+    private JFrame nameGetter;
 
     public IPChat() {
         super(null);

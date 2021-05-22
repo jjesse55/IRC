@@ -37,8 +37,8 @@ public class Server extends Thread {
     private final ServerDisconnect SERVER_DISCONNECT;
 
     // Information about clients that the server keeps track of
-    final ArrayList<User> USERS = new ArrayList<>();
-    final HashMap<String, Room> ROOMS = new HashMap<>();
+    private final ArrayList<User> USERS = new ArrayList<>();
+    private final HashMap<String, Room> ROOMS = new HashMap<>();
 
     /**
      * Main program that runs the IRC server

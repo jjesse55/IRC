@@ -4,7 +4,7 @@ import code.Codes.OpCodes;
 
 public class GoodBye extends OpPackets {
 
-    final String USER_NAME;
+    private final String USER_NAME;
 
       /**
      * This is the request to join/create a room if the room is not already created
