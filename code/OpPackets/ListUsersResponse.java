@@ -1,7 +1,6 @@
 package code.OpPackets;
 
 import java.util.ArrayList;
-
 import code.Codes.OpCodes;
 
 public class ListUsersResponse extends OpPackets {
