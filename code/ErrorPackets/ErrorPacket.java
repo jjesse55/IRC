@@ -13,12 +13,12 @@ import code.IRC_Packets.IrcPacket;
 public abstract class ErrorPacket extends IrcPacket {
     
     //Error Code for Specific Op Packets 
-    protected ErrorCodes errorCode;
+    protected final ErrorCodes ERROR_CODE;
    
     public ErrorPacket(OpCodes opCode, ErrorCodes errorCode){
         super(opCode);
-        this.errorCode = errorCode;
+        this.ERROR_CODE = errorCode;
     }
 
-    public ErrorCodes getErrorCode() { return this.errorCode; }
+    public ErrorCodes getErrorCode() { return this.ERROR_CODE; }
 }

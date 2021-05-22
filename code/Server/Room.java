@@ -14,14 +14,14 @@ import code.OpPackets.SendMessage;
 public class Room extends Thread {
 
     // Class fields
-    private String roomName;
+    private final String ROOM_NAME;
     private SendMessage messageToFwd;
-    private ArrayList<User> users = new ArrayList<>();
+    private final ArrayList<User> USERS = new ArrayList<>();
 
 
     // Class methods
     public Room(String roomName) {
-        this.roomName = roomName;
+        this.ROOM_NAME = roomName;
     }
 
 
@@ -29,7 +29,7 @@ public class Room extends Thread {
         System.out.println("LOG: Sending msg: " + this.messageToFwd.getMessage()
         + " to all the users in the room: " + this.getRoomName());
 
-        for (User user : this.users) {
+        for (User user : this.USERS) {
             try {
                 Socket socket = new Socket(user.getClientHost(), user.getPortNumber());
                 ObjectOutputStream outToRoom = new ObjectOutputStream(socket.getOutputStream());
@@ -52,7 +52,7 @@ public class Room extends Thread {
 
 
     public void addUser(User user) {
-        this.users.add(user);
+        this.USERS.add(user);
     }
 
     /**
@@ -60,9 +60,9 @@ public class Room extends Thread {
      * other or when the client requests to leave a room
      */
     public void removeUser(String userToRemove) {
-        for (User user : this.users) {
+        for (User user : this.USERS) {
             if (user.getUsername().equalsIgnoreCase(userToRemove)) {
-                this.users.remove(user);
+                this.USERS.remove(user);
                 return;
             }
         }
@@ -72,11 +72,11 @@ public class Room extends Thread {
      * Gets the list of users for when a client requests to list all users in a room
      */
     public ArrayList<String> getUsers() {
-        if (this.users.isEmpty())
+        if (this.USERS.isEmpty())
             return null;
 
         ArrayList<String> allUsersInTheRoom = new ArrayList<>();
-        for (User user : this.users)
+        for (User user : this.USERS)
             allUsersInTheRoom.add(user.getUsername());
 
         return allUsersInTheRoom;
@@ -86,7 +86,7 @@ public class Room extends Thread {
      * Checks to see if a user is in the current room
      */
     public boolean containsUser(String username) {
-        for (User user : this.users) {
+        for (User user : this.USERS) {
             if (user.getUsername().equalsIgnoreCase(username))
                 return true;
         }
@@ -99,10 +99,10 @@ public class Room extends Thread {
     }
 
     public boolean isEmpty() {
-        return this.users.isEmpty();
+        return this.USERS.isEmpty();
     }
 
     public String getRoomName() {
-        return this.roomName;
+        return this.ROOM_NAME;
     }
 }

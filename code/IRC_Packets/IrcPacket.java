@@ -6,20 +6,20 @@ import code.Codes.OpCodes;
 public abstract class IrcPacket implements Serializable {
 
     //Header of the IrcPacket
-    protected IrcPacketHeader packetHeader;
+    protected final IrcPacketHeader PACKET_HEADER;
 
     /**
      * Initialize the header of the packet with an opCode passed in via argument
      * @param opCode
      */
     protected IrcPacket(OpCodes opCode) {
-        this.packetHeader = new IrcPacketHeader(opCode);
+        this.PACKET_HEADER = new IrcPacketHeader(opCode);
     }
 
     /**
-     * @return the packetHeader
+     * @return the PACKET_HEADER
      */
     public IrcPacketHeader getPacketHeader() {
-        return this.packetHeader;
+        return this.PACKET_HEADER;
     }
 }

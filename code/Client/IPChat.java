@@ -26,16 +26,16 @@ import java.util.HashMap;
 
 /**
  * Main client part of the application. 1. Initiates the client application 2.
- * Asks the user for the username they would like to use 3. Displays a menu of
+ * Asks the user for the username they would like to use 3. Displays a MENU of
  * options that the user can perform in the application
  */
 class IPChat extends GuiBase implements ActionListener, Runnable {
     // Class fields
     private AliveS keepAliveSocket;
-    private HashMap<String, ChatRoom> roomsJoined = new HashMap<>();
+    private final HashMap<String, ChatRoom> ROOMS_JOINED = new HashMap<>();
 
     // Fields for the GUI
-    JFrame menu;
+    final JFrame MENU = new JFrame("Menu");
     String username;
 
     // class methods
@@ -62,23 +62,22 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
      */
     public void run() {
         this.handshakeAndUsername();
-        this.menuOptionMethods();
+        this.MENUOptionMethods();
     }
 
 
-    public void menuOptionMethods() {
+    public void MENUOptionMethods() {
 
         Color bgColor = new Color(47, 79, 79);
-        menu = new JFrame("Menu");
-        menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        MENU.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        menu.getContentPane().setBackground(bgColor);
-        JPanel menuBar = new JPanel();
-        menuBar.setPreferredSize(new Dimension(200, 500));
+        MENU.getContentPane().setBackground(bgColor);
+        JPanel MENUBar = new JPanel();
+        MENUBar.setPreferredSize(new Dimension(200, 500));
 
         JButton listRooms = new JButton("List All Rooms");
         listRooms.setPreferredSize(new Dimension(200, 90));
-        menuBar.add(listRooms);
+        MENUBar.add(listRooms);
 
         listRooms.addActionListener(actionEvent -> {
 
@@ -98,7 +97,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
 
         JButton addRoom = new JButton("Add/Join a Room");
         addRoom.setPreferredSize(new Dimension(200, 90));
-        menuBar.add(addRoom);
+        MENUBar.add(addRoom);
 
         addRoom.addActionListener(actionEvent -> {
                 nameGetter = new JFrame("Add/Join A Room");
@@ -126,7 +125,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
 
         JButton removeRoom = new JButton("Leave a Room");
         removeRoom.setPreferredSize(new Dimension(200, 90));
-        menuBar.add(removeRoom);
+        MENUBar.add(removeRoom);
 
         removeRoom.addActionListener(actionEvent -> {
             nameGetter = new JFrame("Leave A Room");
@@ -140,13 +139,13 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
             if (isErrPacket(resp))
                 handleErrorResponseFromServer((ErrorPacket) resp);
             else {
-                ChatRoom toClose = roomsJoined.get(roomRemov);
+                ChatRoom toClose = ROOMS_JOINED.get(roomRemov);
                 if (toClose == null) {
                     System.err.println("ERR: Cannot exit the room: " + roomRemov + ". Name does not exist");
                     return;
                 }
                 toClose.closeRoomWindow();
-                roomsJoined.remove(roomRemov);
+                ROOMS_JOINED.remove(roomRemov);
 
                 System.out.println("LOG: Successfully left the room: " + roomRemov);
             }
@@ -154,7 +153,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
 
         JButton displayUsers = new JButton("Display All Users in a Room");
         displayUsers.setPreferredSize(new Dimension(200, 90));
-        menuBar.add(displayUsers);
+        MENUBar.add(displayUsers);
         displayUsers.addActionListener(actionEvent -> {
             String roomToList = JOptionPane.showInputDialog(nameGetter, "Enter The Name of the Room");
             if(roomToList == null){
@@ -180,7 +179,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
 
         JButton serverDisconnect = new JButton("Exit IPChat");
         serverDisconnect.setPreferredSize(new Dimension(200, 90));
-        menuBar.add(serverDisconnect);
+        MENUBar.add(serverDisconnect);
 
         serverDisconnect.addActionListener(actionEvent -> {
 
@@ -208,10 +207,10 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
             System.out.println("LOG: Exiting IPChat");
         });
 
-        // menu.setLayout(null);
-        menu.getContentPane().add(menuBar);
-        menu.pack();
-        menu.setVisible(true);
+        // MENU.setLayout(null);
+        MENU.getContentPane().add(MENUBar);
+        MENU.pack();
+        MENU.setVisible(true);
     }
 
     public String userName() {
@@ -324,6 +323,6 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
      * Add a new room to the Array kept by the clinet of rooms joined
      */
     private void addNewRoom(ChatRoom room) {
-        this.roomsJoined.put(room.getRoomName(), room);
+        this.ROOMS_JOINED.put(room.getRoomName(), room);
     }
 }

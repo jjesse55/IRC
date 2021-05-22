@@ -52,10 +52,8 @@ public class AliveS extends Thread {
     private IrcPacket handleRequestFromClient(IrcPacket request) {
         switch (request.getPacketHeader().getOpCode()) {
             case OP_CODE_GOODBYE:
-                GoodBye goodBye = (GoodBye) request;
                 return new GoodBye(null);
             case OP_CODE_KEEP_ALIVE:
-                KeepAlive keepAlive = (KeepAlive) request;
                 return new KeepAlive();
             default:
                 return new IllegalOpcode();

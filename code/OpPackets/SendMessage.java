@@ -3,21 +3,21 @@ package code.OpPackets;
 import code.Codes.OpCodes;
 
 public class SendMessage extends OpPackets {
-    private String msgToRoom;
-    private String userName;
-    private String roomName;
+    private final String MSG_TO_ROOM;
+    private final String USERNAME;
+    private final String ROOM_NAME;
 
     /**
      * This is the request to send a message
      */
     public SendMessage(String msg, String un, String roomName){
         super(OpCodes.OP_CODE_SEND_MESSAGE);
-        this.msgToRoom=msg;
-        this.userName=un;
-        this.roomName = roomName;
+        this.MSG_TO_ROOM=msg;
+        this.USERNAME=un;
+        this.ROOM_NAME = roomName;
     }
 
-    public String getMessage(){ return this.msgToRoom;}
-    public String getUserName(){ return this.userName;}
-    public String getRoomName() { return this.roomName; }
+    public String getMessage(){ return this.MSG_TO_ROOM;}
+    public String getUserName(){ return this.USERNAME;}
+    public String getRoomName() { return this.ROOM_NAME; }
 }

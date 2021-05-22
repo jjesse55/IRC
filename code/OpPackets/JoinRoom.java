@@ -3,22 +3,22 @@ package code.OpPackets;
 import code.Codes.OpCodes;
 
 public class JoinRoom extends OpPackets{
-    private String chatRoom;
-    private String userName;
-    private int portNumber;
+    private final String CHAT_ROOM;
+    private final String USER_NAME;
+    private final int PORT_NUMBER;
 
     /**
      * This is the request to join/create a room if the room is not already created
      */
     public JoinRoom(String room, String userName, int pN){
         super(OpCodes.OP_CODE_JOIN_ROOM);
-        this.chatRoom=room;
-        this.userName= userName;
-        this.portNumber=pN;
+        this.CHAT_ROOM=room;
+        this.USER_NAME= userName;
+        this.PORT_NUMBER=pN;
     }
 
 
-    public String getRoomName() { return this.chatRoom; }
-    public String getUsername() { return this.userName; }
-    public int getPortNumber() { return this.portNumber; }
+    public String getRoomName() { return this.CHAT_ROOM; }
+    public String getUsername() { return this.USER_NAME; }
+    public int getPortNumber() { return this.PORT_NUMBER; }
 }

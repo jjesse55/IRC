@@ -11,14 +11,14 @@ import code.Codes.OpCodes;
 public class IrcPacketHeader implements Serializable {
     
     //OpCode for the header of the IrcPacket
-    protected OpCodes opCode;
+    protected final OpCodes OP_CODE;
 
-    public IrcPacketHeader(OpCodes opCode) { this.opCode = opCode; }
+    public IrcPacketHeader(OpCodes opCode) { this.OP_CODE = opCode; }
 
     /**
-     * @return the opCode
+     * @return the OP_CODE
      */
     public OpCodes getOpCode() {
-        return opCode;
+        return OP_CODE;
     }
 }
