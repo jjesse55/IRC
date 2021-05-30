@@ -7,8 +7,6 @@ import code.IRC_Packets.IrcPacket;
 
 /**
  * This is the base class for all error packets.
- * 
- * Extends the generic IRC packet class
  */
 public abstract class ErrorPacket extends IrcPacket {
     

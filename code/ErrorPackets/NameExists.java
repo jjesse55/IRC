@@ -5,7 +5,7 @@ import code.Codes.OpCodes;
 
 
 /**
- * This is an error packet for when the client logging on tries to
+ * Error packet when a client logs on and tries to
  * register as a name that is already in use.
  */
 public class NameExists extends ErrorPacket {

@@ -8,7 +8,7 @@ public class SendMessage extends OpPackets {
     private final String ROOM_NAME;
 
     /**
-     * This is the request to send a message
+     * Request to send a message
      */
     public SendMessage(String msg, String un, String roomName){
         super(OpCodes.OP_CODE_SEND_MESSAGE);

@@ -5,11 +5,10 @@ import code.Codes.OpCodes;
 
 public abstract class IrcPacket implements Serializable {
 
-    //Header of the IrcPacket
     protected final IrcPacketHeader PACKET_HEADER;
 
     /**
-     * Initialize the header of the packet with an opCode passed in via argument
+     * Initialize the header of the packet with an opCode passed in.
      * @param opCode
      */
     protected IrcPacket(OpCodes opCode) {

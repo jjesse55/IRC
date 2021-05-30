@@ -7,7 +7,7 @@ public class GoodBye extends OpPackets {
     private final String USER_NAME;
 
       /**
-     * This is the request to join/create a room if the room is not already created
+     * Request to join/create a room if the room is not already created
      * @param userName
      */
     public GoodBye(String userName){

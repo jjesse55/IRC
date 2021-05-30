@@ -8,7 +8,7 @@ public class HandShake extends OpPackets {
     private final int PROTOCOL = 0x12345678;
 
     /**
-     * This is the first message sent to the server to establish connection
+     * First message sent to the server to establish connection
      * @param user
      */
     public HandShake(User user){

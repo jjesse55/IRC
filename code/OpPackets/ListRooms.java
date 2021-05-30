@@ -4,12 +4,12 @@ import code.Codes.OpCodes;
 
 
 /**
- * IRC packet send to server requesting to get a list of all current rooms
+ * IRC packet send to server requesting to get a list of current rooms
  */
 public class ListRooms extends OpPackets{
 
     /**
-     * This is the request to listing all rooms 
+     * Request to list all rooms 
      */
     public ListRooms(){
         super(OpCodes.OP_CODE_LIST_ROOMS);

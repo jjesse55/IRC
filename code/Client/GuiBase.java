@@ -98,7 +98,7 @@ public abstract class GuiBase extends JFrame {
     }
 
     /**
-     * This method is specifically for handling errors from the server
+     * Handles errors from the server
      */
     protected void handleErrorResponseFromServer(ErrorPacket errorPacket) {
         switch (errorPacket.getErrorCode()) {
@@ -135,7 +135,6 @@ public abstract class GuiBase extends JFrame {
 
     /**
      * Determines if the packet response from the server contains an error code
-     * becuase of the inability to perform some operation.
      */
     protected boolean isErrPacket(IrcPacket packet) {
         return packet.getPacketHeader().getOpCode() == OpCodes.OP_CODE_ERR;

@@ -63,7 +63,8 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
         this.FRAME.getContentPane().setBackground(bgColor);
         this.FRAME.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        this.FRAME.setLayout(new GridBagLayout()); // no need to use a layout manager
+        // no need to use a layout manager
+        this.FRAME.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(2, 0, 0, 0);
 
@@ -142,7 +143,7 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
     }
 
     /**
-     * This is to be used for showing a message in the cat bubble and displaying who
+     * This is to be used for showing a message in the chat bubble and displaying who
      * it is from
      * 
      * @param username()

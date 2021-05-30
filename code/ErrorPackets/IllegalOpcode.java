@@ -5,7 +5,7 @@ import code.Codes.OpCodes;
 
 
 /**
- * This is an error IRC Packet for when the clients has requested an operation that
+ * This is an error IRC Packet when clients request an operation that
  * is not defined by a legal opCode
  */
 public class IllegalOpcode extends ErrorPacket {
