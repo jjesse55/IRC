@@ -8,24 +8,18 @@ import code.Codes.OpCodes;
 import code.ErrorPackets.ErrorPacket;
 import code.IRC_Packets.IrcPacket;
 
-/**
- * Base class for the client side of the application
- */
 public abstract class GuiBase extends JFrame {
 
-    // Fields for connecting to the server
     protected Socket clientSocket;
-    protected static final int SERVER_PORT = 7777; // Port number for the client process
+    protected static final int SERVER_PORT = 7777;
     protected static final String SERVER_HOST = "localhost";
 
     protected String username;
 
-    // Constructor
     protected GuiBase(String username) {
         this.username = username;
     }
 
-    // Class methods
     protected void openClientSocket() {
         try {
             this.clientSocket = new Socket(SERVER_HOST, SERVER_PORT);
@@ -69,16 +63,9 @@ public abstract class GuiBase extends JFrame {
         return toReturn;
     }
 
-    /**
-     * READ THIS!!! This function determines what type of response packet is sent
-     * based on the opCode and then calls the functionality on that object once it
-     * is dynamically casted.
-     * 
-     * @param response
-     */
     protected void handleResponseFromServer(IrcPacket response) {
         switch (response.getPacketHeader().getOpCode()) {
-            case OP_CODE_ERR:
+            case OP_CODE_ERROR:
                 ErrorPacket errorPacket = (ErrorPacket) response;
                 this.handleErrorResponseFromServer(errorPacket);
                 break;
@@ -88,18 +75,15 @@ public abstract class GuiBase extends JFrame {
                 break;
             case OP_CODE_LIST_ROOMS_RESPONSE:
                 break;
-            case OP_CODE_LIST_USERS_RESP:
+            case OP_CODE_LIST_USERS_RESPONSE:
                 break;
-            case OP_CODE_JOIN_ROOM_RESP:
+            case OP_CODE_JOIN_ROOM_RESPONSE:
                 break;
-            case OP_CODE_LEAVE_ROOM_RESP:
+            case OP_CODE_LEAVE_ROOM_RESPONSE:
                 break;
         }
     }
 
-    /**
-     * Handles errors from the server
-     */
     protected void handleErrorResponseFromServer(ErrorPacket errorPacket) {
         switch (errorPacket.getErrorCode()) {
             case IRC_ERR_ILLEGAL_OPCODE:
@@ -133,16 +117,10 @@ public abstract class GuiBase extends JFrame {
         this.username = username;
     }
 
-    /**
-     * Determines if the packet response from the server contains an error code
-     */
     protected boolean isErrPacket(IrcPacket packet) {
-        return packet.getPacketHeader().getOpCode() == OpCodes.OP_CODE_ERR;
+        return packet.getPacketHeader().getOpCode() == OpCodes.OP_CODE_ERROR;
     }
 
-    /**
-     * Client can gracefully handle server crashes.
-     */
     public void serverCrashes() {
         JFrame servCrash = new JFrame("Server Stopped Responding");
         servCrash.setVisible(true);

@@ -15,7 +15,6 @@ import code.ErrorPackets.ErrorPacket;
 
 public class ChatRoom extends GuiBase implements ActionListener, Runnable {
 
-    // class fields
     private final String ROOM_NAME;
     private final ServerSocket LISTENING_SOCKET;
 
@@ -26,7 +25,6 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
     private final JButton BUTTON = new JButton("Click to Send Message");
     private final JLabel LABEL_ROOM = new JLabel();
 
-    // Run method for room threads
     public void run() {
         while (true) {
             try {
@@ -34,11 +32,11 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
 
                 ObjectInputStream inFromClient = new ObjectInputStream(newConnection.getInputStream());
 
-                SendMessage msg = (SendMessage) inFromClient.readObject();
+                SendMessage message = (SendMessage) inFromClient.readObject();
                 System.out.println(
-                        "LOG: New messages recieved for room: " + this.ROOM_NAME + "\nMessage: " + msg.getMessage());
+                        "LOG: New messages recieved for room: " + this.ROOM_NAME + "\nMessage: " + message.getMessage());
 
-                displayMessage(msg.getUserName(), msg.getMessage());
+                displayMessage(message.getUserName(), message.getMessage());
 
                 ObjectOutputStream outToClient = new ObjectOutputStream(newConnection.getOutputStream());
                 outToClient.writeObject(new SendMessageResp());
@@ -51,24 +49,19 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
         }
     }
 
-    // Class methods
-
     public ChatRoom(String name, ServerSocket LISTENING_SOCKET, String username) {
         super(username);
         this.ROOM_NAME = name;
         this.LISTENING_SOCKET = LISTENING_SOCKET;
 
-        Color bgColor = new Color(47, 79, 79);
-        // the screen
-        this.FRAME.getContentPane().setBackground(bgColor);
+        Color backgroundColor = new Color(47, 79, 79);
+        this.FRAME.getContentPane().setBackground(backgroundColor);
         this.FRAME.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // no need to use a layout manager
         this.FRAME.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(2, 0, 0, 0);
 
-        // LABEL for window
         c.gridx = 0;
         c.gridy = 0;
         c.ipadx = 0;
@@ -77,7 +70,6 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
         this.LABEL.setForeground(Color.WHITE);
         this.FRAME.add(this.LABEL, c);
 
-        // This is for the actual chat text
         c.gridx = 0;
         c.gridy = 4;
         c.ipadx = 320;
@@ -95,7 +87,6 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
         this.LABEL_ROOM.setForeground(Color.white);
         this.FRAME.add(this.LABEL_ROOM, c);
 
-        // Adding a textbox for the chatting
         c.gridx = 0;
         c.gridy = 5;
         c.ipadx = 320;
@@ -112,7 +103,6 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
         this.BUTTON.addActionListener(this);
         this.BUTTON.setActionCommand("SendMessage");
 
-        // FRAME controls
         this.FRAME.pack();
         this.FRAME.setLayout(null);
         this.FRAME.setSize(600, 600);
@@ -129,26 +119,19 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
             this.TEXT_BOX_1.setText(null);
             String useName = username;
 
-            SendMessage msgToSend = new SendMessage(message, useName, this.ROOM_NAME);
+            SendMessage messageToSend = new SendMessage(message, useName, this.ROOM_NAME);
             System.out.println("LOG: Attempting to send message to room: " + this.ROOM_NAME + "\nMessage: " + message);
 
-            IrcPacket resp = sendPacketToWelcomeServer(msgToSend);
+            IrcPacket response = sendPacketToWelcomeServer(messageToSend);
 
-            if (isErrPacket(resp)) {
-                handleErrorResponseFromServer((ErrorPacket) resp);
+            if (isErrPacket(response)) {
+                handleErrorResponseFromServer((ErrorPacket) response);
             } else {
                 System.out.println("LOG: Message successfully sent.");
             }
         }
     }
 
-    /**
-     * This is to be used for showing a message in the chat bubble and displaying who
-     * it is from
-     * 
-     * @param username()
-     * @param message
-     */
     public void displayMessage(String username, String message) {
         this.CHAT_BUBBLE.append(username + ": " + message + "\n");
     }
@@ -158,7 +141,6 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
         this.FRAME.dispose();
     }
 
-    // Getters
     public ServerSocket getListeningSocket() {
         return this.LISTENING_SOCKET;
     }
