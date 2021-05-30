@@ -71,7 +71,7 @@ public class ServerDisconnect extends Thread {
     }
 
     /**
-     * Method that sends keep alive messages to all clients connected to the server
+     * Sends keep alive messages to all clients connected to the server
      * Is invoked in server.java in five second increments
      */
     public ArrayList<User> sendKeepAliveMessages() {

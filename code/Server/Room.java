@@ -8,7 +8,7 @@ import code.OpPackets.SendMessage;
 
 
 /**
- * This is the SERVER's room class (seperate from a client room which is in
+ * SERVER's room class (seperate from a client room which is in
  * ChatRoom.java)
  */
 public class Room extends Thread {
@@ -56,8 +56,7 @@ public class Room extends Thread {
     }
 
     /**
-     * Remove a user from a room either when the server/client disconnects from each
-     * other or when the client requests to leave a room
+     * Remove a user from a room.
      */
     public void removeUser(String userToRemove) {
         for (User user : this.USERS) {
@@ -69,7 +68,7 @@ public class Room extends Thread {
     }
 
     /**
-     * Gets the list of users for when a client requests to list all users in a room
+     * Gets the list of users.
      */
     public ArrayList<String> getUsers() {
         if (this.USERS.isEmpty())

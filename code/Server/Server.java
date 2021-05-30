@@ -25,12 +25,12 @@ import code.OpPackets.SendMessage;
 import code.OpPackets.SendMessageResp;
 
 /**
- * Server class for the server side of the IRC
+ * Server class
  */
 public class Server extends Thread {
 
     // Class fields
-    private static final int PORT = 7777; // Port number for the server process
+    private static final int PORT = 7777;
     private final ServerSocket WELCOME_SOCKET;
     private final static int PROTOCOL = 0x12345678;
 
@@ -185,7 +185,7 @@ public class Server extends Thread {
                 return new SendMessageResp();
 
             case OP_CODE_SEND_PRIVATE_MESSAGE:
-                // Not yet implemented (E.C.)
+                // TODO
                 break;
 
             case OP_CODE_GOODBYE:

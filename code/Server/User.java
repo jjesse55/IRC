@@ -4,8 +4,6 @@ import java.io.Serializable;
 
 /**
  * This class is how the client will keep track of all the current users
- * 
- * All objects will have the username of the user, ip address, and port #
  */
 public class User implements Serializable {
 
