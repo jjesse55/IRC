@@ -42,8 +42,8 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
                 outToClient.writeObject(new SendMessageResp());
 
                 newConnection.close();
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception exception) {
+                exception.printStackTrace();
                 System.err.println("ERR: Exception raised in attempt to receive a message from the server.");
             }
         }
@@ -111,8 +111,8 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        String action = e.getActionCommand();
+    public void actionPerformed(ActionEvent exception) {
+        String action = exception.getActionCommand();
         if (action.equals("SendMessage")) {
 
             String message = this.TEXT_BOX_1.getText();
@@ -124,7 +124,7 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
 
             IrcPacket response = sendPacketToWelcomeServer(messageToSend);
 
-            if (isErrPacket(response)) {
+            if (isErrorPacket(response)) {
                 handleErrorResponseFromServer((ErrorPacket) response);
             } else {
                 System.out.println("LOG: Message successfully sent.");

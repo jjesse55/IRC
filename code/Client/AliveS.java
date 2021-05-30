@@ -16,8 +16,8 @@ public class KeepAlive extends Thread {
     public KeepAlive() {
         try {
             this.listeningSocket = new ServerSocket(0);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
             System.err.println("Could not establish keep alive connection. System exiting...");
             System.exit(1);
         }
@@ -33,8 +33,8 @@ public class KeepAlive extends Thread {
                 ObjectOutputStream outToServer = new ObjectOutputStream(aliveConnection.getOutputStream());
                 outToServer.writeObject(this.handleRequestFromClient(serverPacket));
                 aliveConnection.close();
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception exception) {
+                exception.printStackTrace();
                 System.err.println("ERR: Exception raised receiving message from the server.");
             }
         }

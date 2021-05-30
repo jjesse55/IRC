@@ -117,7 +117,7 @@ public abstract class GuiBase extends JFrame {
         this.username = username;
     }
 
-    protected boolean isErrPacket(IrcPacket packet) {
+    protected boolean isErrorPacket(IrcPacket packet) {
         return packet.getPacketHeader().getOpCode() == OpCodes.OP_CODE_ERROR;
     }
 

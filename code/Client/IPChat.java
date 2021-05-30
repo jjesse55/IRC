@@ -72,7 +72,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
                 System.out.println("LOG: Sending request to server to list all rooms.");
                 IrcPacket response = sendPacketToWelcomeServer(listRooms1);
 
-            if (isErrPacket(response))
+            if (isErrorPacket(response))
                 handleErrorResponseFromServer((ErrorPacket) response);
             else {
                 ListRoomsResp roomresponse = (ListRoomsResp) response;
@@ -101,7 +101,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
             System.out.println("LOG: Requesting to join the room: " + roomAdd);
             IrcPacket response = sendPacketToWelcomeServer(roomJoin);
 
-            if (isErrPacket(response))
+            if (isErrorPacket(response))
                 handleErrorResponseFromServer((ErrorPacket) response);
             else
                 System.out.println("LOG: Successfully joined the room: " + roomAdd);
@@ -122,7 +122,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
             System.out.println("LOG: Requesting to leave the room: " + roomRemove);
             IrcPacket response = sendPacketToWelcomeServer(leaveRoom);
 
-            if (isErrPacket(response))
+            if (isErrorPacket(response))
                 handleErrorResponseFromServer((ErrorPacket) response);
             else {
                 ChatRoom toClose = this.ROOMS_JOINED.get(roomRemove);
@@ -152,7 +152,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
             IrcPacket response = sendPacketToWelcomeServer(listUsers);
 
 
-            if (isErrPacket(response))
+            if (isErrorPacket(response))
                 handleErrorResponseFromServer((ErrorPacket) response);
             else {
                 ListUsersResponse listUsersResponse = (ListUsersResponse) response;
@@ -172,7 +172,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
             System.out.println("LOG: Informing server of client exiting IPChat application");
             IrcPacket response = sendPacketToWelcomeServer(new GoodBye(getUsername()));
 
-            if (isErrPacket(response)) {
+            if (isErrorPacket(response)) {
                 handleErrorResponseFromServer((ErrorPacket) response);
             } else {
                 JFrame disconnect = new JFrame("Disconnecting from Server");
@@ -216,7 +216,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
         System.exit(1);
     }
 
-    public void actionPerformed(ActionEvent e) {}
+    public void actionPerformed(ActionEvent exception) {}
 
     public void displayRooms(ArrayList<String> rooms) {
         JFrame listAllRoomsFrame = new JFrame("List All Rooms");
@@ -288,8 +288,8 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
 
             System.out.println("LOG: Successfully opened a new window for room: " + roomName);
             return newRoom.getListeningSocket().getLocalPort();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
             System.err.println("ERR: Unable to open the new room: : " + roomName + "... Please try again.");
         }
 
