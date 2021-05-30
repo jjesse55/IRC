@@ -23,8 +23,8 @@ public abstract class GuiBase extends JFrame {
     protected void openClientSocket() {
         try {
             this.clientSocket = new Socket(SERVER_HOST, SERVER_PORT);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
             System.err.println("ERR: Unable to open the client socket");
             this.serverCrashes();
         }
@@ -33,8 +33,8 @@ public abstract class GuiBase extends JFrame {
     protected void closeClientSocket() {
         try {
             this.clientSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
             System.err.println("ERR: Unable to close the client socket");
         }
     }
@@ -86,20 +86,20 @@ public abstract class GuiBase extends JFrame {
 
     protected void handleErrorResponseFromServer(ErrorPacket errorPacket) {
         switch (errorPacket.getErrorCode()) {
-            case IRC_ERR_ILLEGAL_OPCODE:
+            case IRC_ERROR_ILLEGAL_OPCODE:
                 System.err.println("ERR: Unsupported Operation Requested... Cannot perform.");
                 break;
-            case IRC_ERR_ILLEGAL_LENGTH:
+            case IRC_ERROR_ILLEGAL_LENGTH:
                 System.err.println("ERR: Illegal packet length (too long).");
                 break;
-            case IRC_ERR_NAME_EXISTS:
+            case IRC_ERROR_NAME_EXISTS:
                 System.err.println("ERR: Name already exists for user. Please try again using a different user name");
                 break;
-            case IRC_ERR_ILLEGAL_PROTOCOL:
+            case IRC_ERROR_ILLEGAL_PROTOCOL:
                 System.err.println("ERR: Illegal protocol for application user... System exiting");
                 System.exit(1);
                 break;
-            case IRC_ERR_INVALID_ROOM_NAME:
+            case IRC_ERROR_INVALID_ROOM_NAME:
                 System.err.println("ERR: Name of room specified does not match that of an existing room."
                         + " Please try again...");
                 break;

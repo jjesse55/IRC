@@ -96,10 +96,10 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
             int p = openNewRoomWindow(roomAdd);
             String us = getUsername();
 
-            JoinRoom roomJoin = new JoinRoom(roomAdd, us, p);
+            JoinRoom joinRoom = new JoinRoom(roomAdd, us, p);
 
             System.out.println("LOG: Requesting to join the room: " + roomAdd);
-            IrcPacket response = sendPacketToWelcomeServer(roomJoin);
+            IrcPacket response = sendPacketToWelcomeServer(joinRoom);
 
             if (isErrorPacket(response))
                 handleErrorResponseFromServer((ErrorPacket) response);
@@ -184,8 +184,8 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
                         System.exit(0);
                     else
                         return;
-                } catch (Exception a) {
-                    a.printStackTrace();
+                } catch (Exception exception) {
+                    exception.printStackTrace();
                     System.exit(5);
                 }
             }
