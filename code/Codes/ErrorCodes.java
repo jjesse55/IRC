@@ -1,8 +1,5 @@
 package code.Codes;
 
-/**
- * Codes for errors when processing a client's request
- */
 public enum ErrorCodes {
     IRC_ERROR_UNKNOWN,            
     IRC_ERROR_ILLEGAL_OPCODE,    

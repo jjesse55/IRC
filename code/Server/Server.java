@@ -24,27 +24,17 @@ import code.OpPackets.ListUsersResponse;
 import code.OpPackets.SendMessage;
 import code.OpPackets.SendMessageResp;
 
-/**
- * Server class
- */
 public class Server extends Thread {
 
-    // Class fields
     private static final int PORT = 7777;
     private final ServerSocket WELCOME_SOCKET;
     private final static int PROTOCOL = 0x12345678;
 
     private final ServerDisconnect SERVER_DISCONNECT;
 
-    // Information about clients that the server keeps track of
     private final ArrayList<User> USERS = new ArrayList<>();
     private final HashMap<String, Room> ROOMS = new HashMap<>();
 
-    /**
-     * Main program that runs the IRC server
-     * 
-     * @param notUsed
-     */
     public static void main(String[] notUsed) throws Exception {
         Server server = new Server();
         server.start();
@@ -67,9 +57,6 @@ public class Server extends Thread {
         }
     }
 
-    /**
-     * thread for the welcome socket of the server accepts incoming connections
-     */
     public void run() {
         while (true) {
             try {
@@ -93,25 +80,11 @@ public class Server extends Thread {
         }
     }
 
-    // Class methods
-
-    /**
-     * Private constructor to keep from outside use.
-     * 
-     * @throws IOException
-     */
     private Server() throws IOException {
         this.WELCOME_SOCKET = new ServerSocket(PORT);
         this.SERVER_DISCONNECT = new ServerDisconnect(this.USERS);
     }
 
-    /**
-     * READ THIS!!! This function determines what type of request packet is sent
-     * based on the opCode and then calls the functionality on that object once it
-     * is dynamically casted.
-     * 
-     * @param request
-     */
     private IrcPacket handleRequestFromClient(IrcPacket request) {
         Room room;
         switch (request.getPacketHeader().getOpCode()) {
@@ -129,7 +102,7 @@ public class Server extends Thread {
             case OP_CODE_LIST_ROOMS:
                 System.out.println("LOG: Recieved request to list all rooms from client.");
                 System.out.println("LOG: Sneding list all rooms response back to client.");
-                return new ListRoomsResp(this.getRooms());
+                return new ListRoomsResponse(this.getRooms());
 
             case OP_CODE_LIST_USERS:
                 ListUsers listUsersPacket = (ListUsers) request;
@@ -151,38 +124,38 @@ public class Server extends Thread {
                 room = this.getRoom(joinRoom.getRoomName());
                 room.addUser(new User(joinRoom.getUsername(), joinRoom.getPortNumber()));
                 System.out.println("Adding client to room: " + joinRoom.getRoomName());
-                return new JoinRoomResp();
+                return new JoinRoomResponse();
 
             case OP_CODE_LEAVE_ROOM:
-                LeaveRoom rqst = (LeaveRoom) request;
-                System.out.println("LOG: Recieved request from client: " + rqst.getUsername() + " to leave room: "
-                        + rqst.getRoomName());
-                room = this.ROOMS.get(rqst.getRoomName());
+                LeaveRoom request = (LeaveRoom) request;
+                System.out.println("LOG: Recieved request from client: " + request.getUsername() + " to leave room: "
+                        + request.getRoomName());
+                room = this.ROOMS.get(request.getRoomName());
                 if (room == null) {
                     System.out.println("ERR: Name in remove room request invalid... Sending error packet response.");
                     return new InvalidRoomName();
                 }
-                String usrExiting = rqst.getUsername();
+                String usrExiting = request.getUsername();
                 if (room.containsUser(usrExiting)) {
                     room.removeUser(usrExiting);
                     if (room.isEmpty())
-                        this.ROOMS.remove(rqst.getRoomName());
+                        this.ROOMS.remove(request.getRoomName());
                 }
                 System.out.println("LOG: Successfull removed client from the room. Sending response packet...");
-                return new LeaveRoomResp();
+                return new LeaveRoomResponse();
 
-            case OP_CODE_SEND_MESSAGE: // Send msg to a room from client
-                SendMessage msg = (SendMessage) request;
-                System.out.println("LOG: Send message request from user: " + msg.getUserName() + " to room: "
-                        + msg.getRoomName() + ". Message: " + msg.getMessage());
-                room = this.getRoom(msg.getRoomName());
-                room.setMessageToForward(msg);
+            case OP_CODE_SEND_MESSAGE:
+                SendMessage message = (SendMessage) request;
+                System.out.println("LOG: Send message request from user: " + message.getUserName() + " to room: "
+                        + message.getRoomName() + ". Message: " + message.getMessage());
+                room = this.getRoom(message.getRoomName());
+                room.setMessageToForward(message);
                 if (room.getState() == Thread.State.NEW)
                     room.start();
                 else
                     room.run();
                 System.out.println("LOG: Sent message to all users in the room, sending response back to sender...");
-                return new SendMessageResp();
+                return new SendMessageResponse();
 
             case OP_CODE_SEND_PRIVATE_MESSAGE:
                 // TODO
@@ -220,7 +193,6 @@ public class Server extends Thread {
         return new UnknownError();
     }
 
-    // Helper methods
     private boolean nameExists(HandShake handShake) {
         for (User user : this.USERS)
             if (user.getUsername().equals(handShake.getUser().getUsername()))
@@ -233,7 +205,6 @@ public class Server extends Thread {
         return handShake.getProtocol() == PROTOCOL;
     }
 
-    // Getters
     private ServerSocket getWelcomeSocket() {
         return this.WELCOME_SOCKET;
     }

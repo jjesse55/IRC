@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 class IPChat extends GuiBase implements ActionListener, Runnable {
-    private KeepAlive keepAliveSocket;
+    private SeverAlive keepAliveSocket;
     private final HashMap<String, ChatRoom> ROOMS_JOINED = new HashMap<>();
 
     private final JFrame MENU = new JFrame("Menu");
@@ -40,7 +40,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
     public static void main(String[] args) {
         javax.swing.SwingUtilities.invokeLater(() -> {
             IPChat myChat = new IPChat();
-            myChat.keepAliveSocket = new KeepAlive();
+            myChat.keepAliveSocket = new ServerAlive();
             myChat.keepAliveSocket.start();
             myChat.run();
         });
@@ -75,7 +75,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
             if (isErrorPacket(response))
                 handleErrorResponseFromServer((ErrorPacket) response);
             else {
-                ListRoomsResp roomresponse = (ListRoomsResp) response;
+                ListRoomResponse roomresponse = (ListRoomResponse) response;
                 displayRooms(roomresponse.getRooms());
                 System.out.println("LOG: Successfully retrieved list all rooms. Displaying now...");
             }
@@ -209,10 +209,10 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
     }
 
     public void serverCrashes() {
-        JFrame servCrash = new JFrame("Server Has Stopped Responding");
-        servCrash.setVisible(true);
-        JOptionPane.showMessageDialog(servCrash, "The Server has stopped responding, IP Chat Exiting");
-        servCrash.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JFrame serverCrash = new JFrame("Server Has Stopped Responding");
+        serverCrash.setVisible(true);
+        JOptionPane.showMessageDialog(serverCrash, "The Server has stopped responding, IP Chat Exiting");
+        serverCrash.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         System.exit(1);
     }
 

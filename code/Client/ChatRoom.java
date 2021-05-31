@@ -39,7 +39,7 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
                 displayMessage(message.getUserName(), message.getMessage());
 
                 ObjectOutputStream outToClient = new ObjectOutputStream(newConnection.getOutputStream());
-                outToClient.writeObject(new SendMessageResp());
+                outToClient.writeObject(new SendMessageResponse());
 
                 newConnection.close();
             } catch (Exception exception) {

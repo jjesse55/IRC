@@ -6,27 +6,20 @@ import java.net.Socket;
 import java.util.ArrayList;
 import code.OpPackets.SendMessage;
 
-
-/**
- * SERVER's room class (seperate from a client room which is in
- * ChatRoom.java)
- */
 public class Room extends Thread {
 
-    // Class fields
     private final String ROOM_NAME;
-    private SendMessage messageToFwd;
+    private SendMessage messageToForward;
     private final ArrayList<User> USERS = new ArrayList<>();
 
 
-    // Class methods
     public Room(String roomName) {
         this.ROOM_NAME = roomName;
     }
 
 
     public void run() {
-        System.out.println("LOG: Sending msg: " + this.messageToFwd.getMessage()
+        System.out.println("LOG: Sending msg: " + this.messageToForward.getMessage()
         + " to all the users in the room: " + this.getRoomName());
 
         for (User user : this.USERS) {
@@ -34,7 +27,7 @@ public class Room extends Thread {
                 Socket socket = new Socket(user.getClientHost(), user.getPortNumber());
                 ObjectOutputStream outToRoom = new ObjectOutputStream(socket.getOutputStream());
 
-                outToRoom.writeObject(this.messageToFwd);
+                outToRoom.writeObject(this.messageToForward);
 
                 ObjectInputStream inFromRoom = new ObjectInputStream(socket.getInputStream());
 
@@ -50,14 +43,10 @@ public class Room extends Thread {
         }
     }
 
-
     public void addUser(User user) {
         this.USERS.add(user);
     }
 
-    /**
-     * Remove a user from a room.
-     */
     public void removeUser(String userToRemove) {
         for (User user : this.USERS) {
             if (user.getUsername().equalsIgnoreCase(userToRemove)) {
@@ -67,9 +56,6 @@ public class Room extends Thread {
         }
     }
 
-    /**
-     * Gets the list of users.
-     */
     public ArrayList<String> getUsers() {
         if (this.USERS.isEmpty())
             return null;
@@ -81,9 +67,6 @@ public class Room extends Thread {
         return allUsersInTheRoom;
     }
 
-    /**
-     * Checks to see if a user is in the current room
-     */
     public boolean containsUser(String username) {
         for (User user : this.USERS) {
             if (user.getUsername().equalsIgnoreCase(username))
@@ -93,8 +76,8 @@ public class Room extends Thread {
         return false;
     }
 
-    public void setMessageToForward(SendMessage msg) {
-        this.messageToFwd = msg;
+    public void setMessageToForward(SendMessage message) {
+        this.messageToForward = message;
     }
 
     public boolean isEmpty() {

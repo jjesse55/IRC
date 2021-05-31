@@ -8,12 +8,12 @@ import code.IRC_Packets.IrcPacket;
 import code.OpPackets.GoodBye;
 import code.OpPackets.KeepAlive;
 
-public class KeepAlive extends Thread {
+public class ServerAlive extends Thread {
 
     private ServerSocket listeningSocket;
 
 
-    public KeepAlive() {
+    public ServerAlive() {
         try {
             this.listeningSocket = new ServerSocket(0);
         } catch (Exception exception) {

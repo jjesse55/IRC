@@ -8,9 +8,6 @@ import code.Codes.OpCodes;
  */
 public class ListRooms extends OpPackets{
 
-    /**
-     * Request to list all rooms 
-     */
     public ListRooms(){
         super(OpCodes.OP_CODE_LIST_ROOMS);
     }

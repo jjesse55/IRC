@@ -7,11 +7,8 @@ public class ListUsersResponse extends OpPackets {
 
     private final ArrayList<String> USERS;
 
-    /**
-     * Response to list all users
-     */
     public ListUsersResponse(ArrayList<String> users) {
-        super(OpCodes.OP_CODE_LIST_USERS_RESP);
+        super(OpCodes.OP_CODE_LIST_USERS_RESPONSE);
         this.USERS = users;
     }
 

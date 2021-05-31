@@ -122,10 +122,10 @@ public abstract class GuiBase extends JFrame {
     }
 
     public void serverCrashes() {
-        JFrame servCrash = new JFrame("Server Stopped Responding");
-        servCrash.setVisible(true);
-        JOptionPane.showMessageDialog(servCrash, "The Server has stopped responding, IP Chat Exiting");
-        servCrash.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JFrame serverCrash = new JFrame("Server Stopped Responding");
+        serverCrash.setVisible(true);
+        JOptionPane.showMessageDialog(serverCrash, "The Server has stopped responding, IP Chat Exiting");
+        serverCrash.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         System.exit(0);
     }
 }
