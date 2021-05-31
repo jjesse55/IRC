@@ -7,7 +7,7 @@ import java.awt.*;
 import javax.swing.JFrame;
 import code.IRC_Packets.IrcPacket;
 import code.OpPackets.SendMessage;
-import code.OpPackets.SendMessageResp;
+import code.OpPackets.SendMessageResponse;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.*;

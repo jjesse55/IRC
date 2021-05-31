@@ -11,7 +11,7 @@ import code.OpPackets.ListRooms;
 import code.OpPackets.GoodBye;
 import code.OpPackets.HandShake;
 import code.OpPackets.JoinRoom;
-import code.OpPackets.ListRoomsResp;
+import code.OpPackets.ListRoomsResponse;
 import code.OpPackets.ListUsers;
 import code.OpPackets.ListUsersResponse;
 import code.Server.User;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 class IPChat extends GuiBase implements ActionListener, Runnable {
-    private SeverAlive keepAliveSocket;
+    private ServerAlive keepAliveSocket;
     private final HashMap<String, ChatRoom> ROOMS_JOINED = new HashMap<>();
 
     private final JFrame MENU = new JFrame("Menu");
@@ -75,7 +75,7 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
             if (isErrorPacket(response))
                 handleErrorResponseFromServer((ErrorPacket) response);
             else {
-                ListRoomResponse roomresponse = (ListRoomResponse) response;
+                ListRoomsResponse roomresponse = (ListRoomsResponse) response;
                 displayRooms(roomresponse.getRooms());
                 System.out.println("LOG: Successfully retrieved list all rooms. Displaying now...");
             }

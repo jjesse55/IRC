@@ -15,14 +15,14 @@ import code.IRC_Packets.IrcPacket;
 import code.OpPackets.GoodBye;
 import code.OpPackets.HandShake;
 import code.OpPackets.JoinRoom;
-import code.OpPackets.JoinRoomResp;
+import code.OpPackets.JoinRoomResponse;
 import code.OpPackets.LeaveRoom;
-import code.OpPackets.LeaveRoomResp;
-import code.OpPackets.ListRoomsResp;
+import code.OpPackets.LeaveRoomResponse;
+import code.OpPackets.ListRoomsResponse;
 import code.OpPackets.ListUsers;
 import code.OpPackets.ListUsersResponse;
 import code.OpPackets.SendMessage;
-import code.OpPackets.SendMessageResp;
+import code.OpPackets.SendMessageResponse;
 
 public class Server extends Thread {
 
@@ -127,19 +127,19 @@ public class Server extends Thread {
                 return new JoinRoomResponse();
 
             case OP_CODE_LEAVE_ROOM:
-                LeaveRoom request = (LeaveRoom) request;
-                System.out.println("LOG: Recieved request from client: " + request.getUsername() + " to leave room: "
-                        + request.getRoomName());
-                room = this.ROOMS.get(request.getRoomName());
+                LeaveRoom leaveRequest = (LeaveRoom) request;
+                System.out.println("LOG: Recieved request from client: " + leaveRequest.getUsername() + " to leave room: "
+                        + leaveRequest.getRoomName());
+                room = this.ROOMS.get(leaveRequest.getRoomName());
                 if (room == null) {
                     System.out.println("ERR: Name in remove room request invalid... Sending error packet response.");
                     return new InvalidRoomName();
                 }
-                String usrExiting = request.getUsername();
+                String usrExiting = leaveRequest.getUsername();
                 if (room.containsUser(usrExiting)) {
                     room.removeUser(usrExiting);
                     if (room.isEmpty())
-                        this.ROOMS.remove(request.getRoomName());
+                        this.ROOMS.remove(leaveRequest.getRoomName());
                 }
                 System.out.println("LOG: Successfull removed client from the room. Sending response packet...");
                 return new LeaveRoomResponse();
