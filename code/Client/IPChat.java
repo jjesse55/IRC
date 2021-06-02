@@ -93,10 +93,10 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
                 System.out.println("Cancel was is pressed");
              }
              else{
-            int p = openNewRoomWindow(roomAdd);
+            int port = openNewRoomWindow(roomAdd);
             String us = getUsername();
 
-            JoinRoom joinRoom = new JoinRoom(roomAdd, us, p);
+            JoinRoom joinRoom = new JoinRoom(roomAdd, us, port);
 
             System.out.println("LOG: Requesting to join the room: " + roomAdd);
             IrcPacket response = sendPacketToWelcomeServer(joinRoom);
