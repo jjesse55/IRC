@@ -59,46 +59,46 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
         this.FRAME.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.FRAME.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(2, 0, 0, 0);
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.insets = new Insets(2, 0, 0, 0);
 
-        c.gridx = 0;
-        c.gridy = 0;
-        c.ipadx = 0;
-        c.ipady = 10;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.ipadx = 0;
+        constraints.ipady = 10;
         this.LABEL.setFont(new Font("", Font.BOLD, 40));
         this.LABEL.setForeground(Color.WHITE);
-        this.FRAME.add(this.LABEL, c);
+        this.FRAME.add(this.LABEL, constraints);
 
-        c.gridx = 0;
-        c.gridy = 4;
-        c.ipadx = 320;
-        c.ipady = 400;
+        constraints.gridx = 0;
+        constraints.gridy = 4;
+        constraints.ipadx = 320;
+        constraints.ipady = 400;
         this.CHAT_BUBBLE.setEditable(false);
         this.CHAT_BUBBLE.setBackground(Color.lightGray);
-        this.FRAME.add(this.CHAT_BUBBLE, c);
+        this.FRAME.add(this.CHAT_BUBBLE, constraints);
 
-        c.gridx = 0;
-        c.gridy = 1;
-        c.ipadx = 0;
-        c.ipady = 0;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.ipadx = 0;
+        constraints.ipady = 0;
         this.LABEL_ROOM.setText("Current Room:  " + ROOM_NAME);
         this.LABEL_ROOM.setFont(new Font("", Font.PLAIN, 15));
         this.LABEL_ROOM.setForeground(Color.white);
-        this.FRAME.add(this.LABEL_ROOM, c);
+        this.FRAME.add(this.LABEL_ROOM, constraints);
 
-        c.gridx = 0;
-        c.gridy = 5;
-        c.ipadx = 320;
-        c.ipady = 20;
+        constraints.gridx = 0;
+        constraints.gridy = 5;
+        constraints.ipadx = 320;
+        constraints.ipady = 20;
         this.TEXT_BOX_1.setBackground(Color.lightGray);
-        this.FRAME.add(this.TEXT_BOX_1, c);
+        this.FRAME.add(this.TEXT_BOX_1, constraints);
 
-        c.gridx = 1;
-        c.gridy = 5;
-        c.ipadx = 10;
-        c.ipady = 10;
-        this.FRAME.add(this.BUTTON, c);
+        constraints.gridx = 1;
+        constraints.gridy = 5;
+        constraints.ipadx = 10;
+        constraints.ipady = 10;
+        this.FRAME.add(this.BUTTON, constraints);
 
         this.BUTTON.addActionListener(this);
         this.BUTTON.setActionCommand("SendMessage");
