@@ -8,15 +8,8 @@ import java.util.Scanner;
 import code.OpPackets.GoodBye;
 import code.OpPackets.KeepAlive;
 
-
-/**
- * Class to implement both the keep alive messages to all the users in the system
- * AND
- * Notify all the clients upon the server disconnecting for maintenance, upgrades, etc.
- */
 public class ServerDisconnect extends Thread {
 
-    //Class fields
     private Socket keepAliveSocket;
     private Socket disconnectSocket;
     private static final String CLIENT_HOSTS = "localhost";
@@ -24,13 +17,8 @@ public class ServerDisconnect extends Thread {
     private final ArrayList<User> USERS;
     private final String ADMIN_PASSWORD = "adminPassword";
 
-
-    //Class methods
     public ServerDisconnect(ArrayList<User> users) { this.USERS = users; }
 
-    /**
-     * Method that waits for an admin password to disconnect the server from all clients
-     */
     public void run() {
         String passwordAttempt = null;
         while(!this.ADMIN_PASSWORD.equals(passwordAttempt)) {
@@ -70,10 +58,6 @@ public class ServerDisconnect extends Thread {
         }
     }
 
-    /**
-     * Method that sends keep alive messages to all clients connected to the server
-     * Is invoked in server.java in five second increments
-     */
     public ArrayList<User> sendKeepAliveMessages() {
         ArrayList<User> usersToRemove = new ArrayList<>();
         for (User user : this.USERS) {

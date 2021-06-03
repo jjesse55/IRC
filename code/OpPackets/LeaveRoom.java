@@ -6,9 +6,6 @@ public class LeaveRoom extends OpPackets {
     private final String CHAT_ROOM;
     private final String USER_NAME;
 
-    /**
-     * Request to leave room
-     */
     public LeaveRoom(String room, String userName)
     {
         super(OpCodes.OP_CODE_LEAVE_ROOM);

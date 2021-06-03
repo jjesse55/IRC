@@ -7,14 +7,11 @@ public class JoinRoom extends OpPackets{
     private final String USER_NAME;
     private final int PORT_NUMBER;
 
-    /**
-     * This is the request to join/create a room if the room is not already created
-     */
-    public JoinRoom(String room, String userName, int pN){
+    public JoinRoom(String room, String userName, int portNumber){
         super(OpCodes.OP_CODE_JOIN_ROOM);
         this.CHAT_ROOM=room;
         this.USER_NAME= userName;
-        this.PORT_NUMBER=pN;
+        this.PORT_NUMBER=portNumber;
     }
 
 
