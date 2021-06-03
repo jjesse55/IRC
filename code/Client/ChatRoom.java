@@ -111,8 +111,8 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
     }
 
     @Override
-    public void actionPerformed(ActionEvent exception) {
-        String action = exception.getActionCommand();
+    public void actionPerformed(ActionEvent actionEvent) {
+        String action = actionEvent.getActionCommand();
         if (action.equals("SendMessage")) {
 
             String message = this.TEXT_BOX_1.getText();
