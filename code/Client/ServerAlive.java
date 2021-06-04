@@ -17,7 +17,6 @@ public class ServerAlive extends Thread {
         try {
             this.listeningSocket = new ServerSocket(0);
         } catch (Exception exception) {
-            exception.printStackTrace();
             System.err.println("Could not establish keep alive connection. System exiting...");
             System.exit(1);
         }
@@ -29,12 +28,10 @@ public class ServerAlive extends Thread {
                 Socket aliveConnection = this.listeningSocket.accept();
                 ObjectInputStream inFromServer = new ObjectInputStream(aliveConnection.getInputStream());
                 IrcPacket serverPacket = (IrcPacket) inFromServer.readObject();
-
                 ObjectOutputStream outToServer = new ObjectOutputStream(aliveConnection.getOutputStream());
                 outToServer.writeObject(this.handleRequestFromClient(serverPacket));
                 aliveConnection.close();
             } catch (Exception exception) {
-                exception.printStackTrace();
                 System.err.println("ERR: Exception raised receiving message from the server.");
             }
         }

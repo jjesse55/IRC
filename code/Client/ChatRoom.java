@@ -25,30 +25,6 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
     private final JButton BUTTON = new JButton("Click to Send Message");
     private final JLabel LABEL_ROOM = new JLabel();
 
-    public void run() {
-        while (true) {
-            try {
-                Socket newConnection = this.LISTENING_SOCKET.accept();
-
-                ObjectInputStream inFromClient = new ObjectInputStream(newConnection.getInputStream());
-
-                SendMessage message = (SendMessage) inFromClient.readObject();
-                System.out.println(
-                        "LOG: New messages recieved for room: " + this.ROOM_NAME + "\nMessage: " + message.getMessage());
-
-                displayMessage(message.getUserName(), message.getMessage());
-
-                ObjectOutputStream outToClient = new ObjectOutputStream(newConnection.getOutputStream());
-                outToClient.writeObject(new SendMessageResponse());
-
-                newConnection.close();
-            } catch (Exception exception) {
-                exception.printStackTrace();
-                System.err.println("ERR: Exception raised in attempt to receive a message from the server.");
-            }
-        }
-    }
-
     public ChatRoom(String name, ServerSocket LISTENING_SOCKET, String username) {
         super(username);
         this.ROOM_NAME = name;
@@ -107,33 +83,46 @@ public class ChatRoom extends GuiBase implements ActionListener, Runnable {
         this.FRAME.setLayout(null);
         this.FRAME.setSize(600, 600);
         this.FRAME.setVisible(true);
+    }
 
+    public void run() {
+        while (true) {
+            try {
+                Socket newConnection = this.LISTENING_SOCKET.accept();
+                ObjectInputStream inFromServer = new ObjectInputStream(newConnection.getInputStream());
+                SendMessage message = (SendMessage) inFromServer.readObject();
+                System.out.println(
+                        "LOG: New messages received for room: " + this.ROOM_NAME + "\nMessage: " + message.getMessage());
+                this.displayMessage(message.getUserName(), message.getMessage());
+                ObjectOutputStream outToServer = new ObjectOutputStream(newConnection.getOutputStream());
+                outToServer.writeObject(new SendMessageResponse());
+                newConnection.close();
+            } catch (Exception exception) {
+                System.err.println("ERR: Exception raised in attempt to receive a message from the server.");
+            }
+        }
+    }
+
+    private void displayMessage(String username, String message) {
+        this.CHAT_BUBBLE.append(username + ": " + message + "\n");
     }
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         String action = actionEvent.getActionCommand();
         if (action.equals("SendMessage")) {
-
             String message = this.TEXT_BOX_1.getText();
             this.TEXT_BOX_1.setText(null);
-            String useName = username;
-
-            SendMessage messageToSend = new SendMessage(message, useName, this.ROOM_NAME);
+            String userName = username;
+            SendMessage messageToSend = new SendMessage(message, userName, this.ROOM_NAME);
             System.out.println("LOG: Attempting to send message to room: " + this.ROOM_NAME + "\nMessage: " + message);
-
-            IrcPacket response = sendPacketToWelcomeServer(messageToSend);
-
+            IrcPacket response = super.sendPacketToServer(messageToSend);
             if (isErrorPacket(response)) {
-                handleErrorResponseFromServer((ErrorPacket) response);
+                super.handleErrorResponseFromServer((ErrorPacket) response);
             } else {
                 System.out.println("LOG: Message successfully sent.");
             }
         }
-    }
-
-    public void displayMessage(String username, String message) {
-        this.CHAT_BUBBLE.append(username + ": " + message + "\n");
     }
 
     public void closeRoomWindow() {

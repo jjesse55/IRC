@@ -1,7 +1,6 @@
 package code.Client;
 
 import javax.swing.*;
-import java.awt.event.*;
 import java.awt.Color;
 import java.awt.*;
 import javax.swing.JFrame;
@@ -16,7 +15,6 @@ import code.OpPackets.ListUsers;
 import code.OpPackets.ListUsersResponse;
 import code.Server.User;
 import java.net.ServerSocket;
-import java.net.SocketTimeoutException;
 import java.io.*;
 
 import code.Codes.OpCodes;
@@ -24,14 +22,15 @@ import code.ErrorPackets.ErrorPacket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-class IPChat extends GuiBase implements ActionListener, Runnable {
+class IPChat extends GuiBase implements Runnable {
+
+    private String username;
+    private JFrame nameGetter;
     private ServerAlive keepAliveSocket;
-    private final HashMap<String, ChatRoom> ROOMS_JOINED = new HashMap<>();
 
     private final JFrame MENU = new JFrame("Menu");
-    private String username;
+    private final HashMap<String, ChatRoom> ROOMS_JOINED = new HashMap<>();
 
-    private JFrame nameGetter;
 
     public IPChat() {
         super(null);
@@ -47,83 +46,144 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
     }
 
     public void run() {
-        this.handshakeAndUsername();
-        this.MENUOptionMethods();
+        String username = this.handshakeWithServer();
+        super.setUsername(username);
+        this.buildMainMenu();
     }
 
+    private String handshakeWithServer() {
+        String usernameToTry = null;
+        try {
+            super.openClientSocket();
+            ObjectOutputStream outToServer = new ObjectOutputStream(this.clientSocket.getOutputStream());
+            usernameToTry = this.promptForUsername();
+            outToServer.writeObject(new HandShake(new User(usernameToTry, this.keepAliveSocket.getPortNumber())));
+            ObjectInputStream inFromServer = new ObjectInputStream(this.clientSocket.getInputStream());
+            IrcPacket ircPacket = (IrcPacket) inFromServer.readObject();
+            super.closeClientSocket();
+            super.handleResponseFromServer(ircPacket);
+            if (ircPacket.getPacketHeader().getOpCode() == OpCodes.OP_CODE_ERROR)
+                this.handshakeWithServer();
+        } catch (Exception exception) {
+            System.out.println("ERR: Error receiving welcome packet from the server");
+            super.serverCrashes();
+        }
+        return usernameToTry;
+    }
 
-    public void MENUOptionMethods() {
+    private String promptForUsername() {
+        this.nameGetter = new JFrame("userName Response");
+        this.username = JOptionPane.showInputDialog(this.nameGetter, "Enter Your Name");
+        if(this.username == null)
+            System.exit(0);
+        return this.username;
+    }
 
+    public void buildMainMenu() {
         Color backgroundColor = new Color(47, 79, 79);
         this.MENU.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         this.MENU.getContentPane().setBackground(backgroundColor);
+
         JPanel menuBar = new JPanel();
         menuBar.setPreferredSize(new Dimension(200, 500));
+        JButton listRoomsMenuButton = this.buildListRoomsMenuButton();
+        menuBar.add(listRoomsMenuButton);
+        JButton joinRoomMenuButton = this.buildJoinRoomMenuButton();
+        menuBar.add(joinRoomMenuButton);
+        JButton leaveRoomMenuButton = this.buildLeaveRoomMenuButton();
+        menuBar.add(leaveRoomMenuButton);
+        JButton displayUsersMenuButton = this.buildDisplayUsersMenuButton();
+        menuBar.add(displayUsersMenuButton);
+        JButton exitChatMenuButton = this.buildExitChatMenuButton();
+        menuBar.add(exitChatMenuButton);
 
-        JButton listRooms = new JButton("List All Rooms");
-        listRooms.setPreferredSize(new Dimension(200, 90));
-        menuBar.add(listRooms);
+        this.MENU.getContentPane().add(menuBar);
+        this.MENU.pack();
+        this.MENU.setVisible(true);
+    }
 
-        listRooms.addActionListener(actionEvent -> {
-
+    private JButton buildListRoomsMenuButton() {
+        JButton listRoomsMenuButton = new JButton("List All Rooms");
+        listRoomsMenuButton.setPreferredSize(new Dimension(200, 90));
+        listRoomsMenuButton.addActionListener(actionEvent -> {
             ListRooms listRooms1 = new ListRooms();
-
-                System.out.println("LOG: Sending request to server to list all rooms.");
-                IrcPacket response = sendPacketToWelcomeServer(listRooms1);
-
-            if (isErrorPacket(response))
-                handleErrorResponseFromServer((ErrorPacket) response);
+            System.out.println("LOG: Sending request to server to list all rooms.");
+            IrcPacket response = super.sendPacketToServer(listRooms1);
+            if (super.isErrorPacket(response))
+                super.handleErrorResponseFromServer((ErrorPacket) response);
             else {
-                ListRoomsResponse roomresponse = (ListRoomsResponse) response;
-                displayRooms(roomresponse.getRooms());
+                ListRoomsResponse roomResponse = (ListRoomsResponse) response;
+                this.displayRooms(roomResponse.getRooms());
                 System.out.println("LOG: Successfully retrieved list all rooms. Displaying now...");
             }
         });
+        return listRoomsMenuButton;
+    }
 
-        JButton addRoom = new JButton("Add/Join a Room");
-        addRoom.setPreferredSize(new Dimension(200, 90));
-        menuBar.add(addRoom);
+    private void displayRooms(ArrayList<String> rooms) {
+        JFrame listAllRoomsFrame = new JFrame("List All Rooms");
+        listAllRoomsFrame.setVisible(true);
+        if (rooms == null)
+            JOptionPane.showMessageDialog(listAllRoomsFrame, "Empty");
+        else
+            JOptionPane.showMessageDialog(listAllRoomsFrame, rooms.toString());
+    }
 
-        addRoom.addActionListener(actionEvent -> {
-                this.nameGetter = new JFrame("Add/Join A Room");
-                String roomAdd = JOptionPane.showInputDialog(this.nameGetter, "Enter The Name you want to join");
-
-            if(roomAdd == null){
+    private JButton buildJoinRoomMenuButton() {
+        JButton joinRoomMenuButton = new JButton("Add/Join a Room");
+        joinRoomMenuButton.setPreferredSize(new Dimension(200, 90));
+        joinRoomMenuButton.addActionListener(actionEvent -> {
+            this.nameGetter = new JFrame("Add/Join A Room");
+            String roomAdd = JOptionPane.showInputDialog(this.nameGetter, "Enter The Name you want to join");
+            if (roomAdd == null) {
                 System.out.println("Cancel was is pressed");
-             }
-             else{
-            int port = openNewRoomWindow(roomAdd);
-            String us = getUsername();
+            } else {
+                int port = this.openNewRoomWindow(roomAdd);
+                String us = super.getUsername();
+                JoinRoom joinRoom = new JoinRoom(roomAdd, us, port);
+                System.out.println("LOG: Requesting to join the room: " + roomAdd);
+                IrcPacket response = super.sendPacketToServer(joinRoom);
+                if (super.isErrorPacket(response))
+                    super.handleErrorResponseFromServer((ErrorPacket) response);
+                else
+                    System.out.println("LOG: Successfully joined the room: " + roomAdd);
+            }
+        });
+        return joinRoomMenuButton;
+    }
 
-            JoinRoom joinRoom = new JoinRoom(roomAdd, us, port);
+    private int openNewRoomWindow(String roomName) {
+        try {
+            ServerSocket roomSocket = new ServerSocket(0);
+            ChatRoom newRoom = new ChatRoom(roomName, roomSocket, this.username);
+            this.addNewRoom(newRoom);
+            Thread roomThread = new Thread(newRoom);
+            System.out.println("LOG: Attempting to open a new window for room: " + roomName);
+            roomThread.start();
+            System.out.println("LOG: Successfully opened a new window for room: " + roomName);
+            return newRoom.getListeningSocket().getLocalPort();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            System.err.println("ERR: Unable to open the new room: : " + roomName + "... Please try again.");
+        }
+        return 0;
+    }
 
-            System.out.println("LOG: Requesting to join the room: " + roomAdd);
-            IrcPacket response = sendPacketToWelcomeServer(joinRoom);
+    private void addNewRoom(ChatRoom room) {
+        this.ROOMS_JOINED.put(room.getRoomName(), room);
+    }
 
-            if (isErrorPacket(response))
-                handleErrorResponseFromServer((ErrorPacket) response);
-            else
-                System.out.println("LOG: Successfully joined the room: " + roomAdd);
-
-             }
-            });
-
-        JButton removeRoom = new JButton("Leave a Room");
-        removeRoom.setPreferredSize(new Dimension(200, 90));
-        menuBar.add(removeRoom);
-
-        removeRoom.addActionListener(actionEvent -> {
+    private JButton buildLeaveRoomMenuButton() {
+        JButton leaveRoomMenuButton = new JButton("Leave a Room");
+        leaveRoomMenuButton.setPreferredSize(new Dimension(200, 90));
+        leaveRoomMenuButton.addActionListener(actionEvent -> {
             this.nameGetter = new JFrame("Leave A Room");
             String roomRemove = JOptionPane.showInputDialog(this.nameGetter, "Enter The Name you want to leave");
-
             LeaveRoom leaveRoom = new LeaveRoom(roomRemove, getUsername());
-
             System.out.println("LOG: Requesting to leave the room: " + roomRemove);
-            IrcPacket response = sendPacketToWelcomeServer(leaveRoom);
-
-            if (isErrorPacket(response))
-                handleErrorResponseFromServer((ErrorPacket) response);
+            IrcPacket response = super.sendPacketToServer(leaveRoom);
+            if (super.isErrorPacket(response))
+                super.handleErrorResponseFromServer((ErrorPacket) response);
             else {
                 ChatRoom toClose = this.ROOMS_JOINED.get(roomRemove);
                 if (toClose == null) {
@@ -132,48 +192,53 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
                 }
                 toClose.closeRoomWindow();
                 this.ROOMS_JOINED.remove(roomRemove);
-
                 System.out.println("LOG: Successfully left the room: " + roomRemove);
             }
         });
+        return leaveRoomMenuButton;
+    }
 
-        JButton displayUsers = new JButton("Display All Users in a Room");
-        displayUsers.setPreferredSize(new Dimension(200, 90));
-        menuBar.add(displayUsers);
-        displayUsers.addActionListener(actionEvent -> {
+    private JButton buildDisplayUsersMenuButton() {
+        JButton displayUsersMenuButton = new JButton("Display All Users in a Room");
+        displayUsersMenuButton.setPreferredSize(new Dimension(200, 90));
+        displayUsersMenuButton.addActionListener(actionEvent -> {
             String roomToList = JOptionPane.showInputDialog(this.nameGetter, "Enter The Name of the Room");
-            if(roomToList == null){
+            if (roomToList == null) {
                 System.out.println("Cancel was is pressed");
-             }
-             else{
-            ListUsers listUsers = new ListUsers(roomToList);
-
-            System.out.println("LOG: Requesting to list all the users in room: " + roomToList);
-            IrcPacket response = sendPacketToWelcomeServer(listUsers);
-
-
-            if (isErrorPacket(response))
-                handleErrorResponseFromServer((ErrorPacket) response);
-            else {
-                ListUsersResponse listUsersResponse = (ListUsersResponse) response;
-                System.out.println("LOG: Successfully retrieved all users in room: " + roomToList
-                + ". Displaying them now...");
-                displayUser(listUsersResponse.getUsers());
+            } else {
+                ListUsers listUsers = new ListUsers(roomToList);
+                System.out.println("LOG: Requesting to list all the users in room: " + roomToList);
+                IrcPacket response = super.sendPacketToServer(listUsers);
+                if (super.isErrorPacket(response))
+                    super.handleErrorResponseFromServer((ErrorPacket) response);
+                else {
+                    ListUsersResponse listUsersResponse = (ListUsersResponse) response;
+                    System.out.println("LOG: Successfully retrieved all users in room: " + roomToList
+                            + ". Displaying them now...");
+                    this.displayUsers(listUsersResponse.getUsers());
+                }
             }
-          }
         });
+        return displayUsersMenuButton;
+    }
 
-        JButton serverDisconnect = new JButton("Exit IPChat");
-        serverDisconnect.setPreferredSize(new Dimension(200, 90));
-        menuBar.add(serverDisconnect);
+    private void displayUsers(ArrayList<String> users) {
+        JFrame user = new JFrame("Showing All Users");
+        user.setVisible(true);
+        if (users == null)
+            JOptionPane.showMessageDialog(user, "Empty");
+        else
+            JOptionPane.showMessageDialog(user, users.toString());
+    }
 
-        serverDisconnect.addActionListener(actionEvent -> {
-
+    private JButton buildExitChatMenuButton() {
+        JButton exitChatMenuButton = new JButton("Exit IPChat");
+        exitChatMenuButton.setPreferredSize(new Dimension(200, 90));
+        exitChatMenuButton.addActionListener(actionEvent -> {
             System.out.println("LOG: Informing server of client exiting IPChat application");
-            IrcPacket response = sendPacketToWelcomeServer(new GoodBye(getUsername()));
-
-            if (isErrorPacket(response)) {
-                handleErrorResponseFromServer((ErrorPacket) response);
+            IrcPacket response = super.sendPacketToServer(new GoodBye(getUsername()));
+            if (super.isErrorPacket(response)) {
+                super.handleErrorResponseFromServer((ErrorPacket) response);
             } else {
                 JFrame disconnect = new JFrame("Disconnecting from Server");
                 disconnect.setVisible(true);
@@ -185,118 +250,11 @@ class IPChat extends GuiBase implements ActionListener, Runnable {
                     else
                         return;
                 } catch (Exception exception) {
-                    exception.printStackTrace();
                     System.exit(5);
                 }
             }
-
             System.out.println("LOG: Exiting IPChat");
         });
-
-        this.MENU.getContentPane().add(menuBar);
-        this.MENU.pack();
-        this.MENU.setVisible(true);
-    }
-
-    public String userName() {
-        this.nameGetter = new JFrame("userName Response");
-        this.username = JOptionPane.showInputDialog(this.nameGetter, "Enter Your Name");
-
-        if(this.username == null)
-            System.exit(0);
-
-        return this.username;
-    }
-
-    public void serverCrashes() {
-        JFrame serverCrash = new JFrame("Server Has Stopped Responding");
-        serverCrash.setVisible(true);
-        JOptionPane.showMessageDialog(serverCrash, "The Server has stopped responding, IP Chat Exiting");
-        serverCrash.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        System.exit(1);
-    }
-
-    public void actionPerformed(ActionEvent exception) {}
-
-    public void displayRooms(ArrayList<String> rooms) {
-        JFrame listAllRoomsFrame = new JFrame("List All Rooms");
-        listAllRoomsFrame.setVisible(true);
-        if (rooms == null)
-             JOptionPane.showMessageDialog(listAllRoomsFrame, "Empty");
-        else
-            JOptionPane.showMessageDialog(listAllRoomsFrame, rooms.toString());
-    }
-
-    public void displayUser(ArrayList<String> users) {
-        JFrame user = new JFrame("Showing All Users");
-        user.setVisible(true);
-        if (users == null)
-            JOptionPane.showMessageDialog(user, "Empty");
-        else
-            JOptionPane.showMessageDialog(user, users.toString());
-    }
-
-
-    private boolean handshakeAndUsername() {
-        String usernameToTry = null;
-
-        try {
-            super.openClientSocket();
-
-            ObjectOutputStream outToServer = new ObjectOutputStream(this.clientSocket.getOutputStream());
-
-            usernameToTry = this.userName();
-
-            System.out.println("LOG: Attempting to register as username: " + usernameToTry);
-            outToServer.writeObject(new HandShake(new User(usernameToTry, this.keepAliveSocket.getPortNumber())));
-
-            ObjectInputStream inFromServer = new ObjectInputStream(this.clientSocket.getInputStream());
-            IrcPacket ircPacket = (IrcPacket) inFromServer.readObject();
-
-            super.closeClientSocket();
-            this.handleResponseFromServer(ircPacket);
-
-            if (ircPacket.getPacketHeader().getOpCode() == OpCodes.OP_CODE_ERROR)
-                return this.handshakeAndUsername();
-
-            System.out.println("LOG: Successfully registered with username: " + usernameToTry);
-
-        } catch (SocketTimeoutException exception) {
-            System.out.println("ERR: The server has no longer become responsive. Please try connecting again");
-            this.serverCrashes();
-        } catch (IOException exception) {
-            System.out.println("ERR: Error recieving welcome packet from the server");
-            this.serverCrashes();
-        } catch (ClassNotFoundException exception) {
-            System.out.println("ERR: The operation specified is unsuported and not available... System exiting");
-            System.exit(1);
-        }
-
-        super.setUsername(usernameToTry);
-        return true;
-    }
-
-    public int openNewRoomWindow(String roomName) {
-        try {
-            ServerSocket roomSocket = new ServerSocket(0);
-            ChatRoom newRoom = new ChatRoom(roomName, roomSocket, this.username);
-            this.addNewRoom(newRoom);
-            Thread roomThread = new Thread(newRoom);
-
-            System.out.println("LOG: Attempting to open a new window for room: " + roomName);
-            roomThread.start();
-
-            System.out.println("LOG: Successfully opened a new window for room: " + roomName);
-            return newRoom.getListeningSocket().getLocalPort();
-        } catch (IOException exception) {
-            exception.printStackTrace();
-            System.err.println("ERR: Unable to open the new room: : " + roomName + "... Please try again.");
-        }
-
-        return 0;
-    }
-
-    private void addNewRoom(ChatRoom room) {
-        this.ROOMS_JOINED.put(room.getRoomName(), room);
+        return exitChatMenuButton;
     }
 }

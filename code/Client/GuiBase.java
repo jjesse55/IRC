@@ -10,21 +10,38 @@ import code.IRC_Packets.IrcPacket;
 
 public abstract class GuiBase extends JFrame {
 
+    protected String username;
     protected Socket clientSocket;
+
     protected static final int SERVER_PORT = 7777;
     protected static final String SERVER_HOST = "localhost";
 
-    protected String username;
 
     protected GuiBase(String username) {
         this.username = username;
+    }
+
+    protected IrcPacket sendPacketToServer(IrcPacket packet) {
+        IrcPacket toReturn = null;
+        try {
+            this.openClientSocket();
+            ObjectOutputStream outToServer = new ObjectOutputStream(this.clientSocket.getOutputStream());
+            outToServer.writeObject(packet);
+            ObjectInputStream inFromServer = new ObjectInputStream(this.clientSocket.getInputStream());
+            toReturn = (IrcPacket) inFromServer.readObject();
+            inFromServer.close();
+            this.closeClientSocket();
+        } catch (Exception e) {
+            System.out.println("ERR: Unable to exchange data with the server.");
+            this.serverCrashes();
+        }
+        return toReturn;
     }
 
     protected void openClientSocket() {
         try {
             this.clientSocket = new Socket(SERVER_HOST, SERVER_PORT);
         } catch (Exception exception) {
-            exception.printStackTrace();
             System.err.println("ERR: Unable to open the client socket");
             this.serverCrashes();
         }
@@ -34,33 +51,16 @@ public abstract class GuiBase extends JFrame {
         try {
             this.clientSocket.close();
         } catch (IOException exception) {
-            exception.printStackTrace();
             System.err.println("ERR: Unable to close the client socket");
         }
     }
 
-    protected IrcPacket sendPacketToWelcomeServer(IrcPacket packet) {
-        IrcPacket toReturn = null;
-
-        try {
-            openClientSocket();
-            ObjectOutputStream outToServer = new ObjectOutputStream(this.clientSocket.getOutputStream());
-            outToServer.writeObject(packet);
-
-            ObjectInputStream inFromServer = new ObjectInputStream(this.clientSocket.getInputStream());
-            toReturn = (IrcPacket) inFromServer.readObject();
-
-            inFromServer.close();
-            closeClientSocket();
-
-        } catch (IOException ex) {
-            System.out.println("ERR: Unable to exchange data with the server.");
-            this.serverCrashes();
-        } catch (ClassNotFoundException exception) {
-            exception.printStackTrace();
-        }
-
-        return toReturn;
+    protected void serverCrashes() {
+        JFrame serverCrash = new JFrame("Server Stopped Responding");
+        serverCrash.setVisible(true);
+        JOptionPane.showMessageDialog(serverCrash, "The Server has stopped responding, IP Chat Exiting");
+        serverCrash.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        System.exit(1);
     }
 
     protected void handleResponseFromServer(IrcPacket response) {
@@ -70,17 +70,11 @@ public abstract class GuiBase extends JFrame {
                 this.handleErrorResponseFromServer(errorPacket);
                 break;
             case OP_CODE_KEEP_ALIVE:
-                break;
             case OP_CODE_HELLO:
-                break;
             case OP_CODE_LIST_ROOMS_RESPONSE:
-                break;
             case OP_CODE_LIST_USERS_RESPONSE:
-                break;
             case OP_CODE_JOIN_ROOM_RESPONSE:
-                break;
             case OP_CODE_LEAVE_ROOM_RESPONSE:
-                break;
         }
     }
 
@@ -104,28 +98,20 @@ public abstract class GuiBase extends JFrame {
                         + " Please try again...");
                 break;
             default:
-                System.err.println("ERR: Unknown server error. System exitting..");
+                System.err.println("ERR: Unknown server error. System exiting..");
                 System.exit(1);
         }
     }
 
-    public String getUsername() {
+    protected String getUsername() {
         return this.username;
     }
 
-    public void setUsername(String username) {
+    protected void setUsername(String username) {
         this.username = username;
     }
 
     protected boolean isErrorPacket(IrcPacket packet) {
         return packet.getPacketHeader().getOpCode() == OpCodes.OP_CODE_ERROR;
-    }
-
-    public void serverCrashes() {
-        JFrame serverCrash = new JFrame("Server Stopped Responding");
-        serverCrash.setVisible(true);
-        JOptionPane.showMessageDialog(serverCrash, "The Server has stopped responding, IP Chat Exiting");
-        serverCrash.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        System.exit(0);
     }
 }
