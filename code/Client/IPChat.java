@@ -32,10 +32,6 @@ class IPChat extends GuiBase implements Runnable {
     private final HashMap<String, ChatRoom> ROOMS_JOINED = new HashMap<>();
 
 
-    public IPChat() {
-        super(null);
-    }
-
     public static void main(String[] args) {
         javax.swing.SwingUtilities.invokeLater(() -> {
             IPChat myChat = new IPChat();
@@ -43,6 +39,10 @@ class IPChat extends GuiBase implements Runnable {
             myChat.keepAliveSocket.start();
             myChat.run();
         });
+    }
+
+    private IPChat() {
+        super(null);
     }
 
     public void run() {
