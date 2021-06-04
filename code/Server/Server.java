@@ -9,75 +9,26 @@ import java.util.HashMap;
 import code.ErrorPackets.IllegalOpcode;
 import code.ErrorPackets.IllegalProtocol;
 import code.ErrorPackets.NameExists;
-import code.ErrorPackets.UnknownError;
 import code.ErrorPackets.InvalidRoomName;
 import code.IRC_Packets.IrcPacket;
-import code.OpPackets.GoodBye;
-import code.OpPackets.HandShake;
-import code.OpPackets.JoinRoom;
-import code.OpPackets.JoinRoomResponse;
-import code.OpPackets.LeaveRoom;
-import code.OpPackets.LeaveRoomResponse;
-import code.OpPackets.ListRoomsResponse;
-import code.OpPackets.ListUsers;
-import code.OpPackets.ListUsersResponse;
-import code.OpPackets.SendMessage;
-import code.OpPackets.SendMessageResponse;
+import code.OpPackets.*;
 
 public class Server extends Thread {
 
-    private static final int PORT = 7777;
     private final ServerSocket WELCOME_SOCKET;
-    private final static int PROTOCOL = 0x12345678;
-
     private final ServerDisconnect SERVER_DISCONNECT;
-
     private final ArrayList<User> USERS = new ArrayList<>();
     private final HashMap<String, Room> ROOMS = new HashMap<>();
 
-    public static void main(String[] notUsed) throws Exception {
+    private static final int PORT = 7777;
+    private final static int PROTOCOL = 0x12345678;
+
+
+    public static void main(String [] notUsed) throws Exception {
         Server server = new Server();
         server.start();
         server.SERVER_DISCONNECT.start();
-        while (true) {
-            ArrayList<User> usersToRemove = server.SERVER_DISCONNECT.sendKeepAliveMessages();
-            for (User user : usersToRemove) {
-                System.out.println("LOG: Timeout recieved from user: " + user.getUsername()
-                        + ". Removing the user from the system now...");
-                for (Room room : server.ROOMS.values()) {
-                    if (room.containsUser(user.getUsername())) {
-                        room.removeUser(user.getUsername());
-                        if (room.isEmpty())
-                            server.ROOMS.remove(room.getRoomName());
-                    }
-                }
-                server.USERS.remove(user);
-            }
-            Thread.sleep(5000);
-        }
-    }
-
-    public void run() {
-        while (true) {
-            try {
-                System.out.println("ServerSocket awaiting connections...");
-                Socket newConnection = this.getWelcomeSocket().accept();
-
-                ObjectInputStream inFromClient = new ObjectInputStream(newConnection.getInputStream());
-
-                IrcPacket clientPacket = (IrcPacket) inFromClient.readObject();
-
-                ObjectOutputStream outToClient = new ObjectOutputStream(newConnection.getOutputStream());
-                outToClient.writeObject(this.handleRequestFromClient(clientPacket));
-
-                newConnection.close();
-            } catch (ClassNotFoundException exception) {
-                System.err.println("ERR: Class Not Found");
-            } catch (Exception exception) {
-                exception.printStackTrace();
-                System.err.println("ERR: Unable to exchange info with client");
-            }
-        }
+        server.pingClientsForTimeout();
     }
 
     private Server() throws IOException {
@@ -85,143 +36,200 @@ public class Server extends Thread {
         this.SERVER_DISCONNECT = new ServerDisconnect(this.USERS);
     }
 
-    private IrcPacket handleRequestFromClient(IrcPacket request) {
-        Room room;
-        switch (request.getPacketHeader().getOpCode()) {
-            case OP_CODE_HELLO:
-                HandShake handShake = (HandShake) request;
-                System.out.println("LOG: Recieved handshake request from client: " + handShake.getUser().getUsername());
-                if (!this.verifyProtocol(handShake))
-                    return new IllegalProtocol();
-                if (this.nameExists(handShake))
-                    return new NameExists();
-                this.USERS.add(handShake.getUser());
-                System.out.println("LOG: Sending handshake to response back to client.");
-                return new HandShake(null);
+    public void run() {
+        while (true) {
+            try {
+                System.out.println("ServerSocket awaiting connections...");
+                Socket newConnection = this.WELCOME_SOCKET.accept();
+                ObjectInputStream inFromClient = new ObjectInputStream(newConnection.getInputStream());
+                IrcPacket clientPacket = (IrcPacket) inFromClient.readObject();
+                ObjectOutputStream outToClient = new ObjectOutputStream(newConnection.getOutputStream());
+                outToClient.writeObject(this.handleRequestFromClient(clientPacket));
+                newConnection.close();
+            } catch (Exception exception) {
+                exception.printStackTrace();
+                System.err.println("ERR: Unable to exchange info with client");
+            }
+        }
+    }
 
-            case OP_CODE_LIST_ROOMS:
-                System.out.println("LOG: Recieved request to list all rooms from client.");
-                System.out.println("LOG: Sneding list all rooms response back to client.");
-                return new ListRoomsResponse(this.getRooms());
-
-            case OP_CODE_LIST_USERS:
-                ListUsers listUsersPacket = (ListUsers) request;
-                System.out.println(
-                        "LOG: Recieved list users request from client: for room " + listUsersPacket.getRoomName());
-                room = this.getRoom(listUsersPacket.getRoomName());
-                System.out.println(
-                        "LOG: Sending list of users in room: " + listUsersPacket.getRoomName() + " back to client.");
-                return room == null ? new ListUsersResponse(null) : new ListUsersResponse(room.getUsers());
-
-            case OP_CODE_JOIN_ROOM:
-                JoinRoom joinRoom = (JoinRoom) request;
-                System.out.println("LOG: Recieved request from client: " + joinRoom.getUsername() + " to join room: "
-                        + joinRoom.getRoomName());
-                if (!this.doesRoomExist(joinRoom.getRoomName())) {
-                    System.out.println("LOG: Name of room does not exist. Creating room now...");
-                    this.addRoom(joinRoom.getRoomName());
-                }
-                room = this.getRoom(joinRoom.getRoomName());
-                room.addUser(new User(joinRoom.getUsername(), joinRoom.getPortNumber()));
-                System.out.println("Adding client to room: " + joinRoom.getRoomName());
-                return new JoinRoomResponse();
-
-            case OP_CODE_LEAVE_ROOM:
-                LeaveRoom leaveRequest = (LeaveRoom) request;
-                System.out.println("LOG: Recieved request from client: " + leaveRequest.getUsername() + " to leave room: "
-                        + leaveRequest.getRoomName());
-                room = this.ROOMS.get(leaveRequest.getRoomName());
-                if (room == null) {
-                    System.out.println("ERR: Name in remove room request invalid... Sending error packet response.");
-                    return new InvalidRoomName();
-                }
-                String usrExiting = leaveRequest.getUsername();
-                if (room.containsUser(usrExiting)) {
-                    room.removeUser(usrExiting);
-                    if (room.isEmpty())
-                        this.ROOMS.remove(leaveRequest.getRoomName());
-                }
-                System.out.println("LOG: Successfull removed client from the room. Sending response packet...");
-                return new LeaveRoomResponse();
-
-            case OP_CODE_SEND_MESSAGE:
-                SendMessage message = (SendMessage) request;
-                System.out.println("LOG: Send message request from user: " + message.getUserName() + " to room: "
-                        + message.getRoomName() + ". Message: " + message.getMessage());
-                room = this.getRoom(message.getRoomName());
-                room.setMessageToForward(message);
-                if (room.getState() == Thread.State.NEW)
-                    room.start();
-                else
-                    room.run();
-                System.out.println("LOG: Sent message to all users in the room, sending response back to sender...");
-                return new SendMessageResponse();
-
-            case OP_CODE_SEND_PRIVATE_MESSAGE:
-                // TODO
-                break;
-
-            case OP_CODE_GOODBYE:
-                GoodBye goodBye = (GoodBye) request;
-                System.out.println("LOG: Revieced goodbye request from exiting client: " + goodBye.getUsername());
-                String userExiting = goodBye.getUsername();
-                System.out.println("Removing the user from the system.");
-                if (this.USERS.contains(userExiting))
-                    this.USERS.remove(userExiting);
-                System.out.println("Removing the user from all subscribed rooms.");
-                while (true) {
-                    try {
-                        for (String roomName : this.ROOMS.keySet()) {
-                            room = this.ROOMS.get(roomName);
-                            if (room.containsUser(userExiting)) {
-                                room.removeUser(userExiting);
-                                if (room.isEmpty())
-                                    this.ROOMS.remove(roomName);
-                            }
-                        }
-                        break;
-                    } catch (ConcurrentModificationException e) {
-                        continue;
+    private void pingClientsForTimeout() {
+        while (true) {
+            ArrayList<User> usersToRemove = this.SERVER_DISCONNECT.sendKeepAliveMessages();
+            for (User user : usersToRemove) {
+                System.out.println("LOG: Timeout received from user: " + user.getUsername()
+                        + ". Removing the user from the system now...");
+                for (Room room : this.ROOMS.values()) {
+                    if (room.containsUser(user.getUsername())) {
+                        room.removeUser(user.getUsername());
+                        if (room.isEmpty())
+                            this.ROOMS.remove(room.getRoomName());
                     }
                 }
-                System.out.println("LOG: Sending goodbye response back to client: " + goodBye.getUsername());
-                return new GoodBye("server");
+                this.USERS.remove(user);
+            }
+            this.sleepFiveSecondsBeforeNextPing();
+        }
+    }
 
+    private void sleepFiveSecondsBeforeNextPing() {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException ignored) {}
+    }
+
+    private IrcPacket handleRequestFromClient(IrcPacket request) {
+        switch (request.getPacketHeader().getOpCode()) {
+            case OP_CODE_HELLO:
+                assert request instanceof HandShake;
+                HandShake handShakeRequest = (HandShake) request;
+                return this.handleHandshakeRequest(handShakeRequest);
+            case OP_CODE_LIST_ROOMS:
+                return this.handleListRoomsRequest();
+            case OP_CODE_LIST_USERS:
+                assert request instanceof ListUsers;
+                ListUsers listUsersRequest = (ListUsers) request;
+                return this.handleListUsersRequest(listUsersRequest);
+            case OP_CODE_JOIN_ROOM:
+                assert request instanceof JoinRoom;
+                JoinRoom joinRoomRequest = (JoinRoom) request;
+                return this.handleJoinRoomRequest(joinRoomRequest);
+            case OP_CODE_LEAVE_ROOM:
+                assert request instanceof LeaveRoom;
+                LeaveRoom leaveRoomRequest = (LeaveRoom) request;
+                return this.handleLeaveRoomRequest(leaveRoomRequest);
+            case OP_CODE_SEND_MESSAGE:
+                assert request instanceof SendMessage;
+                SendMessage sendMessageRequest = (SendMessage) request;
+                return this.handleSendMessageRequest(sendMessageRequest);
+            case OP_CODE_GOODBYE:
+                assert request instanceof GoodBye;
+                GoodBye goodByeRequest = (GoodBye) request;
+                return this.handleGoodbyeRequest(goodByeRequest);
             default:
                 return new IllegalOpcode();
         }
-        return new UnknownError();
     }
 
-    private boolean nameExists(HandShake handShake) {
-        for (User user : this.USERS)
-            if (user.getUsername().equals(handShake.getUser().getUsername()))
-                return true;
-
-        return false;
+    private IrcPacket handleHandshakeRequest(HandShake handShakeRequest) {
+        System.out.println("LOG: Received handshake request from client: " + handShakeRequest.getUser().getUsername());
+        boolean invalidProtocolUsed = !this.verifyProtocol(handShakeRequest);
+        if (invalidProtocolUsed)
+            return new IllegalProtocol();
+        boolean usernameAlreadyExists = this.nameExists(handShakeRequest);
+        if (usernameAlreadyExists)
+            return new NameExists();
+        this.USERS.add(handShakeRequest.getUser());
+        System.out.println("LOG: Sending handshake to response back to client.");
+        return new HandShake(null);
     }
 
     private boolean verifyProtocol(HandShake handShake) {
         return handShake.getProtocol() == PROTOCOL;
     }
 
-    private ServerSocket getWelcomeSocket() {
-        return this.WELCOME_SOCKET;
+    private boolean nameExists(HandShake handShake) {
+        for (User user : this.USERS)
+            if (user.getUsername().equals(handShake.getUser().getUsername()))
+                return true;
+        return false;
+    }
+
+    private IrcPacket handleListRoomsRequest() {
+        System.out.println("LOG: Received request to list all rooms from client.\n " +
+                "LOG: Sending list all rooms response back to client.");
+        return new ListRoomsResponse(this.getRooms());
     }
 
     private ArrayList<String> getRooms() {
         return this.ROOMS.isEmpty() ? null : new ArrayList<String>(this.ROOMS.keySet());
     }
 
+    private IrcPacket handleListUsersRequest(ListUsers listUsersRequest) {
+        System.out.println(
+                "LOG: Received list users request from client: for room " + listUsersRequest.getRoomName());
+        Room roomToListUsers = this.getRoom(listUsersRequest.getRoomName());
+        System.out.println(
+                "LOG: Sending list of users in room: " + listUsersRequest.getRoomName() + " back to client.");
+        boolean roomExists = roomToListUsers != null;
+        ArrayList<String> usersInRoom = roomExists ? roomToListUsers.getUsers() : null;
+        return new ListUsersResponse(usersInRoom);
+    }
+
     private Room getRoom(String roomName) {
         return this.ROOMS.get(roomName);
     }
 
+    private IrcPacket handleJoinRoomRequest(JoinRoom joinRoomRequest) {
+        System.out.println("LOG: Received request from client: " + joinRoomRequest.getUsername() + " to join room: "
+                + joinRoomRequest.getRoomName());
+        boolean roomDoesNotExist = !this.doesRoomExist(joinRoomRequest.getRoomName());
+        if (roomDoesNotExist) {
+            System.out.println("LOG: Room does not exist. Creating room now...");
+            this.addRoom(joinRoomRequest.getRoomName());
+        }
+        Room roomToJoin = this.getRoom(joinRoomRequest.getRoomName());
+        roomToJoin.addUser(new User(joinRoomRequest.getUsername(), joinRoomRequest.getPortNumber()));
+        System.out.println("Adding client to room: " + joinRoomRequest.getRoomName());
+        return new JoinRoomResponse();
+    }
+
     private boolean doesRoomExist(String name) {
-        return this.ROOMS.keySet().contains(name);
+        return this.ROOMS.containsKey(name);
     }
 
     private void addRoom(String name) {
         this.ROOMS.put(name, new Room(name));
+    }
+
+    private IrcPacket handleLeaveRoomRequest(LeaveRoom leaveRoomRequest) {
+        System.out.println("LOG: Received request from client: " + leaveRoomRequest.getUsername() + " to leave room: "
+                + leaveRoomRequest.getRoomName());
+        Room roomToLeave = this.ROOMS.get(leaveRoomRequest.getRoomName());
+        if (roomToLeave == null) {
+            System.out.println("ERR: Name in remove room request invalid... Sending error packet response.");
+            return new InvalidRoomName();
+        }
+        String usrExiting = leaveRoomRequest.getUsername();
+        if (roomToLeave.containsUser(usrExiting)) {
+            roomToLeave.removeUser(usrExiting);
+            if (roomToLeave.isEmpty())
+                this.ROOMS.remove(leaveRoomRequest.getRoomName());
+        }
+        System.out.println("LOG: Successful removed client from the room. Sending response packet...");
+        return new LeaveRoomResponse();
+    }
+
+    private IrcPacket handleSendMessageRequest(SendMessage sendMessageRequest) {
+        System.out.println("LOG: Send message request from user: " + sendMessageRequest.getUserName() + " to room: "
+                + sendMessageRequest.getRoomName() + ". Message: " + sendMessageRequest.getMessage());
+        Room roomToSendMessage = this.getRoom(sendMessageRequest.getRoomName());
+        roomToSendMessage.setMessageToForward(sendMessageRequest);
+        if (roomToSendMessage.getState() == Thread.State.NEW)
+            roomToSendMessage.start();
+        else
+            roomToSendMessage.run();
+        System.out.println("LOG: Sent message to all users in the room, sending response back to sender...");
+        return new SendMessageResponse();
+    }
+
+    private IrcPacket handleGoodbyeRequest(GoodBye goodByeRequest) {
+        System.out.println("LOG: Received goodbye request from exiting client: " + goodByeRequest.getUsername());
+        String userExiting = goodByeRequest.getUsername();
+        System.out.println("Removing the user from all subscribed rooms.");
+        try {
+            for (String roomName : this.ROOMS.keySet()) {
+                Room roomToRemoveUserFrom = this.ROOMS.get(roomName);
+                if (roomToRemoveUserFrom.containsUser(userExiting)) {
+                    roomToRemoveUserFrom.removeUser(userExiting);
+                    if (roomToRemoveUserFrom.isEmpty())
+                        this.ROOMS.remove(roomName);
+                }
+            }
+        } catch (ConcurrentModificationException ignored) {
+            this.handleGoodbyeRequest(goodByeRequest);
+        }
+        System.out.println("LOG: Sending goodbye response back to client: " + goodByeRequest.getUsername());
+        return new GoodBye("server");
     }
 }

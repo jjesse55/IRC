@@ -8,8 +8,9 @@ import code.OpPackets.SendMessage;
 
 public class Room extends Thread {
 
-    private final String ROOM_NAME;
     private SendMessage messageToForward;
+
+    private final String ROOM_NAME;
     private final ArrayList<User> USERS = new ArrayList<>();
 
 
@@ -17,26 +18,18 @@ public class Room extends Thread {
         this.ROOM_NAME = roomName;
     }
 
-
     public void run() {
         System.out.println("LOG: Sending msg: " + this.messageToForward.getMessage()
         + " to all the users in the room: " + this.getRoomName());
-
         for (User user : this.USERS) {
             try {
-                Socket socket = new Socket(user.getClientHost(), user.getPortNumber());
+                Socket socket = new Socket(User.CLIENT_HOST, user.getPortNumber());
                 ObjectOutputStream outToRoom = new ObjectOutputStream(socket.getOutputStream());
-
                 outToRoom.writeObject(this.messageToForward);
-
                 ObjectInputStream inFromRoom = new ObjectInputStream(socket.getInputStream());
-
                 inFromRoom.readObject();
-
                 inFromRoom.close();
                 socket.close();
-            } catch (ClassNotFoundException exception) {
-                System.out.println("ERR: Class Not Found");
             } catch (Exception exception) {
                 System.out.println("ERR: Error sending message to user: " + user.getUsername());
             }
@@ -59,11 +52,9 @@ public class Room extends Thread {
     public ArrayList<String> getUsers() {
         if (this.USERS.isEmpty())
             return null;
-
         ArrayList<String> allUsersInTheRoom = new ArrayList<>();
         for (User user : this.USERS)
             allUsersInTheRoom.add(user.getUsername());
-
         return allUsersInTheRoom;
     }
 
@@ -72,7 +63,6 @@ public class Room extends Thread {
             if (user.getUsername().equalsIgnoreCase(username))
                 return true;
         }
-
         return false;
     }
 

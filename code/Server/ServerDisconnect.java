@@ -12,50 +12,46 @@ public class ServerDisconnect extends Thread {
 
     private Socket keepAliveSocket;
     private Socket disconnectSocket;
-    private static final String CLIENT_HOSTS = "localhost";
 
     private final ArrayList<User> USERS;
     private final String ADMIN_PASSWORD = "adminPassword";
 
+    private static final String CLIENT_HOSTS = "localhost";
+
     public ServerDisconnect(ArrayList<User> users) { this.USERS = users; }
 
     public void run() {
-        String passwordAttempt = null;
-        while(!this.ADMIN_PASSWORD.equals(passwordAttempt)) {
-            Scanner scanner = new Scanner(System.in);
+        String passwordAttempt;
+        Scanner scanner = new Scanner(System.in);
+        do {
             passwordAttempt = scanner.nextLine();
-            if(!passwordAttempt.equals(this.ADMIN_PASSWORD)) {
-                System.out.println("ERR: Incorrrect admin password entered. Please try again.");
-                continue;
+        } while (!this.ADMIN_PASSWORD.equals(passwordAttempt));
+        for (User user : this.USERS) {
+            try {
+                System.out.println("LOG: Notifying user: " + user.getUsername() + " of server disconnection.");
+                this.openDisconnectSocket(user);
+                ObjectOutputStream outToUser = new ObjectOutputStream(this.disconnectSocket.getOutputStream());
+                outToUser.writeObject(new GoodBye("server"));
+                ObjectInputStream inFromUser = new ObjectInputStream(this.disconnectSocket.getInputStream());
+                inFromUser.readObject();
+                System.out.println("LOG: Confirmed server disconnection from user: " + user.getUsername());
+                inFromUser.close();
+                this.closeDisconnectSocket();
+            } catch (Exception e) {
+                System.out.println("ERR: Could not successfully send notice of server disconnect to user: "
+                + user.getUsername());
             }
-
-            for (User user : this.USERS) {
-                try {
-                    System.out.println("LOG: Notifying user: " + user.getUsername() + " of server disconnection.");
-
-                    this.openDisconnectSocket(user);
-                    ObjectOutputStream outToUser = new ObjectOutputStream(this.getDisconnectSocket().getOutputStream());
-    
-                    outToUser.writeObject(new GoodBye("server"));
-    
-                    ObjectInputStream inFromUser = new ObjectInputStream(this.getDisconnectSocket().getInputStream());
-    
-                    inFromUser.readObject();
-
-                    System.out.println("LOG: Confirmed server disconncetion from user: " + user.getUsername());
-    
-                    inFromUser.close();
-                    closeDisconnectSocket();
-    
-                } catch (Exception e) {
-                    System.out.println("ERR: Could not successfully send notice of server disconnect to user: "
-                    + user.getUsername());
-                }
-            }
-
-            System.out.println("LOG: Server disconnected from all users, now terminating...");
-            System.exit(0);
         }
+        System.out.println("LOG: Server disconnected from all users, now terminating...");
+        System.exit(0);
+    }
+
+    private void openDisconnectSocket(User user) throws Exception {
+        this.disconnectSocket = new Socket(CLIENT_HOSTS, user.getPortNumber());
+    }
+
+    private void closeDisconnectSocket() throws Exception {
+        this.disconnectSocket.close();
     }
 
     public ArrayList<User> sendKeepAliveMessages() {
@@ -63,22 +59,16 @@ public class ServerDisconnect extends Thread {
         for (User user : this.USERS) {
             try {
                 this.openKeepAliveSocket(user);
-                ObjectOutputStream outToUser = new ObjectOutputStream(this.getKeepAliveSocket().getOutputStream());
-
+                ObjectOutputStream outToUser = new ObjectOutputStream(this.keepAliveSocket.getOutputStream());
                 outToUser.writeObject(new KeepAlive());
-
-                ObjectInputStream inFromUser = new ObjectInputStream(this.getKeepAliveSocket().getInputStream());
-
+                ObjectInputStream inFromUser = new ObjectInputStream(this.keepAliveSocket.getInputStream());
                 inFromUser.readObject();
-
                 inFromUser.close();
-                closeKeepAliveSocket();
-
+                this.closeKeepAliveSocket();
             } catch (Exception e) {
                 usersToRemove.add(user);
             }
         }
-
         return usersToRemove;
     }
 
@@ -86,18 +76,7 @@ public class ServerDisconnect extends Thread {
         this.keepAliveSocket = new Socket(CLIENT_HOSTS, user.getPortNumber());
     }
 
-    private void openDisconnectSocket(User user) throws Exception {
-        this.disconnectSocket = new Socket(CLIENT_HOSTS, user.getPortNumber());
-    }
-
     private void closeKeepAliveSocket() throws Exception {
         this.keepAliveSocket.close();
     }
-
-    private void closeDisconnectSocket() throws Exception {
-        this.disconnectSocket.close();
-    }
-
-    private Socket getKeepAliveSocket() { return this.keepAliveSocket; }
-    private Socket getDisconnectSocket() { return this.disconnectSocket; }
 }

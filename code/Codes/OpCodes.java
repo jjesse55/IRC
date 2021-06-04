@@ -14,6 +14,5 @@ public enum OpCodes {
     OP_CODE_LEAVE_ROOM_RESPONSE,           
     OP_CODE_SEND_MESSAGE,               
     OP_CODE_SEND_MESSAGE_RESPONSE, 
-    OP_CODE_SEND_PRIVATE_MESSAGE,       
-    OP_CODE_GOODBYE;                    
+    OP_CODE_GOODBYE;
 }
